@@ -83,15 +83,10 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     WRITE_PARAMETER(R_MIN);
     WRITE_PARAMETER(R_MAX);
     WRITE_PARAMETER(GRID_RATIO);
-    WRITE_PARAMETER(U_BASE);
-    WRITE_PARAMETER(U_AMPLITUDE);
-    WRITE_PARAMETER(U_SCALE);
-    WRITE_PARAMETER(RHO_SCALE);
-    WRITE_PARAMETER(INITIAL_RHO_MIN);
+    WRITE_PARAMETER(RHO_INITIAL);
+    WRITE_PARAMETER(U_INITIAL);
     WRITE_PARAMETER(T_INITIAL);
-    WRITE_PARAMETER(W_AREA_POWER);
-    WRITE_PARAMETER(W_MINUS_FRACTION);
-    WRITE_PARAMETER(W_MINUS_SCALE);
+    WRITE_PARAMETER(W_MINUS_INITIAL);
     WRITE_PARAMETER(CFL_NUMBER);
     WRITE_PARAMETER(SOURCE_CFL);
     WRITE_PARAMETER(LIMIT_SOURCE_STEP);
@@ -119,7 +114,7 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     file << "\ngeometry = "
          << (SUPER_RADIAL_EXPANSION ? "Kopp-Holzer superradial; A(r_in)=1; volume=Gauss quadrature"
                                     : "radial 1D; A(r)=r^2; volume=integral(A dr)") << '\n'
-         << "initial_conditions = analytic profiles from include.h at cell centers\n"
+         << "initial_conditions = " << (RESTART_FILE[0] ? "loaded from checkpoint" : "uniform state from include.h") << '\n'
          << "inner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; copied u, w_minus\n"
          << "outer_boundary = constant extrapolation\n"
          << "signal_speed_estimate = max(VA,sqrt(cs2+cw2)); "

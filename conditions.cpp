@@ -1,39 +1,14 @@
 #include "functions.h"
 
-// Initial profiles are defined only for r >= 1. Ghosts are set separately by BCs.
+// Initialize physical cells. Ghosts are set separately by the boundary conditions.
 void set_initial_conditions(Grid& grid)
 {
     if (grid.size() == 0 || grid.face(grid.begin()).r < 1.0)
         throw logic_error("Initial profiles require a grid with r >= 1.");
     const int first = grid.begin();
-    const int count = grid.end() - first;
-    vector<State> states(count);
-    int invalid = 0;
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static) reduction(|:invalid)
-#endif
-    for (int j = 0; j < count; ++j) {
-        const Cell& c = grid.cell(first + j);
-        const double x = c.r - 1.0;
-        const double u = U_BASE + U_AMPLITUDE * (-expm1(-x / U_SCALE));
-        const double rho = max(U_BASE / (c.area * u) +
-            (1.0 - U_BASE / u) * exp(-x / RHO_SCALE), INITIAL_RHO_MIN);
-        const double wp = OMEGA_0 * pow(c.area, W_AREA_POWER);
-        const double wm = W_MINUS_FRACTION * wp * (-expm1(-x / W_MINUS_SCALE));
-        try {
-            states[j] = Primitive{rho, u, THETA * rho * T_INITIAL, wp, wm}.to_conservative();
-        } catch (const invalid_argument&) {
-            // An exception must not escape an OpenMP worker.
-            invalid = 1;
-        }
-    }
-    if (invalid)
-        throw runtime_error("Initial profiles produced invalid states.");
-#ifdef _OPENMP
-#pragma omp parallel for schedule(static)
-#endif
-    for (int j = 0; j < count; ++j)
-        grid.set_state(first + j, states[j]);
+    const State initial = State::from_primitive(RHO_INITIAL, U_INITIAL, T_INITIAL, OMEGA_0, W_MINUS_INITIAL);
+    for (int i = first; i < grid.end(); ++i)
+        grid.set_state(i, initial);
 }
 
 State photospheric_boundary_state(const State& interior)

@@ -56,37 +56,12 @@ constexpr double R_MIN = 1.0;               // Inner boundary at the solar surfa
 constexpr double R_MAX = 30.0;              // Outer boundary in solar-radius units.
 constexpr double GRID_RATIO = 1.008;        // Adjacent cell width ratio; 1 gives a uniform grid.
 
-// Trial initial profiles, evaluated at physical cell centers at t = 0.
-// Here r >= 1, A(1) = 1, and exp denotes the exponential function.
-
-// Velocity: u(r) = U_BASE + U_AMPLITUDE * (1 - exp(-(r - 1) / U_SCALE)).
-constexpr double U_BASE = 0.02;             // Velocity at r = 1.
-constexpr double U_AMPLITUDE = 1.45;        // Added velocity far from the base; u tends to 1.47.
-constexpr double U_SCALE = 3.5;             // Radial e-folding length of the velocity increase.
-
-// Density: rho(r) = max(U_BASE / (A(r) * u(r))
-//   + (1 - U_BASE / u(r)) * exp(-(r - 1) / RHO_SCALE), INITIAL_RHO_MIN).
-// This gives rho(1) = 1 and approximately A*rho*u = U_BASE far from the base,
-// until the density floor becomes active.
-constexpr double RHO_SCALE = 0.25;          // Decay length of the near-base density correction.
-constexpr double INITIAL_RHO_MIN = 1e-8;    // Density floor for initialization only.
-
-// Uniform dimensionless temperature for fresh runs.
+// Uniform dimensionless state for fresh runs. The outgoing wave energy is OMEGA_0.
+constexpr double RHO_INITIAL = 1.0;
+constexpr double U_INITIAL = 0.02;
 constexpr double T_INITIAL = 1.0;
-static_assert(T_INITIAL > 0);
-
-// Wave energy densities (not wave amplitudes):
-// w_plus(r)  = OMEGA_0 * A(r)^W_AREA_POWER.
-// w_minus(r) = W_MINUS_FRACTION * w_plus(r) * (1 - exp(-(r - 1) / W_MINUS_SCALE)).
-// Initially w_plus(1) = OMEGA_0 and w_minus(1) = 0.
-constexpr double W_AREA_POWER = -1.2;       // Outgoing energy scales as r^-2.4 when A(r) = r^2.
-constexpr double W_MINUS_FRACTION = 0.02;   // Far-field ratio w_minus / w_plus.
-constexpr double W_MINUS_SCALE = 0.5;       // Radial e-folding length of the incoming wave fraction rise.
-
-// Derived initial quantities: p = THETA * rho * T, momentum density = rho * u,
-// E = rho*u*u/2 + p/(GAMMA - 1) + w_plus + w_minus.
-// These profiles are initial guesses, not a stationary solution or fixed boundary data.
-// In these comments, ^ denotes exponentiation (use pow in C++).
+constexpr double W_MINUS_INITIAL = 0.02 * OMEGA_0;
+static_assert(RHO_INITIAL > 0 && T_INITIAL > 0 && W_MINUS_INITIAL >= 0);
 
 // Dimensionless solver settings.
 enum class SlopeLimiter { Minmod, VanLeer, FirstOrder };

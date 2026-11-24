@@ -2,8 +2,8 @@
 #include <cassert>
 
 // A uniform gas at rest with equal wave populations has no reflection.
-// At t=0 the analytical cell-averaged RHS is gravity in momentum, equal
-// dissipation in both waves, and zero in density and total energy.
+// The initial momentum RHS includes gravity and the difference between the
+// area secant in the flux and the analytic derivative in the source.
 int main()
 {
     g_grid.create(10, 2, 1, 2, 1);
@@ -18,9 +18,12 @@ int main()
     assert(g_step == 1 && g_time == END_TIME);
     const int i = g_grid.begin() + 4;
     const Cell& c = g_grid.cell(i);
-    const double gravity = c.width / c.volume;
-    const double loss = D * c.r * gravity * 0.001;
-    assert(abs((c.state.momentum - initial.momentum) / dt + gravity) < 1e-6);
+    const double area_secant = (g_grid.face(i + 1).area - g_grid.face(i).area) / c.width;
+    const double pressure = initial.pressure() + 0.5 * (initial.w_plus + initial.w_minus);
+    const double momentum_rhs = pressure * (c.area_gradient - area_secant) / c.area
+        - initial.rho / (c.r * c.r);
+    const double loss = D / sqrt(c.area * initial.rho) * 0.001;
+    assert(abs((c.state.momentum - initial.momentum) / dt - momentum_rhs) < 1e-6);
     assert(abs((c.state.w_plus - initial.w_plus) / dt + loss) < 1e-6);
     assert(abs((c.state.w_minus - initial.w_minus) / dt + loss) < 1e-6);
     assert(abs((c.state.energy - initial.energy) / dt) < 1e-6);

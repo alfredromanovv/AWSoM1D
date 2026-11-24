@@ -72,6 +72,12 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     WRITE_PARAMETER(D);
     WRITE_PARAMETER(OMEGA_0);
     WRITE_PARAMETER(ENABLE_REFLECTION);
+    WRITE_PARAMETER(SUPER_RADIAL_EXPANSION);
+    if constexpr (SUPER_RADIAL_EXPANSION) {
+        WRITE_PARAMETER(EXPANSION_F_MAX);
+        WRITE_PARAMETER(EXPANSION_R);
+        WRITE_PARAMETER(EXPANSION_SIGMA);
+    }
     WRITE_PARAMETER(NX);
     WRITE_PARAMETER(NG);
     WRITE_PARAMETER(R_MIN);
@@ -89,8 +95,6 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     WRITE_PARAMETER(W_MINUS_FRACTION);
     WRITE_PARAMETER(W_MINUS_SCALE);
     WRITE_PARAMETER(CFL_NUMBER);
-    WRITE_PARAMETER(SOURCE_CFL);
-    WRITE_PARAMETER(LIMIT_SOURCE_STEP);
     WRITE_PARAMETER(END_TIME);
     WRITE_PARAMETER(PRINT_INTERVAL);
     WRITE_PARAMETER(OUTPUT_INTERVAL);
@@ -112,9 +116,11 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
         file << grid.cell(first + 1).width / grid.cell(first).width;
     else
         file << "not_applicable";
-    file << "\ngeometry = radial 1D; A(r)=r^2; volume=integral(A dr)\n"
+    file << "\ngeometry = " << (SUPER_RADIAL_EXPANSION ? "Kopp-Holzer super-radial; A(r_in)=1; volume=Gauss quadrature"
+                                                          : "radial 1D; A(r)=r^2; volume=integral(A dr)") << '\n'
+         << "spatial_operator = cell-centered geometry; flux difference / (A_i * dr_i)\n"
          << "initial_conditions = analytic profiles from include.h at cell centers\n"
-         << "inner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; copied u, w_minus\n"
+         << "inner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; extrapolated u>=1e-5, w_minus>=1e-12\n"
          << "outer_boundary = constant extrapolation\n"
          << "signal_speed_estimate = max(VA,sqrt(cs2+cw2)); "
             "cs2=GAMMA*p/rho; cw2=3*(w_plus+w_minus)/(4*rho)\n"

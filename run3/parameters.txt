@@ -1,0 +1,60 @@
+# AWSoM1D run parameters; all physical quantities and time are dimensionless
+final_time = 40.504425637060237
+final_step = 212430
+solver_implemented = true
+# Active numerical method:
+RIEMANN_SOLVER = HLL
+LIMITER_NAME = vanleer
+SCHEME_ORDER = 2
+TIME_INTEGRATOR = IMEX-RK2-Amplitudes
+GAMMA = 1.6666666666666667
+THETA = 0.0050000000000000001
+B = 1.5
+D = 35
+OMEGA_0 = 0.080000000000000002
+ENABLE_REFLECTION = 1
+NX = 600
+NG = 2
+R_MIN = 1
+R_MAX = 30
+GRID_RATIO = 1.008
+U_BASE = 0.02
+U_AMPLITUDE = 1.45
+U_SCALE = 3.5
+RHO_SCALE = 0.25
+INITIAL_RHO_MIN = 1e-08
+T_AMPLITUDE = 20
+T_SCALE = 0.80000000000000004
+T_POWER = -0.29999999999999999
+W_AREA_POWER = -1.2
+W_MINUS_FRACTION = 0.02
+W_MINUS_SCALE = 0.5
+CFL_NUMBER = 0.45000000000000001
+SOURCE_CFL = 0.5
+LIMIT_SOURCE_STEP = 0
+END_TIME = 1000
+PRINT_INTERVAL = 0.5
+OUTPUT_INTERVAL = 0.5
+CONVERGENCE_TOL = 1.0000000000000001e-09
+CONV_NEEDED = 5
+RESTART_FILE = 
+SAVE_FILE = restart.dat
+actual_physical_cells = 600
+actual_ghost_layers_per_side = 2
+actual_r_min = 1
+actual_r_max = 30
+actual_first_width = 0.0019625789398693971
+actual_last_width = 0.23210573307528293
+actual_first_width_ratio = 1.0080000000000851
+geometry = radial 1D; A(r)=r^2; volume=integral(A dr)
+initial_conditions = analytic profiles from include.h at cell centers
+inner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; copied u, w_minus
+outer_boundary = constant extrapolation
+signal_speed_estimate = max(VA,sqrt(cs2+cw2)); cs2=GAMMA*p/rho; cw2=3*(w_plus+w_minus)/(4*rho)
+output_cells = physical only (no ghosts)
+binary_format = AWSoM1D version 2; little-endian IEEE754 float64
+binary_header = magic[8]=AWS1DOUT, uint32 version, uint32 columns, uint64 cells, uint64 step, float64 time, float64 eta_diss (48 bytes total)
+binary_rows = cell-major; 14 float64 values per cell
+columns = r_left r_right r width area volume rho u p T momentum energy w_plus w_minus
+OpenMP = 200203
+OpenMP_max_threads = 8

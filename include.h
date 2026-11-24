@@ -36,13 +36,20 @@ extern atomic<bool> g_stop;
 // All physical quantities, coordinates, and times below are dimensionless.
 // Computational example from Section 9 of the model document.
 constexpr double GAMMA = 5.0 / 3.0;         // Adiabatic index.
-constexpr double THETA = 0.0036;            // Equation of state: p = THETA * rho * T.
+constexpr double THETA = 0.005;            // Equation of state: p = THETA * rho * T.
 constexpr double B = 1.50;                  // Alfven speed coefficient: VA = B / (A * sqrt(rho)).
 constexpr double D = 35.0;                  // Wave dissipation coefficient d.
 constexpr double OMEGA_0 = 0.08;            // Initial outgoing wave energy density at r = 1.
 constexpr bool ENABLE_REFLECTION = true;  // Enable energy transfer between the wave populations.
 
-// One-dimensional radial grid. Flux tube cross section: A(r) = r^2.
+// Flux-tube geometry. Enable the Kopp-Holzer profile used by old_old.
+constexpr bool SUPER_RADIAL_EXPANSION = true;
+constexpr double EXPANSION_F_MAX = 6.5;
+constexpr double EXPANSION_R = 1.3;
+constexpr double EXPANSION_SIGMA = 0.25;
+static_assert(EXPANSION_F_MAX >= 1 && EXPANSION_R > 0 && EXPANSION_SIGMA > 0);
+
+// One-dimensional radial grid.
 constexpr int NX = 600;                    // Number of physical cells.
 constexpr int NG = 2;                      // Number of ghost layers on each side.
 constexpr double R_MIN = 1.0;               // Inner boundary at the solar surface.
@@ -103,10 +110,8 @@ constexpr const char* LIMITER_NAME = SLOPE_LIMITER == SlopeLimiter::Minmod ? "mi
 enum class FluxMethod { HLL, HLLC };
 constexpr FluxMethod FLUX_METHOD = FluxMethod::HLL; // HLLC is reserved.
 constexpr const char* RIEMANN_SOLVER = FLUX_METHOD == FluxMethod::HLL ? "HLL" : "HLLC";
-constexpr bool LIMIT_SOURCE_STEP = false; // Optional accuracy cap based on instantaneous wave loss.
-constexpr double SOURCE_CFL = 0.5;
 constexpr double END_TIME = 1000.0; // Absolute final time, including restarted runs.
-inline constexpr char TIME_INTEGRATOR[] = "IMEX-Heun-BE";
+inline constexpr char TIME_INTEGRATOR[] = "IMEX-RK2-Amplitudes";
 constexpr int SCHEME_ORDER = SLOPE_LIMITER == SlopeLimiter::FirstOrder ? 1 : 2; // Spatial order; first-order time accuracy with wave sources.
 constexpr double CFL_NUMBER = 0.45;
 constexpr double PRINT_INTERVAL = 0.5;      // Simulation-time interval between progress reports.

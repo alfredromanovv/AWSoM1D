@@ -3,6 +3,23 @@
 
 Grid g_grid;
 
+namespace {
+// Stable evaluation of 1 / (1 + exp((EXPANSION_R - r) / EXPANSION_SIGMA)).
+double expansion_fraction(double r)
+{
+    const double x = (r - EXPANSION_R) / EXPANSION_SIGMA;
+    const double e = exp(-abs(x));
+    return (x >= 0 ? 1.0 : e) / (1 + e);
+}
+
+double raw_area(double r)
+{
+    if constexpr (SUPER_RADIAL_EXPANSION)
+        return r * r * (1 + (EXPANSION_F_MAX - 1) * expansion_fraction(r));
+    return r * r;
+}
+}
+
 bool Primitive::valid() const
 {
     return isfinite(rho) && rho > 0.0 && isfinite(u) && isfinite(p) && p > 0.0 &&
@@ -67,17 +84,25 @@ void Grid::create(int count, int ghosts, double r_min, double r_max, double rati
         throw invalid_argument("Grid stretching is too large.");
     vector<Face> faces(total + 1);
     vector<Cell> cells(total);
+    const double area_norm = SUPER_RADIAL_EXPANSION ? raw_area(r_min) : 1.0;
     // Closed-form face positions avoid a serial prefix sum and are deterministic.
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
 #endif
-    for (int i = 0; i <= total; ++i) {
-        const int j = i - ghosts;
+    for (int j = 0; j <= count; ++j) {
         const double fraction = ratio == 1.0 ? static_cast<double>(j) / count
             : expm1(j * log_ratio) / denominator;
         const double r = j == 0 ? r_min : (j == count ? r_max
             : r_min + (r_max - r_min) * fraction);
-        faces[i] = {r, r * r};
+        faces[ghosts + j] = {r, raw_area(r) / area_norm};
+    }
+    const double left_width = faces[ghosts + 1].r - r_min;
+    const double right_width = r_max - faces[ghosts + count - 1].r;
+    for (int j = 1; j <= ghosts; ++j) {
+        const double left = r_min - j * left_width;
+        const double right = r_max + j * right_width;
+        faces[ghosts - j] = {left, raw_area(left) / area_norm};
+        faces[ghosts + count + j] = {right, raw_area(right) / area_norm};
     }
     int invalid = 0;
 #ifdef _OPENMP
@@ -89,9 +114,22 @@ void Grid::create(int count, int ghosts, double r_min, double r_max, double rati
         Cell& c = cells[i];
         c.r = left + 0.5 * (right - left);
         c.width = right - left;
-        c.area = c.r * c.r;
-        c.volume = c.width * (left * left + left * right + right * right) / 3.0;
+        c.area = raw_area(c.r) / area_norm;
+        c.area_gradient = 2 * c.r;
+        if constexpr (SUPER_RADIAL_EXPANSION) {
+            const double fraction = expansion_fraction(c.r);
+            const double f = 1 + (EXPANSION_F_MAX - 1) * fraction;
+            const double df = (EXPANSION_F_MAX - 1) * fraction * (1 - fraction) / EXPANSION_SIGMA;
+            c.area_gradient = (2 * c.r * f + c.r * c.r * df) / area_norm;
+            // Three-point Gauss-Legendre quadrature for the diagnostic volume.
+            const double offset = 0.5 * c.width * sqrt(3.0 / 5.0);
+            c.volume = c.width * (5 * (raw_area(c.r - offset) + raw_area(c.r + offset)) / area_norm
+                + 8 * c.area) / 18;
+        } else {
+            c.volume = c.width * (left * left + left * right + right * right) / 3.0;
+        }
         if (!(left > 0.0) || !(c.width > 0.0) || !(c.volume > 0.0) ||
+            !(c.area > 0.0) || !isfinite(c.area) || !isfinite(c.area_gradient) ||
             !isfinite(c.volume) || !isfinite(faces[i + 1].area))
             invalid = 1;
     }

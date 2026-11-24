@@ -1,0 +1,930 @@
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath,amssymb,bm}
+\usepackage[a4paper,margin=20mm]{geometry}
+\usepackage{mathrsfs}
+
+\newcommand{\vb}[1]{\bm{#1}}
+\newcommand{\B}{\vb{B}}
+\newcommand{\uvec}{\vb{u}}
+\newcommand{\VA}{\vb{V}_A}
+\newcommand{\PA}{P_A}
+\newcommand{\Rref}{\mathcal R}
+\newcommand{\Id}{\mathbf I}
+
+\begin{document}
+
+\section{Обозначения}
+
+Искомые функции времени $t$ и пространственных координат
+$\vb{x}$: $\rho$ --- плотность плазмы,
+$\uvec$ --- скорость, $p$ --- давление,
+$\B$ --- магнитное поле,
+$E$ --- полная плотность энергии плазмы и магнитного поля
+(без энергии волн), $w_+$ и $w_-$ --- плотности энергии
+альфвеновских волн, распространяющихся вдоль
+и против $\B$ соответственно.
+
+\[
+E=\frac{\rho|\uvec|^2}{2}
++\frac{p}{\gamma-1}
++\frac{|\B|^2}{2\mu_0},
+\qquad \gamma=\frac53.
+\]
+\[
+\VA=\frac{\B}{\sqrt{\mu_0\rho}},
+\qquad
+\PA=\frac{w_++w_-}{2},
+\qquad
+\vb{g}=-\frac{GM_\odot}{r^3}\vb{x},
+\quad r=|\vb{x}|.
+\]
+
+Здесь $\VA$ --- вектор скорости Альфвена,
+$\PA$ --- волновое давление,
+$\mu_0$ --- магнитная постоянная,
+$G$ --- гравитационная постоянная,
+$M_\odot$ --- масса Солнца.
+
+\section{Трёхмерная система уравнений}
+
+\begingroup
+\small
+\begin{align}
+\frac{\partial\rho}{\partial t}+\nabla\cdot(\rho\uvec)
+&=0,
+\label{eq:mass}\\[5pt]
+\frac{\partial(\rho\uvec)}{\partial t}+\nabla\cdot\left[\rho\uvec\otimes\uvec+\left(p+\PA+\frac{|\B|^2}{2\mu_0}\right)\Id-\frac{\B\otimes\B}{\mu_0}\right]
+&=\rho\vb{g},
+\label{eq:momentum}\\[5pt]
+\frac{\partial\B}{\partial t}+\nabla\cdot(\B\otimes\uvec-\uvec\otimes\B)
+&=\vb{0}, \quad \nabla\cdot\B=0
+\label{eq:induction}\\[5pt]
+\frac{\partial E}{\partial t}+\nabla\cdot\left[\left(E+p+\frac{|\B|^2}{2\mu_0}\right)\uvec-\frac{(\uvec\cdot\B)\B}{\mu_0}+\vb{q}\right]
+&=\rho\uvec\cdot\vb{g}-\uvec\cdot\nabla\PA+Q_w-Q_{\rm rad}+Q_{\rm bg},
+\label{eq:energy}\\[5pt]
+\frac{\partial w_+}{\partial t}+\nabla\cdot\left[(\uvec+\VA)w_+\right]+\frac{w_+}{2}\nabla\cdot\uvec
+&=-\Rref\sqrt{w_+w_-}-\Gamma_+w_+,
+\label{eq:wplus}\\[5pt]
+\frac{\partial w_-}{\partial t}+\nabla\cdot\left[(\uvec-\VA)w_-\right]+\frac{w_-}{2}\nabla\cdot\uvec
+&=\Rref\sqrt{w_+w_-}-\Gamma_-w_-.
+\label{eq:wminus}
+\end{align}
+\endgroup
+
+Уравнения \eqref{eq:mass} и \eqref{eq:momentum} описывают
+сохранение массы и импульса, \eqref{eq:induction} ---
+магнитную индукцию в приближении идеальной МГД,
+\eqref{eq:energy} --- баланс энергии плазмы и магнитного поля,
+\eqref{eq:wplus}--\eqref{eq:wminus} --- перенос энергии
+альфвеновских волн.
+
+Здесь $\Id$ --- единичный тензор,
+$\otimes$ --- диадное произведение,
+$\vb{q}$ --- тепловой поток,
+$Q_w$ --- турбулентный нагрев,
+$Q_{\rm rad}$ --- радиационные потери,
+$Q_{\rm bg}$ --- дополнительный нагрев,
+$\Rref$ --- коэффициент отражения волн,
+$\Gamma_\pm$ --- коэффициенты турбулентной диссипации.
+
+\medskip
+\noindent\textbf{Турбулентное замыкание.}
+
+\[
+\Gamma_\pm=\frac{2}{L_\perp}
+\sqrt{\frac{w_\mp}{\rho}},
+\qquad
+L_\perp\sqrt{|\B|}=C_L=\mathrm{const}>0, \quad Q_w=\Gamma_+w_++\Gamma_-w_-. 
+\]
+
+Здесь $L_\perp$ --- поперечный корреляционный масштаб
+турбулентности. Нагрев $Q_w$ равен суммарной скорости
+диссипации энергии обеих популяций волн.
+
+\medskip
+\noindent\textbf{Отражение альфвеновских волн.}
+
+\[
+\mathcal R_{\rm imb}
+=
+\sqrt{
+\left[(\VA\cdot\nabla)\ln|\VA|\right]^2
++
+\left[\vb{b}\cdot(\nabla\times\uvec)\right]^2
+},
+\qquad
+\vb{b}=\frac{\B}{|\B|}.
+\]
+
+\[
+\Rref=
+\min\left\{
+\mathcal R_{\rm imb},
+\max(\Gamma_+,\Gamma_-)
+\right\}\mathcal C,
+\]
+\[
+\mathcal C=
+\begin{cases}
+1-2\sqrt{\dfrac{w_-}{w_+}},
+& w_+\geq 4w_-,\\[8pt]
+0,
+& \dfrac14w_-<w_+<4w_-,\\[8pt]
+2\sqrt{\dfrac{w_+}{w_-}}-1,
+& w_-\geq 4w_+.
+\end{cases}
+\]
+
+Здесь $\mathcal R_{\rm imb}$ --- максимальная скорость
+отражения, определяемая неоднородностью фонового течения,
+$\mathcal C$ --- коэффициент, учитывающий дисбаланс
+энергий встречных волн. При $\Rref>0$ энергия передаётся от $w_+$ к $w_-$,
+при $\Rref<0$ --- от $w_-$ к $w_+$.
+
+Замыкания для теплопроводности $\vb{q}$,
+радиационных потерь $Q_{\rm rad}$,
+дополнительного нагрева $Q_{\rm bg}$ будут рассмотрены позднее.
+
+
+\section{Квазиодномерная система уравнений}
+\label{sec:quasi1d}
+
+Рассматривается течение плазмы вдоль магнитной трубки
+с площадью поперечного сечения $A(r)$.
+Боковая поверхность трубки $\Sigma$ образована магнитными
+силовыми линиями и является непроницаемой для плазмы:
+\[
+\left.\B\cdot\vb{n}\right|_\Sigma=0,
+\qquad
+\left.\uvec\cdot\vb{n}\right|_\Sigma=0,
+\qquad
+\uvec\parallel\B.
+\]
+Здесь $\vb{n}$ --- единичная нормаль к боковой поверхности.
+Предполагается, что все искомые величины зависят только
+от продольной координаты $r$ и времени $t$,
+а магнитная трубка имеет заданную стационарную геометрию.
+
+\begingroup
+\small
+\begin{align}
+\frac{\partial\rho}{\partial t}
++\frac{1}{A}\frac{\partial(A\rho u)}{\partial r}
+&=0,
+\label{eq:1d_mass}\\[5pt]
+\frac{\partial(\rho u)}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A(\rho u^2+p+\PA)\right]
+&=\frac{p+\PA}{A}\frac{dA}{dr}
+-\rho\frac{GM_\odot}{r^2},
+\label{eq:1d_momentum}\\[5pt]
+\frac{\partial H}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A\bigl(u(H+p)+q\bigr)\right]
+&=-\rho u\frac{GM_\odot}{r^2}
+-u\frac{\partial\PA}{\partial r}
++Q_w-Q_{\rm rad}+Q_{\rm bg},
+\label{eq:1d_energy}\\[5pt]
+\frac{\partial w_+}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A(u+V_A)w_+\right]
++\frac{w_+}{2A}\frac{\partial(Au)}{\partial r}
+&=-\Rref\sqrt{w_+w_-}-\Gamma_+w_+,
+\label{eq:1d_wplus}\\[5pt]
+\frac{\partial w_-}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A(u-V_A)w_-\right]
++\frac{w_-}{2A}\frac{\partial(Au)}{\partial r}
+&=\Rref\sqrt{w_+w_-}-\Gamma_-w_-.
+\label{eq:1d_wminus}
+\end{align}
+\endgroup
+
+Уравнения \eqref{eq:1d_mass}--\eqref{eq:1d_wminus}
+описывают соответственно сохранение массы,
+продольного импульса, энергии плазмы и перенос
+энергии альфвеновских волн.
+
+Плотность энергии плазмы и волновое давление:
+\[
+H=\frac{\rho u^2}{2}+\frac{p}{\gamma-1},
+\qquad
+\PA=\frac{w_++w_-}{2},
+\qquad \gamma=\frac53.
+\]
+
+\medskip
+\noindent\textbf{Геометрия и магнитное поле.}
+
+Из сохранения магнитного потока через поперечное
+сечение трубки следует
+\[
+A(r)B(r)=\Phi_B=\mathrm{const},
+\qquad
+V_A=\frac{B(r)}{\sqrt{\mu_0\rho}}.
+\]
+
+Здесь $A(r)$ --- площадь поперечного сечения
+магнитной трубки, $\Phi_B$ --- постоянный магнитный поток,
+$B(r)$ --- модуль магнитного поля, $V_A$ ---
+скорость Альфвена. Конкретная зависимость $A(r)$
+будет задана отдельно.
+
+\medskip
+\noindent\textbf{Турбулентная диссипация.}
+
+\[
+\Gamma_\pm=\frac{2}{L_\perp}
+\sqrt{\frac{w_\mp}{\rho}},
+\qquad
+L_\perp\sqrt{B}=C_L=\mathrm{const}>0, \quad Q_w=\Gamma_+w_++\Gamma_-w_-.
+\]
+
+Здесь $L_\perp$ --- поперечный корреляционный масштаб
+турбулентности, $\Gamma_\pm$ --- коэффициенты
+диссипации энергии волн, $Q_w$ --- нагрев плазмы
+за счёт турбулентной диссипации.
+
+\medskip
+\noindent\textbf{Отражение альфвеновских волн.}
+
+В квазиодномерном приближении коэффициент отражения
+принимает вид
+\[
+\Rref=
+\min\left\{
+\left|\frac{\partial V_A}{\partial r}\right|,
+\max(\Gamma_+,\Gamma_-)
+\right\}\mathcal C,
+\]
+где $\mathcal C$ --- коэффициент дисбаланса энергий
+встречных волн, определённый в трёхмерной модели.
+
+\medskip
+\noindent\textbf{Остальные источники энергии.}
+
+В уравнении \eqref{eq:1d_energy}
+$q$ --- продольный тепловой поток,
+$Q_{\rm rad}$ --- радиационные потери,
+$Q_{\rm bg}$ --- дополнительный нагрев плазмы.
+
+Замыкания для $q$, $Q_{\rm rad}$ и $Q_{\rm bg}$
+будут заданы отдельно.
+
+
+\section{Упрощённая модель с альфвеновским нагревом}
+\label{sec:simplified}
+
+На первом этапе рассмотрим упрощённую модель,
+в которой пренебрегаем теплопроводностью,
+радиационными потерями и дополнительным нагревом:
+\[
+q=0,\qquad Q_{\rm rad}=0,\qquad Q_{\rm bg}=0.
+\]
+Единственным механизмом нагрева плазмы считается
+турбулентная диссипация альфвеновских волн.
+При этом сохраняются перенос и отражение волн,
+а также их взаимодействие со средним течением.
+
+Система уравнений принимает вид:
+
+\begingroup
+\small
+\begin{align}
+\frac{\partial\rho}{\partial t}
++\frac{1}{A}\frac{\partial(A\rho u)}{\partial r}
+&=0,
+\label{eq:s_mass}\\[5pt]
+\frac{\partial(\rho u)}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A(\rho u^2+p+\PA)\right]
+&=\frac{p+\PA}{A}\frac{dA}{dr}-\rho\frac{GM_\odot}{r^2},
+\label{eq:s_momentum}\\[5pt]
+\frac{\partial H}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[Au(H+p)\right]
+&=-\rho u\frac{GM_\odot}{r^2}
+-u\frac{\partial\PA}{\partial r}+Q_w,
+\label{eq:s_energy}\\[5pt]
+\frac{\partial w_+}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A(u+V_A)w_+\right]
++\frac{w_+}{2A}\frac{\partial(Au)}{\partial r}
+&=-\Rref\sqrt{w_+w_-}-\Gamma_+w_+,
+\label{eq:s_wplus}\\[5pt]
+\frac{\partial w_-}{\partial t}
++\frac{1}{A}\frac{\partial}{\partial r}
+\left[A(u-V_A)w_-\right]
++\frac{w_-}{2A}\frac{\partial(Au)}{\partial r}
+&=\Rref\sqrt{w_+w_-}-\Gamma_-w_-.
+\label{eq:s_wminus}
+\end{align}
+\endgroup
+
+Все обозначения и замыкания для $\Gamma_\pm$,
+$\Rref$ и $Q_w$ остаются прежними.
+В дальнейшем исследуем возможность получения
+стационарного решения этой системы и его использование
+в качестве начального условия для нестационарной задачи.
+
+
+\section{Стационарная система уравнений}
+\label{sec:stationary}
+
+Рассмотрим стационарное течение, полагая все производные
+по времени равными нулю. Система уравнений принимает вид:
+
+\begingroup
+\small
+\begin{align}
+\frac{d}{dr}(A\rho u)
+&=0,
+\label{eq:st_mass}\\[5pt]
+\frac{1}{A}\frac{d}{dr}
+\left[A(\rho u^2+p+\PA)\right]
+&=\frac{p+\PA}{A}\frac{dA}{dr}-\rho\frac{GM_\odot}{r^2},
+\label{eq:st_momentum}\\[5pt]
+\frac{1}{A}\frac{d}{dr}\left[Au(H+p)\right]
+&=-\rho u\frac{GM_\odot}{r^2}
+-u\frac{d\PA}{dr}+Q_w,
+\label{eq:st_energy}\\[5pt]
+\frac{1}{A}\frac{d}{dr}\left[A(u+V_A)w_+\right]
++\frac{w_+}{2A}\frac{d(Au)}{dr}
+&=-\Rref\sqrt{w_+w_-}-\Gamma_+w_+,
+\label{eq:st_wplus}\\[5pt]
+\frac{1}{A}\frac{d}{dr}\left[A(u-V_A)w_-\right]
++\frac{w_-}{2A}\frac{d(Au)}{dr}
+&=\Rref\sqrt{w_+w_-}-\Gamma_-w_-.
+\label{eq:st_wminus}
+\end{align}
+\endgroup
+
+\noindent\textbf{Замыкания.}
+
+\[
+H=\frac{\rho u^2}{2}+\frac{p}{\gamma-1},
+\qquad
+\PA=\frac{w_++w_-}{2},
+\qquad \gamma=\frac53.
+\]
+
+\[
+AB=\Phi_B=\mathrm{const},
+\qquad
+V_A=\frac{B}{\sqrt{\mu_0\rho}},
+\qquad
+L_\perp\sqrt B=C_L=\mathrm{const}>0.
+\]
+
+\[
+\Gamma_\pm=\frac{2}{L_\perp}\sqrt{\frac{w_\mp}{\rho}},
+\qquad
+Q_w=\Gamma_+w_++\Gamma_-w_-.
+\]
+
+\[
+\Rref=
+\min\left\{
+\left|\frac{dV_A}{dr}\right|,
+\max(\Gamma_+,\Gamma_-)
+\right\}\mathcal C.
+\]
+
+Коэффициент $\mathcal C$ определяется ранее заданной
+кусочной функцией от $w_+$ и $w_-$.
+Геометрия магнитной трубки задаётся функцией $A(r)$.
+
+Из уравнения неразрывности следует первый интеграл
+\[
+A\rho u=\dot m=\mathrm{const},
+\]
+где $\dot m$ --- постоянный массовый расход через трубку.
+
+\newpage
+
+\section{Обезразмеривание стационарной задачи}
+
+Рассмотрим стационарную систему для пяти функций
+\[
+\rho(r),\quad u(r),\quad p(r),\quad w_+(r),\quad w_-(r).
+\]
+Температура связана с давлением и плотностью
+уравнением состояния идеального газа с постоянной $\mu$:
+\[
+p=\frac{\rho k_{\rm B}T}{\mu m_u},\qquad
+H=\frac{\rho u^2}{2}+\frac{p}{\gamma-1},
+\qquad \gamma=\frac53.
+\]
+
+Параметры задачи и заданная геометрия записываются как
+\[
+G,\ M_\odot,\ \mu_0,\ k_{\rm B},\ m_u,\ \mu,\ \gamma,\
+R_\odot,\ r_{\rm out},\
+\rho_{\rm ph},\ T_{\rm ph},\ B_{\rm ph},\
+L_{\perp,{\rm ph}},\ w_{+,{\rm ph}}
+\qquad\text{и}\qquad A(r).
+\]
+При $B_{\rm ph}>0$ магнитный поток и корреляционная
+длина определяются соотношениями
+\[
+AB=A(R_\odot)B_{\rm ph},\qquad
+L_\perp\sqrt B=L_{\perp,{\rm ph}}\sqrt{B_{\rm ph}}.
+\]
+
+\medskip
+\noindent\textbf{Характерные величины.}
+
+Используем следующие основные размерности СИ
+\[
+\mathsf M\ \text{(масса)},\quad
+\mathsf L\ \text{(длина)},\quad
+\mathsf T\ \text{(время)},\quad
+\mathsf I\ \text{(сила тока)},\quad
+\Theta\ \text{(температура)}.
+\]
+Выбираем масштабы
+\[
+\begin{array}{c|c|c}
+\text{Величина} & \text{Масштаб} & \text{Размерность}\\ \hline
+\text{Длина} & R_*=R_\odot & \mathsf L\\
+\text{Скорость} & U_*=\sqrt{GM_\odot/R_*}
+    & \mathsf L\mathsf T^{-1}\\
+\text{Плотность} & \rho_*=\rho_{\rm ph}
+    & \mathsf M\mathsf L^{-3}\\
+\text{Температура} & T_*=T_{\rm ph}
+    & \Theta\\
+\text{Площадь} & A_*=A(R_*)
+    & \mathsf L^2\\
+\text{Давление и плотность энергии}
+    & p_*=\rho_*U_*^2
+    & \mathsf M\mathsf L^{-1}\mathsf T^{-2}\\
+\text{Магнитное поле} & B_*=B_{\rm ph}
+    & \mathsf M\mathsf T^{-2}\mathsf I^{-1}\\
+\text{Частота} & \Gamma_*=U_*/R_*
+    & \mathsf T^{-1}\\
+\text{Объёмный нагрев} & Q_*=p_*U_*/R_*
+    & \mathsf M\mathsf L^{-1}\mathsf T^{-3}
+\end{array}
+\]
+Гравитационный масштаб скорости обращает коэффициент
+гравитации в единицу. Фотосферные масштабы плотности
+и температуры упрощают граничные условия, а общий
+масштаб давления и энергий волн сохраняет вид
+соотношения для волнового давления.
+
+Безразмерные величины определим следующим образом:
+\[
+\hat r=\frac r{R_*},\quad
+\hat A=\frac A{A_*},\quad
+\hat\rho=\frac\rho{\rho_*},\quad
+\hat u=\frac u{U_*},\quad
+\hat T=\frac T{T_*},\quad
+\hat B=\frac B{B_*},\quad
+\hat V_A=\frac{V_A}{U_*},
+\]
+\[
+\hat p=\frac p{p_*},\quad
+\hat H=\frac H{p_*},\quad
+\hat w_\pm=\frac{w_\pm}{p_*},\quad
+\hat P_A=\frac{P_A}{p_*},\quad
+\hat L_\perp=\frac{L_\perp}{R_*},
+\]
+\[
+\hat\Gamma_\pm=\frac{\Gamma_\pm}{\Gamma_*},\qquad
+\hat{\mathcal R}=\frac{\mathcal R}{\Gamma_*},\qquad
+\hat Q_w=\frac{Q_w}{Q_*}.
+\]
+
+\medskip
+\noindent\textbf{Подстановка масштабов.}
+
+В члене силы тяжести возникает множитель
+$GM_\odot/(R_*U_*^2)=1$.
+Подстановка масштабов в уравнение состояния,
+скорость Альфвена и частоты диссипации даёт
+\[
+\hat p
+=\frac{k_{\rm B}T_*}{\mu m_uU_*^2}\hat\rho\hat T,
+\qquad
+\hat V_A
+=\frac{B_*}{U_*\sqrt{\mu_0\rho_*}}\,
+\frac{1}{\hat A\sqrt{\hat\rho}},
+\qquad
+\hat\Gamma_\pm
+=\frac{2R_*}{L_{\perp,{\rm ph}}}
+\sqrt{\frac{\hat w_\mp}{\hat A\hat\rho}}.
+\]
+Обозначим получившиеся коэффициенты через
+\[
+\theta=\frac{k_{\rm B}T_*}{\mu m_uU_*^2},\qquad
+b=\frac{B_*}{U_*\sqrt{\mu_0\rho_*}},\qquad
+d=\frac{2R_*}{L_{\perp,{\rm ph}}}.
+\]
+
+Далее шапочки опускаем. Все переменные в уравнениях
+и граничных условиях ниже безразмерны, а параметры
+с индексом ${\rm ph}$ в определениях масштабов
+и коэффициентов остаются размерными.
+
+\medskip
+\noindent\textbf{Безразмерная система.}
+
+Штрих обозначает производную по безразмерному $r$.
+Стационарные уравнения имеют вид
+\begingroup
+\small
+\begin{align*}
+(A\rho u)'&=0,\\[4pt]
+\frac1A\left[A(\rho u^2+p+P_A)\right]'
+&=(p+P_A)\frac{A'}A-\frac{\rho}{r^2},\\[4pt]
+\frac1A\left[Au(H+p)\right]'
+&=-\frac{\rho u}{r^2}-uP_A'+Q_w,\\[4pt]
+\frac1A\left[A(u+V_A)w_+\right]'
++\frac{w_+}{2A}(Au)'
+&=-\mathcal R\sqrt{w_+w_-}-\Gamma_+w_+,\\[4pt]
+\frac1A\left[A(u-V_A)w_-\right]'
++\frac{w_-}{2A}(Au)'
+&=\mathcal R\sqrt{w_+w_-}-\Gamma_-w_-.
+\end{align*}
+\endgroup
+Здесь
+\[
+H=\frac{\rho u^2}{2}+\frac{p}{\gamma-1},
+\qquad
+P_A=\frac{w_++w_-}{2},
+\qquad
+V_A=\frac{b}{A\sqrt\rho},
+\]
+\[
+\Gamma_\pm=d\sqrt{\frac{w_\mp}{A\rho}},
+\qquad
+Q_w=\Gamma_+w_++\Gamma_-w_-
+=\frac{d}{\sqrt{A\rho}}
+\left(w_+\sqrt{w_-}+w_-\sqrt{w_+}\right).
+\]
+Коэффициент отражения принимает вид
+\[
+\mathcal R
+=\mathcal C(w_+,w_-)
+\min\left\{
+b\left|\left(\frac{1}{A\sqrt\rho}\right)'\right|,
+\frac{d}{\sqrt{A\rho}}
+\max\bigl(\sqrt{w_+},\sqrt{w_-}\bigr)
+\right\}.
+\]
+Вид функции $\mathcal C$ сохраняется, поскольку
+она зависит от отношения энергий волн.
+
+Температуру восстанавливаем по найденным
+давлению и плотности:
+\[
+T=\frac{p}{\theta\rho}.
+\]
+
+\medskip
+\noindent\textbf{Физический смысл коэффициентов.}
+
+Коэффициент
+\[
+\theta
+=\frac{k_{\rm B}T_{\rm ph}/(\mu m_u)}{GM_\odot/R_\odot}
+=\frac{p_{\rm ph}}{\rho_{\rm ph}U_*^2}
+\]
+сравнивает фотосферный тепловой масштаб $p_{\rm ph}/\rho_{\rm ph}$
+с гравитационным масштабом удельной энергии.
+При записи системы через $p$ он входит в граничное
+значение давления и в формулу пересчёта температуры.
+
+Коэффициент
+\[
+b=\frac{V_{A,{\rm ph}}}{U_*}
+\]
+есть отношение фотосферной скорости Альфвена
+к гравитационному масштабу скорости.
+Он входит в перенос волн и в градиентную ветвь
+коэффициента отражения.
+
+Коэффициент
+\[
+d=\frac{2R_\odot}{L_{\perp,{\rm ph}}}
+\]
+есть удвоенное отношение радиуса Солнца
+к фотосферной корреляционной длине.
+Он входит в диссипацию волн и нагрев газа.
+Безразмерная частота $\Gamma_\pm$ представляет
+отношение времени переноса $R_*/U_*$ к местному
+времени диссипации соответствующей популяции.
+
+\medskip
+\noindent\textbf{Граничные условия.}
+
+На фотосфере задаются размерные плотность
+$\rho_{\rm ph}$, температура $T_{\rm ph}$
+и энергия выходящих волн $w_{+,{\rm ph}}$.
+Граничное давление вычисляем по уравнению состояния:
+\[
+p_{\rm ph}=\frac{\rho_{\rm ph}k_{\rm B}T_{\rm ph}}{\mu m_u}.
+\]
+Для системы, записанной через давление, это даёт
+\[
+\rho(1)=1,\qquad
+p(1)=\theta,\qquad
+w_+(1)=\omega,\qquad
+\omega=\frac{w_{+,{\rm ph}}}{\rho_{\rm ph}U_*^2}.
+\]
+При этих условиях $T(1)=1$.
+Параметр $\omega$ сравнивает заданную волновую
+энергию с масштабом давления $\rho_{\rm ph}U_*^2$.
+Отношение $\omega/(2\theta)$ показывает вклад
+выходящих волн в давление относительно теплового
+давления на фотосфере.
+
+Значения $u(1)$ и $w_-(1)$ подбираются при поиске
+стационарного решения, регулярно проходящего через
+звуковую критическую точку. Для определения обоих
+значений нужны две независимые скалярные связи.
+Регулярность в простой звуковой критической точке
+даёт одну связь, а возможность получить вторую
+из другой критической точки проверяется
+при анализе связанной системы.
+
+Внешняя граница находится при $r=r_{\rm out}/R_\odot$.
+На ней граничные данные не задаются, если все
+характеристики выходят из расчётной области.
+Для волновой подсистемы проверяется также $u>V_A$.
+
+\section{Особая точка и построение стационарного решения}
+
+Все величины безразмерны, $\gamma=5/3$.
+Геометрия $A(r)$ задана.
+
+\subsection{Сведение системы}
+
+Постоянные массового расхода и удельного полного
+потока энергии определяются соотношениями
+\[
+m=A\rho u,
+\]
+\[
+\varepsilon
+=\frac{u^2}{2}-\frac1r+\frac{5p}{2\rho}
++\frac{3(w_++w_-)}{2\rho}
++\frac{V_A(w_+-w_-)}{\rho u}.
+\]
+Следовательно,
+\[
+\rho=\frac{m}{Au},\qquad
+V_A=b\sqrt{\frac{u}{mA}},\qquad
+\Gamma_\pm=d\sqrt{\frac{uw_\mp}{m}},
+\]
+\begin{equation}
+p=\frac{2m}{5Au}
+\left(\varepsilon-\frac{u^2}{2}+\frac1r\right)
+-\frac35(w_++w_-)
+-\frac{2V_A}{5u}(w_+-w_-).
+\label{eq:crit_pressure}
+\end{equation}
+
+Таким образом, остаются три искомые функции
+$u,w_+,w_-$ и постоянные $m,\varepsilon$.
+Давление далее рассматривается как функция
+$r,u,w_+,w_-$, заданная формулой
+\eqref{eq:crit_pressure}.
+
+\subsection{Три ветви отражения}
+
+Замыкание отражения имеет вид
+\[
+\mathcal R
+=\mathcal C\min\left\{
+\frac{V_A}{2}\left|\frac{u'}u-\frac{A'}A\right|,
+\max(\Gamma_+,\Gamma_-)
+\right\}.
+\]
+На каждой ветви оно линейно по $u'$:
+\[
+\mathcal R=\eta u'+\zeta.
+\]
+Соответствующие коэффициенты равны
+\[
+\begin{array}{c|c|c}
+\text{Ветвь} & \eta & \zeta\\ \hline
+\text{Ограничение диссипацией}
+&0&\mathcal C\max(\Gamma_+,\Gamma_-)\\[3pt]
+\text{Положительный градиент}
+&\dfrac{\mathcal C V_A}{2u}
+&-\dfrac{\mathcal C V_A}{2}\dfrac{A'}A\\[7pt]
+\text{Отрицательный градиент}
+&-\dfrac{\mathcal C V_A}{2u}
+&\dfrac{\mathcal C V_A}{2}\dfrac{A'}A
+\end{array}
+\]
+
+Для первой ветви требуется
+\[
+\frac{V_A}{2}\left|\frac{u'}u-\frac{A'}A\right|
+\geq\max(\Gamma_+,\Gamma_-).
+\]
+Для второй и третьей ветвей требуется обратное
+неравенство и соответственно
+\[
+\frac{u'}u-\frac{A'}A\geq0,
+\qquad
+\frac{u'}u-\frac{A'}A\leq0.
+\]
+Эти условия проверяются после нахождения $u'$.
+
+\subsection{Уравнение для производной скорости}
+
+После исключения плотности и давления система
+принимает вид
+\begin{equation}
+\mathsf M
+\begin{pmatrix}u'\\w_+'\\w_-'\end{pmatrix}
+=\boldsymbol f,
+\label{eq:crit_matrix}
+\end{equation}
+где
+\[
+\mathsf M=
+\begin{pmatrix}
+\rho u+\dfrac{\partial p}{\partial u}
+&
+\dfrac{\partial p}{\partial w_+}+\dfrac12
+&
+\dfrac{\partial p}{\partial w_-}+\dfrac12\\[8pt]
+\dfrac{w_+}{2}\left(3+\dfrac{V_A}{u}\right)
++\eta\sqrt{w_+w_-}
+&u+V_A&0\\[8pt]
+\dfrac{w_-}{2}\left(3-\dfrac{V_A}{u}\right)
+-\eta\sqrt{w_+w_-}
+&0&u-V_A
+\end{pmatrix},
+\]
+\[
+\boldsymbol f=
+\begin{pmatrix}
+-\rho/r^2-\partial p/\partial r\\[4pt]
+-\dfrac{w_+}{2}(3u+V_A)\dfrac{A'}A
+-\zeta\sqrt{w_+w_-}-\Gamma_+w_+\\[7pt]
+-\dfrac{w_-}{2}(3u-V_A)\dfrac{A'}A
++\zeta\sqrt{w_+w_-}-\Gamma_-w_-
+\end{pmatrix}.
+\]
+Частные производные давления вычисляются по
+\eqref{eq:crit_pressure} при фиксированных
+$m,\varepsilon$. Производная по $r$ учитывает $A(r)$.
+
+Пусть $u\ne V_A$.
+Из второй и третьей строк непосредственно выражаем
+\begin{equation}
+w_+'=\frac{f_2-M_{21}u'}{u+V_A},
+\qquad
+w_-'=\frac{f_3-M_{31}u'}{u-V_A}.
+\label{eq:crit_wave_derivatives}
+\end{equation}
+Подставляя их в первую строку, получаем
+\begin{equation}
+D\,u'=N,
+\label{eq:crit_scalar}
+\end{equation}
+где
+\[
+D=M_{11}
+-\frac{M_{12}M_{21}}{u+V_A}
+-\frac{M_{13}M_{31}}{u-V_A},
+\]
+\[
+N=f_1
+-\frac{M_{12}f_2}{u+V_A}
+-\frac{M_{13}f_3}{u-V_A}.
+\]
+Таким образом, в обычной точке $u'=N/D$.
+Если $D=0$, конечная производная возможна
+только при одновременном выполнении $N=0$.
+
+\subsection{Поиск критического состояния}
+
+Условия особой точки имеют вид
+\begin{equation}
+D(r_c,u_c,w_{+,c},w_{-,c};m,\varepsilon)=0,
+\qquad
+N(r_c,u_c,w_{+,c},w_{-,c};m,\varepsilon)=0.
+\label{eq:crit_conditions}
+\end{equation}
+
+При заданных $A(r),b,d$ здесь присутствуют
+шесть неизвестных
+\[
+r_c,\quad u_c,\quad w_{+,c},\quad w_{-,c},
+\quad m,\quad\varepsilon.
+\]
+Поэтому значения $m,\varepsilon$ сами по себе
+обычно не определяют критическую точку.
+
+Для локального поиска можно задать также
+$w_{+,c},w_{-,c}$.
+Тогда \eqref{eq:crit_conditions} становится системой
+двух алгебраических уравнений для $r_c,u_c$.
+
+Другой способ --- сначала построить кривые
+$D=0$ и $N=0$ на плоскости $(r,u)$.
+Их пересечения дают начальные приближения
+для уточнения корней.
+Пересечений может быть несколько или не быть вовсе.
+
+Локальный поиск проводится отдельно для трёх
+ветвей отражения.
+Каждая ветвь даёт свои функции $D,N$.
+Для каждого найденного состояния далее вычисляется
+наклон и проверяются неравенства соответствующей
+ветви. Недопустимые кандидаты отбрасываются.
+Совпадающие решения на границах ветвей учитываются
+как одна точка.
+
+Если $u=V_A$, выражения с делением на $u-V_A$
+не используются. В этом случае проверяются
+вырождение и совместность исходной системы
+\eqref{eq:crit_matrix}.
+
+\subsection{Наклон в особой точке}
+
+Обозначим искомый наклон скорости через $q=u'_c$.
+Тогда
+\[
+w_{+,c}'=\frac{f_2-M_{21}q}{u_c+V_{A,c}},
+\qquad
+w_{-,c}'=\frac{f_3-M_{31}q}{u_c-V_{A,c}}.
+\]
+Все коэффициенты берутся в найденном
+критическом состоянии.
+
+Продифференцируем \eqref{eq:crit_scalar}
+вдоль решения:
+\[
+D'u'+Du''=N'.
+\]
+В особой точке $D=N=0$, поэтому
+\begin{equation}
+q\left(
+D_r+D_uq+D_{w_+}w_{+,c}'+D_{w_-}w_{-,c}'
+\right)
+=
+N_r+N_uq+N_{w_+}w_{+,c}'+N_{w_-}w_{-,c}'.
+\label{eq:crit_slope}
+\end{equation}
+Индексы здесь обозначают частные производные
+при фиксированных $m,\varepsilon$.
+
+Поскольку $w_{\pm,c}'$ линейны по $q$,
+уравнение \eqref{eq:crit_slope} имеет степень
+не выше второй относительно $q$.
+Каждый действительный корень задаёт кандидат
+на наклон решения.
+
+Для каждого корня проверяются условия выбранной
+ветви отражения и направление продолжения решения.
+Для простого пересечения требуется также
+\[
+D_r+D_uq+D_{w_+}w_{+,c}'+D_{w_-}w_{-,c}'\ne0.
+\]
+Если допустимых действительных корней нет,
+выбранное критическое состояние не даёт
+гладкого проходящего решения.
+При вырождении уравнения для наклона необходимо
+разложение более высокого порядка.
+
+На границах ветвей замыкания производные
+рассматриваются односторонне.
+
+\subsection{Интегрирование от найденной точки}
+
+После выбора наклона начинаем расчёт
+с небольшим отступом от особой точки:
+\[
+u(r_c\pm\delta)=u_c\pm\delta u_c'+O(\delta^2),
+\]
+\[
+w_\pm(r_c\pm\delta)
+=w_{\pm,c}\pm\delta w_{\pm,c}'+O(\delta^2).
+\]
+От $r_c-\delta$ интегрируем к фотосфере,
+от $r_c+\delta$ --- к внешней границе.
+В регулярных точках производные находим
+из линейной системы \eqref{eq:crit_matrix}.
+
+Ветвь отражения определяется локально
+и может изменяться вдоль решения.
+При её смене пересчитываются $\eta,\zeta$
+и матрица системы.
+Проверяются положительность давления и плотности,
+а также устойчивость результата при уменьшении
+стартового отступа $\delta$.
+
+
+\end{document}

@@ -40,8 +40,8 @@ void set_initial_conditions(Grid& grid)
 State photospheric_boundary_state(const State& interior)
 {
     // Fixed photospheric density, temperature and outgoing wave energy.
-    // Velocity and incoming wave energy follow the adjacent physical cell.
-    return State::from_primitive(1.0, interior.to_primitive().u, 1.0, OMEGA_0, interior.w_minus);
+    // Extrapolate velocity and incoming wave energy with the legacy lower bounds.
+    return State::from_primitive(1.0, max(interior.velocity(), 1e-5), 1.0, OMEGA_0, max(interior.w_minus, 1e-12));
 }
 
 void apply_boundary_conditions(Grid& grid)

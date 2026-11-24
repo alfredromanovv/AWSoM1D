@@ -55,7 +55,17 @@ int main()
         assert(close(c.state.velocity(), U_BASE + U_AMPLITUDE * (1 - exp(-x / U_SCALE))));
         assert(close(c.state.temperature(), 1 + T_AMPLITUDE * (1 - exp(-x / T_SCALE)) * pow(c.r, T_POWER)));
     }
-    assert(close(volume, (pow(R_MAX, 3) - pow(R_MIN, 3)) / 3));
+    const double radial_volume = (pow(R_MAX, 3) - pow(R_MIN, 3)) / 3;
+    if constexpr (SUPER_RADIAL_EXPANSION) {
+        assert(grid.face(grid.begin()).area == 1.0);
+        assert(volume >= radial_volume / (R_MIN * R_MIN));
+        const int i = grid.begin();
+        const Cell& cell = grid.cell(i);
+        const double secant = (grid.face(i + 1).area - grid.face(i).area) / cell.width;
+        assert(abs(secant / cell.area_gradient - 1) < 1e-4);
+    } else {
+        assert(close(volume, radial_volume));
+    }
 #ifdef _OPENMP
     omp_set_num_threads(4);
 #endif
@@ -80,12 +90,12 @@ int main()
         assert(boundary.w_minus == interior.w_minus);
     }
     assert(grid.cell(grid.size() - 1).state.energy == grid.cell(grid.end() - 1).state.energy);
-    const State state = State::from_primitive(2, -0.5, 3, 0.1, 0.2);
+    const State state = State::from_primitive(2, -0.5, 3, 0.1, 0.0);
     assert(close(state.velocity(), -0.5) && close(state.temperature(), 3));
     const Primitive primitive = state.to_primitive();
     assert(close(primitive.rho, 2) && close(primitive.u, -0.5));
     assert(close(primitive.p, THETA * 2 * 3));
-    assert(close(primitive.w_plus, 0.1) && close(primitive.w_minus, 0.2));
+    assert(close(primitive.w_plus, 0.1) && primitive.w_minus == 0.0);
     const State roundtrip = primitive.to_conservative();
     assert(close(roundtrip.rho, state.rho) && close(roundtrip.momentum, state.momentum));
     assert(close(roundtrip.energy, state.energy));
@@ -102,9 +112,9 @@ int main()
         const State& boundary = grid.cell(i).state;
         assert(boundary.rho == 1.0 && close(boundary.temperature(), 1.0));
         assert(boundary.w_plus == OMEGA_0);
-        assert(close(boundary.velocity(), -0.5) && boundary.w_minus == 0.2);
+        assert(close(boundary.velocity(), 1e-5) && boundary.w_minus == 1e-12);
         assert(close(boundary.energy,
-            0.5 * 0.5 * 0.5 + THETA / (GAMMA - 1.0) + OMEGA_0 + 0.2));
+            0.5 * 1e-10 + THETA / (GAMMA - 1.0) + OMEGA_0 + 1e-12));
         assert(grid.cell(grid.end() + i).state.energy == state.energy);
     }
     assert(grid.cell(grid.begin()).state.energy == state.energy);
@@ -118,8 +128,12 @@ int main()
     assert(grid.size() == NX + 2 * NG); // Failed create preserves old grid.
     for (double ratio : {1.0, 1.0 + 1e-12, 0.99}) {
         grid.create(10, 2, 1, 2, ratio);
-        for (int i = 0; i + 1 < grid.size(); ++i)
+        for (int i = grid.begin(); i + 1 < grid.end(); ++i)
             assert(close(grid.cell(i + 1).width / grid.cell(i).width, ratio));
+        for (int j = 0; j < grid.begin(); ++j) {
+            assert(close(grid.cell(j).width, grid.cell(grid.begin()).width));
+            assert(close(grid.cell(grid.end() + j).width, grid.cell(grid.end() - 1).width));
+        }
     }
     grid.create(1, 0, 1, 2, 1);
     set_initial_conditions(grid);

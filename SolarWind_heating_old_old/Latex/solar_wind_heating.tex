@@ -1,0 +1,437 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[a4paper,margin=22mm]{geometry}
+
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!60!black,
+    citecolor=blue!60!black
+}
+
+\title{\textbf{Квазиодномерная нестационарная модель ускорения и нагрева солнечного ветра альфвеновской турбулентностью: консервативная формулировка, параметрический анализ и численная схема}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Трёхмерные уравнения идеальной МГД с альфвеновской турбулентностью}
+
+Искомыми функциями времени $t$ и радиус-вектора $\bm{x}$ ($r = |\bm{x}|$) являются плотность плазмы $\rho$, массовая скорость $\bm{u}$, тепловое давление $p$, магнитная индукция $\bm{B}$, а также плотности энергии альфвеновских волн $w_+$ и $w_-$, распространяющихся соответственно вдоль и против направления магнитного поля $\bm{B}$.
+
+Полная плотность энергии плазмы и магнитного поля (без учёта энергии волн) $E_{\rm mhd}$, вектор альфвеновской скорости $\bm{V}_A$, изотропное волновое давление $P_A$ и ускорение солнечной гравитации $\bm{g}$ определяются соотношениями:
+\begin{equation}
+E_{\rm mhd} = \frac{\rho|\bm{u}|^2}{2} + \frac{p}{\gamma-1} + \frac{|\bm{B}|^2}{2\mu_0}, \qquad
+\bm{V}_A = \frac{\bm{B}}{\sqrt{\mu_0\rho}}, \qquad
+P_A = \frac{w_+ + w_-}{2}, \qquad
+\bm{g} = -\frac{GM_\odot}{r^3}\bm{x},
+\label{eq:defs_3d}
+\end{equation}
+где $\gamma = 5/3$ --- показатель адиабаты, $\mu_0$ --- магнитная постоянная, $G$ --- гравитационная постоянная, $M_\odot$ --- масса Солнца.
+
+Трёхмерная система уравнений модели AWSoM (Alfv\'en Wave Solar Model) включает законы сохранения массы, импульса, уравнения индукции идеальной МГД, баланса энергии плазмы и переноса энергии встречных популяций альфвеновских волн:
+\begin{align}
+\frac{\partial\rho}{\partial t} + \nabla\cdot(\rho\bm{u}) &= 0,
+\label{eq:3d_mass}\\[4pt]
+\frac{\partial(\rho\bm{u})}{\partial t} + \nabla\cdot\left[\rho\bm{u}\otimes\bm{u} + \left(p + P_A + \frac{|\bm{B}|^2}{2\mu_0}\right)\mathbf{I} - \frac{\bm{B}\otimes\bm{B}}{\mu_0}\right] &= \rho\bm{g},
+\label{eq:3d_momentum}\\[4pt]
+\frac{\partial\bm{B}}{\partial t} + \nabla\cdot(\bm{B}\otimes\bm{u} - \bm{u}\otimes\bm{B}) &= \bm{0}, \qquad \nabla\cdot\bm{B} = 0,
+\label{eq:3d_induction}\\[4pt]
+\frac{\partial E_{\rm mhd}}{\partial t} + \nabla\cdot\left[\left(E_{\rm mhd} + p + \frac{|\bm{B}|^2}{2\mu_0}\right)\bm{u} - \frac{(\bm{u}\cdot\bm{B})\bm{B}}{\mu_0} + \bm{q}\right] &= \rho\bm{u}\cdot\bm{g} - \bm{u}\cdot\nabla P_A + Q_w - Q_{\rm rad} + Q_{\rm bg},
+\label{eq:3d_energy}\\[4pt]
+\frac{\partial w_\pm}{\partial t} + \nabla\cdot\left[(\bm{u} \pm \bm{V}_A)w_\pm\right] + \frac{w_\pm}{2}\nabla\cdot\bm{u} &= \mp\mathcal{R}\sqrt{w_+ w_-} - \Gamma_\pm w_\pm.
+\label{eq:3d_waves}
+\end{align}
+Здесь $\mathbf{I}$ --- единичный тензор, $\bm{q}$ --- вектор теплового потока, $Q_{\rm rad}$ --- радиационные потери, $Q_{\rm bg}$ --- фоновый нагрев. Феноменологическое замыкание каскадной диссипации $\Gamma_\pm$, турбулентного нагрева $Q_w$ и коэффициента линейного отражения $\mathcal{R}$ имеет вид:
+\begin{equation}
+\Gamma_\pm = \frac{2}{L_\perp}\sqrt{\frac{w_\mp}{\rho}}, \qquad
+L_\perp\sqrt{|\bm{B}|} = C_L = \mathrm{const} > 0, \qquad
+Q_w = \Gamma_+ w_+ + \Gamma_- w_-,
+\label{eq:3d_dissipation}
+\end{equation}
+\begin{equation}
+\mathcal{R} = \min\left\{\mathcal{R}_{\rm imb},\, \max(\Gamma_+,\Gamma_-)\right\}\mathcal{C}(w_+, w_-), \qquad
+\mathcal{R}_{\rm imb} = \sqrt{\left[(\bm{V}_A\cdot\nabla)\ln|\bm{V}_A|\right]^2 + \left[\bm{b}\cdot(\nabla\times\bm{u})\right]^2},
+\label{eq:3d_reflection}
+\end{equation}
+где $\bm{b} = \bm{B}/|\bm{B}|$, $L_\perp$ --- поперечный корреляционный масштаб турбулентности, а безразмерная функция дисбаланса волн $\mathcal{C}(w_+, w_-)$ задаётся кусочно-гладким соотношением:
+\begin{equation}
+\mathcal{C}(w_+, w_-) =
+\begin{cases}
+1 - 2\sqrt{w_-/w_+}, & w_+ \ge 4w_-,\\[4pt]
+0, & \frac{1}{4}w_- < w_+ < 4w_-,\\[4pt]
+2\sqrt{w_+/w_-} - 1, & w_- \ge 4w_+.
+\end{cases}
+\label{eq:imbalance_func}
+\end{equation}
+
+\section{Квазиодномерная редукция и переход к консервативной форме}
+
+Рассмотрим осесимметричную магнитную трубку с заданной стационарной площадью поперечного сечения $A(r) > 0$, боковая поверхность которой образована магнитными силовыми линиями ($\bm{u} \parallel \bm{B}$). Из соленоидальности магнитного поля следует сохранение магнитного потока $\Phi_B$ вдоль трубки:
+\begin{equation}
+A(r)B(r) = \Phi_B = \mathrm{const}, \qquad V_A(r,\rho) = \frac{B(r)}{\sqrt{\mu_0\rho}}, \qquad L_\perp(r) = C_L B(r)^{-1/2}.
+\label{eq:flux_tube}
+\end{equation}
+В отсутствие неадиабатических источников ($\bm{q}=\bm{0}$, $Q_{\rm rad}=0$, $Q_{\rm bg}=0$) и завихренности ($\nabla\times\bm{u}=\bm{0}$) продольная проекция системы \eqref{eq:3d_mass}--\eqref{eq:3d_waves} для газодинамической плотности энергии плазмы
+\begin{equation}
+E_g = \frac{\rho u^2}{2} + \frac{p}{\gamma-1}
+\label{eq:gas_energy_def}
+\end{equation}
+содержит неконсервативный член работы волнового давления $-u\,\partial P_A/\partial r$ и объёмный источник нагрева $Q_w$:
+\begin{equation}
+\frac{\partial E_g}{\partial t} + \frac{1}{A}\frac{\partial}{\partial r}\left[A u (E_g + p)\right] = -\rho u \frac{GM_\odot}{r^2} - u\frac{\partial P_A}{\partial r} + Q_w.
+\label{eq:noncons_Eg}
+\end{equation}
+Аналогично, уравнения переноса волн содержат неконсервативные члены взаимодействия с расходящимся потоком $+\frac{w_\pm}{2A}\frac{\partial(Au)}{\partial r}$ и источник диссипации $-\Gamma_\pm w_\pm$:
+\begin{equation}
+\frac{\partial w_\pm}{\partial t} + \frac{1}{A}\frac{\partial}{\partial r}\left[A(u \pm V_A)w_\pm\right] + \frac{w_\pm}{2A}\frac{\partial(Au)}{\partial r} = \mp\mathcal{R}\sqrt{w_+ w_-} - \Gamma_\pm w_\pm.
+\label{eq:noncons_w}
+\end{equation}
+
+Заметим, что тождество
+\[
+\frac{w_+ + w_-}{2A}\frac{\partial(Au)}{\partial r} + u\frac{\partial P_A}{\partial r} = \frac{1}{A}\frac{\partial(A u P_A)}{\partial r}, \qquad (\Gamma_+ w_+ + \Gamma_- w_-) - Q_w = 0
+\]
+позволяет сложить уравнения \eqref{eq:noncons_Eg} и \eqref{eq:noncons_w}, введя полную плотность энергии системы «плазма + альфвеновские волны» $E$:
+\begin{equation}
+E = E_g + w_+ + w_- = \frac{\rho u^2}{2} + \frac{p}{\gamma-1} + w_+ + w_-.
+\label{eq:total_energy_def}
+\end{equation}
+В переменной $E$ уравнение полной энергии принимает строго дивергентный (консервативный) вид, не содержащий ни неконсервативной производной $\partial P_A/\partial r$, ни жёсткого источника турбулентного нагрева $Q_w$.
+
+Введём вектор консервативных переменных на единицу длины трубки $\bm{U}$ и вектор физических потоков $\bm{F}(\bm{U}, r)$:
+\begin{equation}
+\bm{U} = A\begin{pmatrix}
+\rho \\[3pt]
+\rho u \\[3pt]
+E \\[3pt]
+w_+ \\[3pt]
+w_-
+\end{pmatrix}, \qquad
+\bm{F}(\bm{U}, r) = A\begin{pmatrix}
+\rho u \\[3pt]
+\rho u^2 + p + P_A \\[3pt]
+u(E + p + P_A) + V_A(w_+ - w_-) \\[3pt]
+(u + V_A)w_+ \\[3pt]
+(u - V_A)w_-
+\end{pmatrix}.
+\label{eq:cons_vectors}
+\end{equation}
+Тогда замкнутая квазиодномерная система записывается в компактной балансной форме:
+\begin{equation}
+\frac{\partial\bm{U}}{\partial t} + \frac{\partial\bm{F}(\bm{U}, r)}{\partial r} + \bm{G}(\bm{U})\frac{\partial(Au)}{\partial r} = \bm{S}_{\rm geom}(\bm{U}, r) + \bm{S}_{\rm turb}(\bm{U}, \partial_r\rho, r),
+\label{eq:master_system}
+\end{equation}
+где вектор неконсервативной связи волн со сжатием потока $\bm{G}$, геометрически-гравитационный источник $\bm{S}_{\rm geom}$ и турбулентный источник в волновой подсистеме $\bm{S}_{\rm turb}$ равны:
+\begin{equation}
+\bm{G}(\bm{U}) = \begin{pmatrix}
+0 \\[3pt]
+0 \\[3pt]
+0 \\[3pt]
+\frac{1}{2}w_+ \\[3pt]
+\frac{1}{2}w_-
+\end{pmatrix}, \quad
+\bm{S}_{\rm geom} = \begin{pmatrix}
+0 \\[3pt]
+(p + P_A)\dfrac{dA}{dr} - A\rho\dfrac{GM_\odot}{r^2} \\[6pt]
+-A\rho u\dfrac{GM_\odot}{r^2} \\[6pt]
+0 \\[3pt]
+0
+\end{pmatrix}, \quad
+\bm{S}_{\rm turb} = A\begin{pmatrix}
+0 \\[3pt]
+0 \\[3pt]
+0 \\[3pt]
+-\mathcal{R}\sqrt{w_+ w_-} - \Gamma_+ w_+ \\[3pt]
++\mathcal{R}\sqrt{w_+ w_-} - \Gamma_- w_-
+\end{pmatrix}.
+\label{eq:source_vectors}
+\end{equation}
+Давление восстанавливается из консервативных компонент по алгебраической формуле:
+\begin{equation}
+p = (\gamma - 1)\left(\frac{U_3}{A} - \frac{U_2^2}{2 A U_1} - \frac{U_4 + U_5}{A}\right), \qquad P_A = \frac{U_4 + U_5}{2A}.
+\label{eq:pressure_recovery}
+\end{equation}
+
+\section{Обезразмеривание и параметрический анализ}
+
+\subsection{Выбор характерных масштабов}
+
+Зададим на внутренней границе $r = R_\odot$ (основание короны / фотосфера) размерные параметры $\rho_0$, $T_0$, $B_0$, корреляционную длину $L_{\perp,0}$ и плотность энергии выходящих волн $w_{+,0}$. В качестве независимых базисных масштабов длины, плотности, скорости (первой космической скорости на поверхности Солнца $v_{\rm K}$), времени и температуры выберем:
+\begin{equation}
+R_* = R_\odot, \qquad \rho_* = \rho_0, \qquad V_* = v_{\rm K} = \sqrt{\frac{GM_\odot}{R_\odot}}, \qquad t_* = \frac{R_*}{V_*}, \qquad T_* = T_0.
+\label{eq:scales_base}
+\end{equation}
+Производные масштабы площади сечения, магнитного поля, давления (и плотности энергии), а также частоты диссипации принимают вид:
+\begin{equation}
+A_* = A(R_\odot), \qquad B_* = B_0, \qquad p_* = \rho_* V_*^2, \qquad \Gamma_* = \frac{V_*}{R_*}.
+\label{eq:scales_derived}
+\end{equation}
+Введём безразмерные переменные (обозначаемые далее без крышек):
+\[
+r \leftarrow \frac{r}{R_*}, \quad t \leftarrow \frac{t}{t_*}, \quad A(r) \leftarrow \frac{A(r)}{A_*}, \quad \rho \leftarrow \frac{\rho}{\rho_*}, \quad u \leftarrow \frac{u}{V_*}, \quad T \leftarrow \frac{T}{T_*}, \quad (p, E, w_\pm, P_A) \leftarrow \frac{(p, E, w_\pm, P_A)}{p_*}.
+\]
+С учётом сохранения магнитного потока $B(r)/B_0 = A(r)^{-1}$ и скейлинга $L_\perp(r)/L_{\perp,0} = A(r)^{1/2}$ безразмерные выражения для скорости Альфвена, частот диссипации, коэффициента отражения и уравнения состояния принимают вид:
+\begin{equation}
+V_A = \frac{V_{A,0}}{A\sqrt{\rho}}, \qquad
+\Gamma_\pm = \alpha_d\sqrt{\frac{w_\mp}{A\rho}}, \qquad
+p = \theta_0\rho T,
+\label{eq:dimless_closures}
+\end{equation}
+\begin{equation}
+\mathcal{R} = \mathcal{C}(w_+, w_-)\min\left\{V_{A,0}\left|\frac{\partial}{\partial r}\left(\frac{1}{A\sqrt{\rho}}\right)\right|,\, \frac{\alpha_d}{\sqrt{A\rho}}\max\left(\sqrt{w_+}, \sqrt{w_-}\right)\right\}.
+\label{eq:dimless_R}
+\end{equation}
+
+В результате система \eqref{eq:master_system} в безразмерных переменных сохраняет свой вид с заменой $GM_\odot/r^2 \to 1/r^2$:
+\begin{align}
+\frac{\partial(A\rho)}{\partial t} + \frac{\partial(A\rho u)}{\partial r} &= 0,
+\label{eq:nd_mass}\\[4pt]
+\frac{\partial(A\rho u)}{\partial t} + \frac{\partial}{\partial r}\left[A(\rho u^2 + p + P_A)\right] &= (p + P_A)\frac{dA}{dr} - \frac{A\rho}{r^2},
+\label{eq:nd_mom}\\[4pt]
+\frac{\partial(A E)}{\partial t} + \frac{\partial}{\partial r}\left[A u(E + p + P_A) + A V_A(w_+ - w_-)\right] &= -\frac{A\rho u}{r^2},
+\label{eq:nd_energy}\\[4pt]
+\frac{\partial(A w_\pm)}{\partial t} + \frac{\partial}{\partial r}\left[A(u \pm V_A)w_\pm\right] + \frac{w_\pm}{2}\frac{\partial(Au)}{\partial r} &= A\left(\mp\mathcal{R}\sqrt{w_+ w_-} - \Gamma_\pm w_\pm\right).
+\label{eq:nd_waves}
+\end{align}
+
+\subsection{Безразмерные комплексы подобия и их физический смысл}
+
+Поведение решений системы \eqref{eq:nd_mass}--\eqref{eq:nd_waves} при заданной геометрии трубки $A(r)$ полностью определяется четырьмя безразмерными управляющими параметрами $(\theta_0, V_{A,0}, \alpha_d, w_{+,0})$, сведёнными в таблицу~\ref{tab:params}.
+
+\begin{table}[ht!]
+\centering
+\caption{Безразмерные параметры подобия квазиодномерной модели солнечного ветра (оценки приведены для условий основания солнечной короны: $R_\odot = 6.96\times 10^8$~м, $V_* = 436.7$~км/с, $T_0 \sim 10^6$~К, $n_0 \sim 10^8\text{--}10^9$~см$^{-3}$, $B_0 \sim 2\text{--}10$~Гс, $L_{\perp,0} \sim 10^4\text{--}10^5$~км).}
+\vspace{2mm}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Параметр} & \textbf{Определение} & \textbf{Физический смысл} & \textbf{Типичный диапазон} \\
+\midrule
+$\theta_0$ & $\dfrac{k_{\rm B}T_0}{\mu m_u V_*^2} = \dfrac{c_{T,0}^2}{V_*^2}$ & Квадрат безразмерной изотермической скорости звука & $0.04 \text{ -- } 0.15$ \\[8pt]
+$V_{A,0}$ & $\dfrac{B_0}{V_*\sqrt{\mu_0\rho_0}}$ & Безразмерная скорость Альфвена у основания ($r=1$) & $1.0 \text{ -- } 5.0$ \\[8pt]
+$\alpha_d$ & $\dfrac{2 R_\odot}{L_{\perp,0}}$ & Безразмерный коэффициент каскадной диссипации & $10 \text{ -- } 150$ \\[8pt]
+$w_{+,0}$ & $\dfrac{w_{+,{\rm dim}}(R_\odot)}{\rho_0 V_*^2}$ & Безразмерная плотность энергии входящих волн & $0.01 \text{ -- } 0.20$ \\
+\bottomrule
+\end{tabular}
+\label{tab:params}
+\end{table}
+
+Из четвёрки фундаментальных параметров непосредственно конструируются ключевые вторичные критерии режима течения на нижней границе ($r = 1$):
+\begin{enumerate}
+\item \textbf{Плазменный параметр бета:} $\beta_0 = \dfrac{2\mu_0 p_0}{B_0^2} = \dfrac{2\theta_0}{V_{A,0}^2} \ll 1$. Малость $\beta_0$ означает доминирование магнитного поля над газовым давлением в нижней короне ($V_A \gg c_s = \sqrt{\gamma\theta_0}$), что приводит к сильной разнице характеристических скоростей (характеристической жёсткости системы).
+\item \textbf{Относительная амплитуда альфвеновских возмущений:} $\dfrac{\delta u_0}{V_{A,0}} = \dfrac{\sqrt{w_{+,0}}}{V_{A,0}} \sim 0.05\text{--}0.15$. Малость этого отношения гарантирует применимость приближения ВКБ и слабонелинейной теории турбулентности.
+\item \textbf{Отношение волнового и теплового давлений:} $\dfrac{P_{A,0}}{p_0} \approx \dfrac{w_{+,0}}{2\theta_0} \sim 0.1\text{--}1.0$, характеризующее прямой вклад градиента волнового давления в ускорение ветра в дозвуковой зоне.
+\item \textbf{Локальное число Дамкёлера каскада:} $\mathrm{Da}_{\rm turb} = \Gamma_\pm \sim \alpha_d\sqrt{w_{+,0}} \sim 1\text{--}20$. Поскольку $\mathrm{Da}_{\rm turb} \gg 1$ при больших $\alpha_d$, характерное время нелинейной диссипации $\tau_{\rm diss} \sim \Gamma_\pm^{-1}$ оказывается существенно меньше динамического времени пролёта плазмы, что порождает жёсткость источниковых членов в уравнениях \eqref{eq:nd_waves}.
+\end{enumerate}
+
+\section{Математические свойства нестационарной системы}
+
+Для построения корректной численной схемы перепишем систему \eqref{eq:nd_mass}--\eqref{eq:nd_waves} в квазилинейной форме относительно вектора примитивных переменных $\bm{W} = (\rho, u, p, w_+, w_-)^T$. Главная особенность системы состоит в том, что выражение для скорости отражения \eqref{eq:dimless_R} содержит пространственную производную скорости Альфвена:
+\begin{equation}
+\frac{\partial V_A}{\partial r} = -V_A\left(\frac{A'}{A} + \frac{1}{2\rho}\frac{\partial\rho}{\partial r}\right).
+\label{eq:dVA_dr}
+\end{equation}
+Следовательно, когда в \eqref{eq:dimless_R} реализуется первая (градиентная) ветвь минимума, член $\mp\mathcal{R}\sqrt{w_+ w_-}$ перестаёт быть чисто алгебраическим источником и порождает неконсервативный дифференциальный член с производной $\partial\rho/\partial r$.
+
+Введём индикатор ветви отражения $\sigma \in \{-1, 0, +1\}$, где $\sigma = 0$ отвечает ограничению диссипацией ($V_{A,0}|\partial_r(A^{-1}\rho^{-1/2})| > \max(\Gamma_+,\Gamma_-)$), а $\sigma = \mathrm{sgn}(\partial_r V_A) = \pm 1$ отвечает градиентной ветви. Тогда квазилинейная система принимает вид
+\begin{equation}
+\frac{\partial\bm{W}}{\partial t} + \mathsf{A}_{\rm prim}(\bm{W})\frac{\partial\bm{W}}{\partial r} = \bm{S}_{\rm alg}(\bm{W}, r),
+\label{eq:quasilinear_form}
+\end{equation}
+где матрица Якоби $\mathsf{A}_{\rm prim}(\bm{W})$ имеет структуру:
+\begin{equation}
+\mathsf{A}_{\rm prim}(\bm{W}) =
+\begin{pmatrix}
+u & \rho & 0 & 0 & 0 \\[4pt]
+0 & u & \dfrac{1}{\rho} & \dfrac{1}{2\rho} & \dfrac{1}{2\rho} \\[6pt]
+0 & \gamma p & u & 0 & 0 \\[4pt]
+-\alpha_+ & \dfrac{3}{2}w_+ & 0 & u + V_A & 0 \\[6pt]
+\alpha_- & \dfrac{3}{2}w_- & 0 & 0 & u - V_A
+\end{pmatrix}, \qquad
+\alpha_\pm = \frac{V_A}{2\rho}\left(w_\pm - \sigma\mathcal{C}\sqrt{w_+ w_-}\right).
+\label{eq:A_prim}
+\end{equation}
+Характеристический полином $\det(\mathsf{A}_{\rm prim} - \lambda\mathbf{I}) = 0$ для сдвинутой скорости $\tilde{\lambda} = \lambda - u$ распадается на энтропийную моду $\tilde{\lambda}_1 = 0$ ($\lambda_1 = u$) и уравнение четвёртой степени, описывающее связанные звуковые и альфвеновские моды:
+\begin{equation}
+\left(\tilde{\lambda}^2 - c_s^2\right)\left(\tilde{\lambda}^2 - V_A^2\right) - \frac{3(w_+ + w_-)}{4\rho}\tilde{\lambda}^2 - \tilde{\lambda}V_A\left(\frac{3(w_+ - w_-)}{4\rho} - \frac{\alpha_+ + \alpha_-}{2}\right) + \frac{V_A^2(\alpha_+ - \alpha_-)}{2} = 0,
+\label{eq:char_poly}
+\end{equation}
+где $c_s = \sqrt{\gamma p/\rho}$ --- адиабатическая скорость звука. Поскольку в реальных условиях солнечного ветра плотность энергии волн мала по сравнению с плотностью энергии магнитного поля ($w_+ + w_- \ll \rho V_A^2$), уравнение \eqref{eq:char_poly} при любом $\sigma \in \{-1,0,+1\}$ имеет четыре вещественных различных корня:
+\begin{equation}
+\lambda_1 = u, \qquad \lambda_{2,3} \approx u \pm c_{\rm eff}, \qquad \lambda_{4,5} \approx u \pm V_A, \qquad c_{\rm eff}^2 = c_s^2 + \frac{w_+ + w_-}{4\rho}\left(3 - \frac{2 V_A^2}{V_A^2 - c_s^2}\right).
+\label{eq:eigenvalues_approx}
+\end{equation}
+Таким образом, нестационарная система является \textbf{гиперболической} во всей области расчёта.
+
+\section{Численная схема решения методом установления}
+
+Для отыскания стационарных и нестационарных режимов течения применяется метод установления по времени (time relaxation) для системы \eqref{eq:nd_mass}--\eqref{eq:nd_waves}. Архитектура численного метода спроектирована так, чтобы нейтрализовать четыре специфические трудности системы: (а) негладкость оператора $\min/\max$ и присутствие $\partial_r\rho$ в коэффициенте отражения $\mathcal{R}$, (б) неконсервативные произведения $w_\pm\partial_r(Au)$, (в) жёсткость источниковых членов диссипации при $\alpha_d \gg 1$ и корневую особенность $\sqrt{w_+ w_-}$ при $w_- \to 0$, (г) прохождение через звуковую ($u = c_{\rm eff}$) и альфвеновскую ($u = V_A$) критические точки.
+
+\subsection{Пространственная сетка и конечно-объёмная дискретизация}
+
+Поскольку вблизи основания короны ($r \in [1, 3]$) плотность $\rho$ и скорость Альфвена $V_A$ изменяются на порядки величины, а при $r \gg 1$ градиенты становятся плавными, вводится неравномерная радиальная сетка $1 = r_{1/2} < r_{3/2} < \dots < r_{N+1/2} = r_{\rm out}$ с геометрическим растяжением шага $\Delta r_i = r_{i+1/2} - r_{i-1/2} = q\Delta r_{i-1}$ ($q \approx 1.01\text{--}1.03$) и центрами ячеек $r_i = \frac{1}{2}(r_{i-1/2} + r_{i+1/2})$.
+
+Интегрирование системы \eqref{eq:master_system} по ячейке $[r_{i-1/2}, r_{i+1/2}]$ даёт полудискретную схему метода конечного объёма для средних по ячейке значений $\bm{U}_i(t)$:
+\begin{equation}
+\frac{d\bm{U}_i}{dt} = -\frac{\hat{\bm{F}}_{i+1/2} - \hat{\bm{F}}_{i-1/2}}{\Delta r_i} - \bm{G}(\bm{U}_i)\frac{\Phi_{m,i+1/2} - \Phi_{m,i-1/2}}{\Delta r_i} + \bm{S}_{{\rm geom},i} + \bm{S}_{{\rm turb},i} \equiv \mathcal{L}_{\rm hyp}(\bm{U}_i) + \bm{S}_{{\rm turb},i}.
+\label{eq:fvm_semidiscrete}
+\end{equation}
+
+\paragraph{1. Реконструкция и численные потоки.}
+Для достижения второго порядка точности по пространству и предотвращения нефизических осцилляций на крутых градиентах в нижней короне кусочно-линейная MUSCL-реконструкция с TVD-лимитером (симметричным лимитером ван Лира или minmod) выполняется в \textbf{примитивных переменных} $\bm{W} = (\rho, u, p, w_+, w_-)^T$, а для плотности и давления --- в логарифмических переменных $(\ln\rho, \ln p)$, что гарантирует строгую положительность реконструированных значений $\rho_{i+1/2}^{L,R} > 0$, $p_{i+1/2}^{L,R} > 0$ на гранях $r_{i+1/2}$:
+\begin{equation}
+\bm{W}_{i+1/2}^L = \bm{W}_i + \frac{\Delta r_i}{2}\bm{s}_i, \qquad
+\bm{W}_{i+1/2}^R = \bm{W}_{i+1} - \frac{\Delta r_{i+1}}{2}\bm{s}_{i+1},
+\label{eq:muscl_recon}
+\end{equation}
+где вектор ограниченных наклонов $\bm{s}_i$ вычисляется с учётом неравномерности сетки.
+
+В качестве численного потока $\hat{\bm{F}}_{i+1/2}$ используется двухволновой поток HLL (Harten--Lax--van Leer) либо локальный поток Русанова (LLF):
+\begin{equation}
+\hat{\bm{F}}_{i+1/2}^{\rm HLL} = \frac{S_R\bm{F}(\bm{U}_{i+1/2}^L, A_{i+1/2}) - S_L\bm{F}(\bm{U}_{i+1/2}^R, A_{i+1/2}) + S_L S_R\left(\bm{U}_{i+1/2}^R - \bm{U}_{i+1/2}^L\right)}{S_R - S_L},
+\label{eq:hll_flux}
+\end{equation}
+где $A_{i+1/2} = A(r_{i+1/2})$ --- точное аналитическое значение площади сечения на грани, а крайние скорости распространения возмущений $S_L \le 0 \le S_R$ оцениваются по максимальным собственным значениям \eqref{eq:eigenvalues_approx}:
+\begin{equation}
+S_L = \min\left(0,\, u_L - c_{f,L},\, u_R - c_{f,R}\right), \qquad
+S_R = \max\left(0,\, u_L + c_{f,L},\, u_R + c_{f,R}\right),
+\label{eq:wave_speeds_hll}
+\end{equation}
+с безопасной мажорантой быстрой магнитозвуковой скорости $c_f = \sqrt{c_s^2 + V_A^2 + \frac{3(w_+ + w_-)}{4\rho}}$.
+
+\emph{Причина выбора HLL/LLF:} В отличие от схемы Роу, требующей аналитического расщепления по собственным векторам матрицы \eqref{eq:A_prim}, которые претерпевают разрыв при переключении ветвей отражения $\sigma \in \{-1,0,+1\}$, схема HLL опирается только на спектр скоростей \eqref{eq:wave_speeds_hll}. Присутствующая в \eqref{eq:hll_flux} численная диссипация подавляет высокочастотные осцилляции в точках смены режима отражения и обеспечивает гладкий, безэнтропийный переход через звуковую ($u = c_{\rm eff}$) и альфвеновскую ($u = V_A$) критические точки без специальных энтропийных поправок.
+
+\paragraph{2. Согласованная аппроксимация геометрического источника и неконсервативного члена.}
+Чтобы в покоящейся изотермической или политропной атмосфере численная погрешность от большого геометрического члена $(p + P_A)dA/dr$ не генерировала паразитные скорости (свойство well-balancing), производная площади в $\bm{S}_{{\rm geom},i}$ аппроксимируется через разность площадей на гранях:
+\begin{equation}
+\left[(p + P_A)\frac{dA}{dr}\right]_i = (p_i + P_{A,i})\frac{A_{i+1/2} - A_{i-1/2}}{\Delta r_i}.
+\label{eq:wb_geom}
+\end{equation}
+Аналогично, в неконсервативном члене $\frac{w_\pm}{2}\frac{\partial(Au)}{\partial r}$ объёмный расход $\Phi_{m,i+1/2} = (Au)_{i+1/2}$ вычисляется согласованно с первой компонентой численного потока массы $\hat{F}_{1,i+1/2}$:
+\begin{equation}
+\Phi_{m,i+1/2} = \frac{2\hat{F}_{1,i+1/2}}{\rho_{i+1/2}^L + \rho_{i+1/2}^R}.
+\label{eq:noncons_au}
+\end{equation}
+Такая связка гарантирует, что при установлении по времени ($\partial_t \to 0$) разностное отношение $(\Phi_{m,i+1/2} - \Phi_{m,i-1/2})/\Delta r_i$ обращается в точную производную от $\dot{m}/\rho_i$, где $\dot{m} = A\rho u = \mathrm{const}$ --- постоянный массовый расход.
+
+\subsection{Вычисление градиента скорости Альфвена и гладкая регуляризация \texorpdfstring{$\mathcal{R}$}{R}}
+
+Как показано в разделе~4, на градиентной ветви отражения величина $|\partial_r V_A|$ в \eqref{eq:dimless_R} содержит производную плотности $\partial_r\rho$. Прямая аппроксимация $\partial_r V_A$ центральными разностями на грубой сетке может приводить к нефизическим переключениям ветвей в формуле $\min\{\dots\}$ и сеточным осцилляциям чёт-нечет. Для обеспечения устойчивости и монотонности сходимости к стационару применяются два приёма:
+\begin{enumerate}
+\item Внутри ячейки $i$ величина $(\partial V_A/\partial r)_i$ вычисляется по уже ограниченным TVD-наклонам логарифма плотности $(s_{\ln\rho})_i$ из шага MUSCL-реконструкции \eqref{eq:muscl_recon}:
+\begin{equation}
+\left(\frac{\partial V_A}{\partial r}\right)_i = -V_{A,i}\left(\frac{A'(r_i)}{A(r_i)} + \frac{1}{2}(s_{\ln\rho})_i\right).
+\label{eq:dva_tvd}
+\end{equation}
+\item При необходимости получения машинного нуля невязки ($\|d\bm{U}/dt\|_\infty < 10^{-12}$) в стационарном состоянии негладкий оператор $\min(X, Y)$ при $X = |\partial_r V_A|$ и $Y = \max(\Gamma_+,\Gamma_-)$ заменяется $C^\infty$-гладкой регуляризацией типа $R$-функции (обобщённого гармонического среднего):
+\begin{equation}
+\min(X, Y) \approx \frac{X Y}{\left(X^p + Y^p + \epsilon_{\rm reg}^p\right)^{1/p}}, \qquad
+|x| \approx \sqrt{x^2 + \epsilon_{\rm reg}^2}, \qquad p \in \{2, 4\}, \quad \epsilon_{\rm reg} = 10^{-8}.
+\label{eq:smooth_min}
+\end{equation}
+Сглаживание \eqref{eq:smooth_min} устраняет разрыв производных правой части на границе смены режимов отражения, предотвращая застревание (chattering) итерационного процесса установления.
+\end{enumerate}
+
+\subsection{Полунеявное расщепление (IMEX) для жёстких турбулентных источников}
+
+Явный шаг по времени для гиперболического оператора переноса $\mathcal{L}_{\rm hyp}(\bm{U})$ ограничен условием Куранта--Фридрихса--Леви (CFL):
+\begin{equation}
+\Delta t_{\rm CFL} = C_{\rm CFL}\min_{1 \le i \le N}\frac{\Delta r_i}{|u_i| + c_{f,i}}, \qquad C_{\rm CFL} \approx 0.4\text{--}0.8.
+\label{eq:cfl_cond}
+\end{equation}
+В то же время источниковый вектор $\bm{S}_{\rm turb}$ в уравнениях волн \eqref{eq:nd_waves} обладает двумя особенностями: во-первых, при $\alpha_d \gg 1$ характерное время диссипации $\Gamma_\pm^{-1}$ может быть меньше $\Delta t_{\rm CFL}$ (жёсткость); во-вторых, якобиан членов $\mp\mathcal{R}\sqrt{w_+ w_-}$ и $-\Gamma_\pm w_\pm \propto \sqrt{w_\mp}w_\pm$ имеет корневую сингулярность $\propto w_\mp^{-1/2}$ при $w_\mp \to 0$. Из-за этого чисто явная схема легко приводит к пробиванию нуля ($w_- < 0$) и аварийному останову из-за извлечения квадратного корня из отрицательного числа.
+
+Для безусловной устойчивости и гарантии строгой положительности $w_\pm \ge 0$ применяется расщепление по физическим процессам (схема типа IMEX --- Implicit-Explicit). На каждом шаге $\Delta t = \Delta t_{\rm CFL}$:
+\begin{enumerate}
+\item \textbf{Явный гиперболический шаг (Предиктор):} Вектор $\bm{U}^* = (A\rho, A\rho u, A E, A w_+^*, A w_-^*)^T$ находится интегрированием системы без $\bm{S}_{\rm turb}$ явной двухшаговой TVD-схемой Рунге--Кутты (SSP-RK2):
+\begin{equation}
+\bm{U}^{(1)} = \bm{U}^n + \Delta t\,\mathcal{L}_{\rm hyp}(\bm{U}^n), \qquad
+\bm{U}^* = \frac{1}{2}\bm{U}^n + \frac{1}{2}\left(\bm{U}^{(1)} + \Delta t\,\mathcal{L}_{\rm hyp}(\bm{U}^{(1)})\right).
+\label{eq:ssprk2}
+\end{equation}
+Заметим, что в силу консервативности уравнения полной энергии \eqref{eq:nd_energy} компоненты плотности $\rho^{n+1} = \rho^*$, импульса $(\rho u)^{n+1} = (\rho u)^*$ и полной энергии $E^{n+1} = E^*$ на этом шаге уже достигают своих финальных значений на слое $t^{n+1}$.
+\item \textbf{Локальный неявный шаг в переменных амплитуд (Корректор для $w_\pm$):} В каждой ячейке $i$ при фиксированной плотности $\rho_i^{n+1}$ и скорости Альфвена $V_{A,i}^{n+1}$ решается локальная система двух ОДУ на интервале $\Delta t$:
+\begin{equation}
+\frac{dw_+}{dt} = -\mathcal{R}\sqrt{w_+ w_-} - \frac{\alpha_d}{\sqrt{A_i\rho_i}}w_+\sqrt{w_-}, \qquad
+\frac{dw_-}{dt} = +\mathcal{R}\sqrt{w_+ w_-} - \frac{\alpha_d}{\sqrt{A_i\rho_i}}w_-\sqrt{w_+}.
+\label{eq:local_ode_w}
+\end{equation}
+Перейдём от плотностей энергии $w_\pm \ge 0$ к \textbf{нормированным переменным амплитуд} $a_\pm = \sqrt{w_\pm} \ge 0$ (пропорциональным переменным Эльзассера $z_\pm = 2\sqrt{w_\pm/\rho}$). Так как $\frac{dw_\pm}{dt} = 2 a_\pm\frac{da_\pm}{dt}$, после сокращения на $a_\pm$ корневая особенность полностью исчезает, и система \eqref{eq:local_ode_w} превращается в гладкую билинейную систему:
+\begin{equation}
+\frac{da_+}{dt} = -\frac{1}{2}\left(\mathcal{R} + \kappa_i a_+\right)a_-, \qquad
+\frac{da_-}{dt} = +\frac{1}{2}\left(\mathcal{R} - \kappa_i a_-\right)a_+, \qquad
+\kappa_i = \frac{\alpha_d}{\sqrt{A_i\rho_i^{n+1}}}.
+\label{eq:ode_a}
+\end{equation}
+Записав для \eqref{eq:ode_a} полунеявную (линеаризованную по коэффициентам со слоя $*$) схему Эйлера с разделением знаков $\mathcal{R}^* = \mathcal{R}_+^* - \mathcal{R}_-^*$ ($\mathcal{R}_\pm^* = \max(0, \pm\mathcal{R}^*)$):
+\begin{equation}
+\begin{pmatrix}
+1 + \dfrac{\Delta t}{2}\left(\mathcal{R}_+^*\dfrac{a_-^*}{a_+^*} + \kappa_i a_-^*\right) & -\dfrac{\Delta t}{2}\mathcal{R}_-^* \\[10pt]
+-\dfrac{\Delta t}{2}\mathcal{R}_+^* & 1 + \dfrac{\Delta t}{2}\left(\mathcal{R}_-^*\dfrac{a_+^*}{a_-^*} + \kappa_i a_+^*\right)
+\end{pmatrix}
+\begin{pmatrix}
+a_+^{n+1} \\[8pt]
+a_-^{n+1}
+\end{pmatrix} =
+\begin{pmatrix}
+a_+^* \\[8pt]
+a_-^*
+\end{pmatrix},
+\label{eq:implicit_2x2}
+\end{equation}
+получаем линейную систему $2 \times 2$ с $M$-матрицей (строго положительной главной диагональю, неположительными внедиагональными элементами и строгим диагональным преобладанием). Обращение матрицы \eqref{eq:implicit_2x2} по правилу Крамера тривиально и \textbf{математически гарантирует} $a_\pm^{n+1} \ge 0$ и $w_\pm^{n+1} = (a_\pm^{n+1})^2 \ge 0$ при произвольно большом $\Delta t$ и любом $\alpha_d$.
+\end{enumerate}
+
+Поскольку на шаге корректора полная энергия $E^{n+1}$ остаётся неизменной, а сумма волновых энергий $(w_+^{n+1} + w_-^{n+1})$ уменьшается за счёт каскадной диссипации ровно на величину выделившегося тепла $\Delta Q_w$, при восстановлении давления по формуле \eqref{eq:pressure_recovery} вся диссипировавшая волновая энергия \textbf{автоматически и с машинной точностью} переходит во внутреннюю тепловую энергию плазмы $p/(\gamma - 1)$.
+
+\subsection{Характеристические граничные условия}
+
+Корректная постановка граничных условий при методе установления диктуется знаками пяти характеристических скоростей \eqref{eq:eigenvalues_approx} на границах расчётной области $r \in [1, r_{\rm out}]$.
+
+\paragraph{1. Внутренняя граница ($r = 1$, основание короны).}
+На нижней границе течение является дозвуковым и субальфвеновским ($0 < u < c_{\rm eff} < V_A$). Следовательно, три характеристики входят в расчётную область ($\lambda_1 = u > 0$, $\lambda_2 = u + c_{\rm eff} > 0$, $\lambda_4 = u + V_A > 0$), а две характеристики выходят из области влево ($\lambda_3 = u - c_{\rm eff} < 0$, $\lambda_5 = u - V_A < 0$). В соответствии с теорией гиперболических краевых задач на границе $r = 1$ задаются ровно \textbf{три} физические величины (соответствующие входящим модам):
+\begin{equation}
+\rho(1, t) = 1, \qquad p(1, t) = \theta_0, \qquad w_+(1, t) = w_{+,0}.
+\label{eq:bc_left_fixed}
+\end{equation}
+Две оставшиеся переменные --- скорость втекания $u(1, t)$ и плотность энергии падающих на Солнце отражённых волн $w_-(1, t)$ --- определяются динамикой потока внутри области и переносятся к границе вдоль выходящих характеристик $\lambda_3, \lambda_5 < 0$. В терминах фиктивных ячеек (ghost cells, индекс $0$) это реализуется экстраполяцией из первой внутренней ячейки (индекс $1$):
+\begin{equation}
+(A\rho u)_{1/2} = (A\rho u)_1 \implies u_0 = 2\frac{A_1\rho_1}{A_{1/2}\cdot 1}u_1 - u_1, \qquad w_{-,0} = w_{-,1},
+\label{eq:bc_left_extrap}
+\end{equation}
+с установкой в фиктивной ячейке $\rho_0 = 2 - \rho_1$, $p_0 = 2\theta_0 - p_1$, $w_{+,0}^{\rm ghost} = 2w_{+,0} - w_{+,1}$. Благодаря условию \eqref{eq:bc_left_extrap} нестационарный поток самостоятельно подбирает единственные физически допустимые значения массового расхода $\dot{m} = u(1)$ и потока отражённых волн $w_-(1)$, обеспечивающие гладкий переход через звуковую и альфвеновскую критические точки.
+
+\paragraph{2. Внешняя граница ($r = r_{\rm out}$, сверхзвуковой и суперальфвеновский выход).}
+Внешняя граница $r_{\rm out}$ выбирается заведомо дальше альфвеновской критической точки ($r_{\rm out} \approx 20\text{--}30$, где $u > V_A > c_{\rm eff}$). Здесь все пять собственных значений строго положительны ($\lambda_{1..5} > 0$), все характеристики выходят за пределы расчётной области, и никакие граничные условия извне не ставятся. В правых фиктивных ячейках ($i = N+1, N+2$) задаётся свободная экстраполяция примитивных переменных:
+\begin{equation}
+\bm{W}_{N+1} = \bm{W}_N, \qquad \bm{W}_{N+2} = \bm{W}_N.
+\label{eq:bc_right_outflow}
+\end{equation}
+
+\subsection{Инициализация и критерий сходимости к стационару}
+
+В качестве начального приближения при $t = 0$ задаётся гладкий трансзвуковой профиль изотермического ветра Паркера с температурой $T(r,0) = 1$, плотностью $\rho(r,0) = \dot{m}_0 / (A(r)u(r,0))$, малой затравочной долей отражённых волн $w_-(r,0) = 10^{-3}w_+(r,0)$ и аналитическим ВКБ-распределением входящих волн $w_+(r,0) = w_{+,0}\,\rho(r,0)^{1/2}$.
+
+Интегрирование по времени продолжается на протяжении нескольких альфвеновских и звуковых времён пролёта области ($t_{\rm max} \sim 50\text{--}100$ безразмерных единиц) до одновременного выполнения двух критериев установления:
+\begin{enumerate}
+\item Падение относительной $L_2$-нормы временной производной всех консервативных переменных ниже заданного порога: $\|\bm{U}^{n+1} - \bm{U}^n\|_2 / (\Delta t\,\|\bm{U}^n\|_2) < 10^{-10}$.
+\item Пространственное постоянство вдоль всей сетки двух первых интегралов стационарной системы --- безразмерного массового расхода $\dot{m}_i = A_i\rho_i u_i$ и безразмерного удельного потока полной энергии (интеграла Бернулли с учётом работы волн) $\varepsilon_i$:
+\begin{equation}
+\dot{m}_i = A_i\rho_i u_i = \mathrm{const}, \qquad
+\varepsilon_i = \frac{u_i^2}{2} + \frac{\gamma}{\gamma-1}\frac{p_i}{\rho_i} - \frac{1}{r_i} + \frac{3(w_{+,i} + w_{-,i})}{2\rho_i} + \frac{V_{A,i}(w_{+,i} - w_{-,i})}{\rho_i u_i} = \mathrm{const},
+\label{eq:stationary_integrals_check}
+\end{equation}
+с относительным отклонением $\max_i |\dot{m}_i - \bar{\dot{m}}|/\bar{\dot{m}} < 10^{-4}$ и $\max_i |\varepsilon_i - \bar{\varepsilon}|/|\bar{\varepsilon}| < 10^{-4}$.
+\end{enumerate}
+
+\end{document}

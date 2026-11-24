@@ -53,7 +53,7 @@ int main()
             assert(close(grid.cell(i + 1).width / c.width, GRID_RATIO));
         const double x = c.r - 1.0;
         assert(close(c.state.velocity(), U_BASE + U_AMPLITUDE * (1 - exp(-x / U_SCALE))));
-        assert(close(c.state.temperature(), 1 + T_AMPLITUDE * (1 - exp(-x / T_SCALE)) * pow(c.r, T_POWER)));
+        assert(close(c.state.temperature(), T_INITIAL));
     }
     const double radial_volume = (pow(R_MAX, 3) - pow(R_MIN, 3)) / 3;
     if constexpr (SUPER_RADIAL_EXPANSION) {

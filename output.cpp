@@ -88,9 +88,7 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     WRITE_PARAMETER(U_SCALE);
     WRITE_PARAMETER(RHO_SCALE);
     WRITE_PARAMETER(INITIAL_RHO_MIN);
-    WRITE_PARAMETER(T_AMPLITUDE);
-    WRITE_PARAMETER(T_SCALE);
-    WRITE_PARAMETER(T_POWER);
+    WRITE_PARAMETER(T_INITIAL);
     WRITE_PARAMETER(W_AREA_POWER);
     WRITE_PARAMETER(W_MINUS_FRACTION);
     WRITE_PARAMETER(W_MINUS_SCALE);
@@ -166,7 +164,7 @@ void save_results(const Grid& grid, double time, uint64_t step)
     file.close();
 }
 
-void save_final_results(const Grid& grid, double time, uint64_t step)
+static void write_text_profile(const string& filename, const Grid& grid, double time, uint64_t step)
 {
     const auto rows = prepare_rows(grid, time);
     // Format in memory and issue one bulk write instead of many small disk writes.
@@ -184,9 +182,20 @@ void save_final_results(const Grid& grid, double time, uint64_t step)
         text << '\n';
     }
     const string data = text.str();
-    auto file = open_output("results.txt");
+    auto file = open_output(filename);
     file.write(data.data(), static_cast<streamsize>(data.size()));
     file.close();
+}
+
+void save_initial_results(const Grid& grid, double time, uint64_t step)
+{
+    save_results(grid, time, step);
+    write_text_profile("initial_conditions.txt", grid, time, step);
+}
+
+void save_final_results(const Grid& grid, double time, uint64_t step)
+{
+    write_text_profile("results.txt", grid, time, step);
     write_parameters(grid, time, step);
 }
 

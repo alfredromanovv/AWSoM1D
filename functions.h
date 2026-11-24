@@ -26,5 +26,6 @@ double dissipation_stiffness(const Grid& grid);
 void output_results();
 // Call at output times; time is dimensionless. Files are written in the working directory.
 void save_results(const Grid& grid, double time, uint64_t step);
+void save_initial_results(const Grid& grid, double time, uint64_t step);
 void save_final_results(const Grid& grid, double time, uint64_t step);
 void save_state(const string& filename);

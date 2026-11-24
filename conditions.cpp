@@ -18,11 +18,10 @@ void set_initial_conditions(Grid& grid)
         const double u = U_BASE + U_AMPLITUDE * (-expm1(-x / U_SCALE));
         const double rho = max(U_BASE / (c.area * u) +
             (1.0 - U_BASE / u) * exp(-x / RHO_SCALE), INITIAL_RHO_MIN);
-        const double temperature = 1.0 + T_AMPLITUDE * (-expm1(-x / T_SCALE)) * pow(c.r, T_POWER);
         const double wp = OMEGA_0 * pow(c.area, W_AREA_POWER);
         const double wm = W_MINUS_FRACTION * wp * (-expm1(-x / W_MINUS_SCALE));
         try {
-            states[j] = Primitive{rho, u, THETA * rho * temperature, wp, wm}.to_conservative();
+            states[j] = Primitive{rho, u, THETA * rho * T_INITIAL, wp, wm}.to_conservative();
         } catch (const invalid_argument&) {
             // An exception must not escape an OpenMP worker.
             invalid = 1;

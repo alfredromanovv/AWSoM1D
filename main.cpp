@@ -34,7 +34,7 @@ int main()
         apply_boundary_conditions(g_grid);
         // Resolve restart input in the launch directory before switching to output.
         enter_run_directory();
-        save_results(g_grid, g_time, g_step);
+        save_initial_results(g_grid, g_time, g_step);
 
         // 3. The calculation must return when g_stop becomes true.
         if (!g_stop.load(memory_order_relaxed)) {

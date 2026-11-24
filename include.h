@@ -71,11 +71,9 @@ constexpr double U_SCALE = 3.5;             // Radial e-folding length of the ve
 constexpr double RHO_SCALE = 0.25;          // Decay length of the near-base density correction.
 constexpr double INITIAL_RHO_MIN = 1e-8;    // Density floor for initialization only.
 
-// Temperature: T(r) = 1 + T_AMPLITUDE * (1 - exp(-(r - 1) / T_SCALE)) * r^T_POWER.
-// T(1) = 1; the added term first rises and then decays with radius.
-constexpr double T_AMPLITUDE = 20.0;        // Multiplier of the temperature excess, not its peak value.
-constexpr double T_SCALE = 0.8;             // Radial e-folding length of the temperature rise.
-constexpr double T_POWER = -0.3;            // Power controlling the outer temperature excess decay.
+// Uniform dimensionless temperature for fresh runs.
+constexpr double T_INITIAL = 1.0;
+static_assert(T_INITIAL > 0);
 
 // Wave energy densities (not wave amplitudes):
 // w_plus(r)  = OMEGA_0 * A(r)^W_AREA_POWER.

@@ -91,7 +91,7 @@ enum class SlopeLimiter { Minmod, VanLeer, FirstOrder };
 //   SlopeLimiter::VanLeer    — van Leer, менее сглаживающий ограничитель.
 //   SlopeLimiter::FirstOrder — первый порядок по пространству (нулевые наклоны).
 // Minmod и VanLeer дают второй порядок по пространству на гладких участках.
-// По времени во всех вариантах используется SSP-RK2.
+// Перенос интегрируется по схеме Heun, отражение и диссипация волн — полунеявно.
 // После изменения пересоберите проект и запустите расчёт заново.
 constexpr SlopeLimiter SLOPE_LIMITER = SlopeLimiter::VanLeer;
 
@@ -103,11 +103,11 @@ constexpr const char* LIMITER_NAME = SLOPE_LIMITER == SlopeLimiter::Minmod ? "mi
 enum class FluxMethod { HLL, HLLC };
 constexpr FluxMethod FLUX_METHOD = FluxMethod::HLL; // HLLC is reserved.
 constexpr const char* RIEMANN_SOLVER = FLUX_METHOD == FluxMethod::HLL ? "HLL" : "HLLC";
-constexpr bool LIMIT_SOURCE_STEP = false; // Enable the explicit source time-step restriction.
+constexpr bool LIMIT_SOURCE_STEP = false; // Optional accuracy cap based on instantaneous wave loss.
 constexpr double SOURCE_CFL = 0.5;
 constexpr double END_TIME = 1000.0; // Absolute final time, including restarted runs.
-inline constexpr char TIME_INTEGRATOR[] = "SSP-RK2";
-constexpr int SCHEME_ORDER = SLOPE_LIMITER == SlopeLimiter::FirstOrder ? 1 : 2; // Spatial order; time remains SSP-RK2.
+inline constexpr char TIME_INTEGRATOR[] = "IMEX-Heun-BE";
+constexpr int SCHEME_ORDER = SLOPE_LIMITER == SlopeLimiter::FirstOrder ? 1 : 2; // Spatial order; first-order time accuracy with wave sources.
 constexpr double CFL_NUMBER = 0.45;
 constexpr double PRINT_INTERVAL = 0.5;      // Simulation-time interval between progress reports.
 constexpr double OUTPUT_INTERVAL = 0.5;     // Simulation-time interval between profile outputs.

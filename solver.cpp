@@ -26,6 +26,11 @@ struct Bounds
 {
     double cfl, source, gamma, residual;
 };
+// Frozen local loss rates. Positive reflection transfers from plus to minus.
+struct WaveRates
+{
+    double loss_plus, loss_minus, reflection;
+};
 struct Work
 {
     vector<Primitive> q;
@@ -33,8 +38,9 @@ struct Work
     vector<Edges> edges;
     vector<Interface> faces;
     vector<Vector> rhs;
+    vector<WaveRates> waves;
     vector<Bounds> bounds;
-    explicit Work(int n) : q(n), va(n), edges(n), faces(n + 1), rhs(n), bounds(n) {}
+    explicit Work(int n) : q(n), va(n), edges(n), faces(n + 1), rhs(n), waves(n), bounds(n) {}
 };
 
 double limited_slope(double a, double b, SlopeLimiter limiter = SLOPE_LIMITER)
@@ -169,22 +175,28 @@ Bounds evaluate(const Grid &grid, Work &w)
             rhs[2] -= c.state.momentum * gravity;
 
             const double gamma = D / c.r * sqrt(max(q.w_plus, q.w_minus) / q.rho);
-            double transfer = 0.0;
+            double reflection = 0.0;
             if constexpr (ENABLE_REFLECTION)
             {
                 // Second-order derivative on the stretched radial mesh.
                 const double dl = c.r - grid.cell(i - 1).r, dr = grid.cell(i + 1).r - c.r;
                 const double gradient =
                     (dr * (w.va[i] - w.va[i - 1]) / dl + dl * (w.va[i + 1] - w.va[i]) / dr) / (dl + dr);
-                transfer =
-                    imbalance(q.w_plus, q.w_minus) * min(abs(gradient), gamma) * sqrt(q.w_plus) * sqrt(q.w_minus);
+                const double rate = imbalance(q.w_plus, q.w_minus) * min(abs(gradient), gamma);
+                if (rate > 0)
+                    reflection = rate * sqrt(q.w_minus / q.w_plus);
+                else if (rate < 0)
+                    reflection = rate * sqrt(q.w_plus / q.w_minus);
             }
             const double diss = D * c.r * gravity; // d * integral(r dr) / volume
-            const double sp = -transfer - diss * q.w_plus * sqrt(q.w_minus / q.rho);
-            const double sm = transfer - diss * q.w_minus * sqrt(q.w_plus / q.rho);
+            const WaveRates rates{diss * sqrt(q.w_minus / q.rho), diss * sqrt(q.w_plus / q.rho), reflection};
+            w.waves[i] = rates;
+            const double transfer = reflection * (reflection >= 0 ? q.w_plus : q.w_minus);
+            const double sp = -transfer - rates.loss_plus * q.w_plus;
+            const double sm = transfer - rates.loss_minus * q.w_minus;
             const double divergence = (ar * r.velocity - al * l.velocity) / c.volume;
-            rhs[3] += sp - 0.5 * q.w_plus * divergence;
-            rhs[4] += sm - 0.5 * q.w_minus * divergence;
+            rhs[3] -= 0.5 * q.w_plus * divergence;
+            rhs[4] -= 0.5 * q.w_minus * divergence;
             double source = infinity;
             if (sp < 0)
                 source = SOURCE_CFL * q.w_plus / (-sp);
@@ -194,12 +206,13 @@ Bounds evaluate(const Grid &grid, Work &w)
             const Vector u = components(c.state);
             for (int k = 0; k < 5; ++k)
             {
-                if (!isfinite(rhs[k]))
+                const double full_rhs = rhs[k] + (k == 3 ? sp : k == 4 ? sm : 0.0);
+                if (!isfinite(full_rhs))
                 {
                     residual = infinity;
                     break;
                 }
-                residual = max(residual, abs(rhs[k]) / (1 + abs(u[k])));
+                residual = max(residual, abs(full_rhs) / (1 + abs(u[k])));
             }
             w.bounds[i] = {CFL_NUMBER * c.width / max(l.speed, r.speed), source, gamma, residual};
         }
@@ -219,7 +232,7 @@ Bounds evaluate(const Grid &grid, Work &w)
 }
 
 // Trial updates affect only scratch grids until both stages have succeeded.
-bool update(Grid &dest, const Grid &base, const Grid &stage, const Work &w, double dt, bool second)
+bool update(Grid &dest, const Grid &base, const Work &first_stage, const Work &w, double dt, bool second)
 {
     int invalid = 0;
     const int first = base.begin(), end = base.end();
@@ -229,14 +242,24 @@ bool update(Grid &dest, const Grid &base, const Grid &stage, const Work &w, doub
 #endif
     for (int i = first; i < end; ++i)
     {
-        auto v = components(stage.cell(i).state);
-        const auto original = components(base.cell(i).state);
+        auto v = components(base.cell(i).state);
         for (int k = 0; k < 5; ++k)
         {
-            v[k] += dt * w.rhs[i][k];
-            if (second)
-                v[k] = 0.5 * (original[k] + v[k]);
+            const double explicit_rhs = second ? 0.5 * (first_stage.rhs[i][k] + w.rhs[i][k]) : w.rhs[i][k];
+            v[k] += dt * explicit_rhs;
         }
+
+        // Backward Euler with stage-frozen coefficients. Solve the donor first,
+        // then use its implicit transfer in the receiver. Total energy includes both waves.
+        const auto &rates = w.waves[i];
+        const bool plus_donates = rates.reflection >= 0;
+        double &donor = v[plus_donates ? 3 : 4];
+        double &receiver = v[plus_donates ? 4 : 3];
+        const double donor_loss = plus_donates ? rates.loss_plus : rates.loss_minus;
+        const double receiver_loss = plus_donates ? rates.loss_minus : rates.loss_plus;
+        const double transfer_rate = abs(rates.reflection);
+        donor /= 1 + dt * (donor_loss + transfer_rate);
+        receiver = (receiver + dt * transfer_rate * donor) / (1 + dt * receiver_loss);
         const State s = state(v);
         if (s.valid())
             dest.set_state(i, s);
@@ -324,11 +347,11 @@ void calculate()
         {
             if (!(g_time + dt > g_time))
                 throw runtime_error("Time step underflow.");
-            if (update(intermediate, g_grid, g_grid, first, dt, false))
+            if (update(intermediate, g_grid, first, first, dt, false))
             {
                 const Bounds mid = evaluate(intermediate, second);
                 if (dt <= min(mid.cfl, mid.source) && isfinite(mid.residual) &&
-                    update(next, g_grid, intermediate, second, dt, true))
+                    update(next, g_grid, first, second, dt, true))
                     break;
             }
             dt *= 0.5;

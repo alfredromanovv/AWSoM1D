@@ -1,4 +1,20 @@
 #include "functions.h"
+#include <filesystem>
+
+static void enter_run_directory()
+{
+    for (uint64_t number = 1; ; ++number) {
+        const filesystem::path path = "run" + to_string(number);
+        error_code error;
+        if (filesystem::create_directory(path, error)) {
+            filesystem::current_path(path);
+            cout << "Output directory: " << filesystem::current_path() << endl;
+            return;
+        }
+        if (error && error != errc::file_exists)
+            throw filesystem::filesystem_error("Cannot create output directory", path, error);
+    }
+}
 
 int main()
 {
@@ -16,6 +32,8 @@ int main()
             set_initial_conditions(g_grid);
         }
         apply_boundary_conditions(g_grid);
+        // Resolve restart input in the launch directory before switching to output.
+        enter_run_directory();
         save_results(g_grid, g_time, g_step);
 
         // 3. The calculation must return when g_stop becomes true.

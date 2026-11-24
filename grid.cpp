@@ -3,6 +3,15 @@
 
 Grid g_grid;
 
+namespace {
+double expansion_factor(double r)
+{
+    const double x = (r - EXPANSION_R) / EXPANSION_SIGMA;
+    const double e = exp(-abs(x));
+    return 1 + (EXPANSION_F_MAX - 1) * (x >= 0 ? 1.0 : e) / (1 + e);
+}
+}
+
 bool Primitive::valid() const
 {
     return isfinite(rho) && rho > 0.0 && isfinite(u) && isfinite(p) && p > 0.0 &&
@@ -67,6 +76,7 @@ void Grid::create(int count, int ghosts, double r_min, double r_max, double rati
         throw invalid_argument("Grid stretching is too large.");
     vector<Face> faces(total + 1);
     vector<Cell> cells(total);
+    const double area_norm = SUPER_RADIAL_EXPANSION ? r_min * r_min * expansion_factor(r_min) : 1.0;
     // Closed-form face positions avoid a serial prefix sum and are deterministic.
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static)
@@ -78,6 +88,8 @@ void Grid::create(int count, int ghosts, double r_min, double r_max, double rati
         const double r = j == 0 ? r_min : (j == count ? r_max
             : r_min + (r_max - r_min) * fraction);
         faces[i] = {r, r * r};
+        if constexpr (SUPER_RADIAL_EXPANSION)
+            faces[i].area = j == 0 ? 1.0 : faces[i].area * (expansion_factor(r) / area_norm);
     }
     int invalid = 0;
 #ifdef _OPENMP
@@ -91,8 +103,30 @@ void Grid::create(int count, int ghosts, double r_min, double r_max, double rati
         c.width = right - left;
         c.area = c.r * c.r;
         c.volume = c.width * (left * left + left * right + right * right) / 3.0;
+        c.gravity_integral = c.width;
+        c.dissipation_integral = c.r * c.width;
+        if constexpr (SUPER_RADIAL_EXPANSION) {
+            c.area *= expansion_factor(c.r) / area_norm;
+            c.volume = c.gravity_integral = c.dissipation_integral = 0.0;
+            // Three-point Gauss-Legendre quadrature for the area and source integrals.
+            const double half_width = 0.5 * c.width;
+            const double offset = half_width * sqrt(3.0 / 5.0);
+            auto integrate_at = [&](double r, double weight) {
+                const double factor = expansion_factor(r) / area_norm;
+                c.volume += weight * r * r * factor;
+                c.gravity_integral += weight * factor;
+                c.dissipation_integral += weight * r * sqrt(factor);
+            };
+            integrate_at(c.r - offset, 5.0 / 9);
+            integrate_at(c.r, 8.0 / 9);
+            integrate_at(c.r + offset, 5.0 / 9);
+            c.volume *= half_width;
+            c.gravity_integral *= half_width;
+            c.dissipation_integral *= half_width;
+        }
         if (!(left > 0.0) || !(c.width > 0.0) || !(c.volume > 0.0) ||
-            !isfinite(c.volume) || !isfinite(faces[i + 1].area))
+            !isfinite(c.volume) || !isfinite(c.gravity_integral) || !isfinite(c.dissipation_integral) ||
+            !(faces[i].area > 0.0) || !isfinite(faces[i + 1].area))
             invalid = 1;
     }
     if (invalid)

@@ -72,6 +72,12 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     WRITE_PARAMETER(D);
     WRITE_PARAMETER(OMEGA_0);
     WRITE_PARAMETER(ENABLE_REFLECTION);
+    WRITE_PARAMETER(SUPER_RADIAL_EXPANSION);
+    if constexpr (SUPER_RADIAL_EXPANSION) {
+        WRITE_PARAMETER(EXPANSION_F_MAX);
+        WRITE_PARAMETER(EXPANSION_R);
+        WRITE_PARAMETER(EXPANSION_SIGMA);
+    }
     WRITE_PARAMETER(NX);
     WRITE_PARAMETER(NG);
     WRITE_PARAMETER(R_MIN);
@@ -112,7 +118,9 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
         file << grid.cell(first + 1).width / grid.cell(first).width;
     else
         file << "not_applicable";
-    file << "\ngeometry = radial 1D; A(r)=r^2; volume=integral(A dr)\n"
+    file << "\ngeometry = "
+         << (SUPER_RADIAL_EXPANSION ? "Kopp-Holzer superradial; A(r_in)=1; volume=Gauss quadrature"
+                                    : "radial 1D; A(r)=r^2; volume=integral(A dr)") << '\n'
          << "initial_conditions = analytic profiles from include.h at cell centers\n"
          << "inner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; copied u, w_minus\n"
          << "outer_boundary = constant extrapolation\n"

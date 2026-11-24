@@ -42,7 +42,14 @@ constexpr double D = 35.0;                  // Wave dissipation coefficient d.
 constexpr double OMEGA_0 = 0.08;            // Initial outgoing wave energy density at r = 1.
 constexpr bool ENABLE_REFLECTION = true;  // Enable energy transfer between the wave populations.
 
-// One-dimensional radial grid. Flux tube cross section: A(r) = r^2.
+// Optional Kopp-Holzer flux-tube expansion, normalized at the inner boundary.
+constexpr bool SUPER_RADIAL_EXPANSION = true;
+constexpr double EXPANSION_F_MAX = 6.5;
+constexpr double EXPANSION_R = 1.3;
+constexpr double EXPANSION_SIGMA = 0.25;
+static_assert(EXPANSION_F_MAX >= 1 && EXPANSION_R > 0 && EXPANSION_SIGMA > 0);
+
+// One-dimensional radial grid.
 constexpr int NX = 600;                    // Number of physical cells.
 constexpr int NG = 2;                      // Number of ghost layers on each side.
 constexpr double R_MIN = 1.0;               // Inner boundary at the solar surface.

@@ -164,11 +164,12 @@ Bounds evaluate(const Grid &grid, Work &w)
             auto &rhs = w.rhs[i];
             for (int k = 0; k < 5; ++k)
                 rhs[k] = (al * l.flux[k] - ar * r.flux[k]) / c.volume;
-            const double gravity = c.width / c.volume;
+            const double gravity = c.gravity_integral / c.volume;
             rhs[1] += (q.p + 0.5 * (q.w_plus + q.w_minus)) * (ar - al) / c.volume - q.rho * gravity;
             rhs[2] -= c.state.momentum * gravity;
 
-            const double gamma = D / c.r * sqrt(max(q.w_plus, q.w_minus) / q.rho);
+            const double sqrt_area = SUPER_RADIAL_EXPANSION ? sqrt(c.area) : c.r;
+            const double gamma = D / sqrt_area * sqrt(max(q.w_plus, q.w_minus) / q.rho);
             double transfer = 0.0;
             if constexpr (ENABLE_REFLECTION)
             {
@@ -179,7 +180,7 @@ Bounds evaluate(const Grid &grid, Work &w)
                 transfer =
                     imbalance(q.w_plus, q.w_minus) * min(abs(gradient), gamma) * sqrt(q.w_plus) * sqrt(q.w_minus);
             }
-            const double diss = D * c.r * gravity; // d * integral(r dr) / volume
+            const double diss = SUPER_RADIAL_EXPANSION ? D * c.dissipation_integral / c.volume : D * c.r * gravity;
             const double sp = -transfer - diss * q.w_plus * sqrt(q.w_minus / q.rho);
             const double sm = transfer - diss * q.w_minus * sqrt(q.w_plus / q.rho);
             const double divergence = (ar * r.velocity - al * l.velocity) / c.volume;
@@ -277,7 +278,8 @@ double dissipation_stiffness(const Grid &grid)
     {
         const auto &c = grid.cell(i);
         cfl = min(cfl, CFL_NUMBER * c.width / max(speed[i], speed[i + 1]));
-        gamma = max(gamma, D / c.r * sqrt(max(q[i].w_plus, q[i].w_minus) / q[i].rho));
+        const double sqrt_area = SUPER_RADIAL_EXPANSION ? sqrt(c.area) : c.r;
+        gamma = max(gamma, D / sqrt_area * sqrt(max(q[i].w_plus, q[i].w_minus) / q[i].rho));
     }
     return cfl * gamma;
 }

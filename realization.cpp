@@ -30,8 +30,12 @@ void save_state(const string &filename)
     ofstream file(temporary);
     file.exceptions(ios::failbit | ios::badbit);
     file.imbue(locale::classic());
-    file << setprecision(numeric_limits<double>::max_digits10) << "AWS1D_RESTART_1 "
-         << g_grid.end() - g_grid.begin() << ' ' << g_time << ' ' << g_step << '\n';
+    file << setprecision(numeric_limits<double>::max_digits10)
+         << (SUPER_RADIAL_EXPANSION ? "AWS1D_RESTART_2 " : "AWS1D_RESTART_1 ")
+         << g_grid.end() - g_grid.begin() << ' ' << g_time << ' ' << g_step;
+    if constexpr (SUPER_RADIAL_EXPANSION)
+        file << ' ' << EXPANSION_F_MAX << ' ' << EXPANSION_R << ' ' << EXPANSION_SIGMA;
+    file << '\n';
     for (int i = g_grid.begin(); i < g_grid.end(); ++i)
     {
         const State &s = g_grid.cell(i).state;
@@ -50,9 +54,18 @@ void load_state(const string &filename)
     int count;
     double time;
     uint64_t step;
-    if (!(file >> magic >> count >> time >> step) || magic != "AWS1D_RESTART_1" ||
+    if (!(file >> magic >> count >> time >> step) ||
         count != g_grid.end() - g_grid.begin() || !isfinite(time) || time < 0)
         throw runtime_error("Invalid restart header: " + filename);
+    if (magic != (SUPER_RADIAL_EXPANSION ? "AWS1D_RESTART_2" : "AWS1D_RESTART_1"))
+        throw runtime_error("Restart geometry or format does not match this build: " + filename);
+    if constexpr (SUPER_RADIAL_EXPANSION)
+    {
+        double f_max, r_exp, sigma;
+        if (!(file >> f_max >> r_exp >> sigma) ||
+            f_max != EXPANSION_F_MAX || r_exp != EXPANSION_R || sigma != EXPANSION_SIGMA)
+            throw runtime_error("Restart expansion parameters do not match this build: " + filename);
+    }
     Grid restored = g_grid;
     for (int i = restored.begin(); i < restored.end(); ++i)
     {

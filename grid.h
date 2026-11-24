@@ -37,14 +37,16 @@ struct State {
 
 struct Face {
     double r = 0.0;
-    double area = 0.0; // A(r) = r^2.
+    double area = 0.0; // A at the face.
 };
 
 struct Cell {
     double r = 0.0;     // Arithmetic midpoint.
     double width = 0.0;
     double area = 0.0;  // A at the midpoint.
-    double volume = 0.0; // Exact integral of A(r) over the cell.
+    double volume = 0.0; // Integral of A(r) over the cell.
+    double gravity_integral = 0.0; // Integral of A(r) / r^2.
+    double dissipation_integral = 0.0; // Integral of sqrt(A(r)).
     State state;
 };
 

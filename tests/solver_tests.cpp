@@ -18,8 +18,8 @@ int main()
     assert(g_step == 1 && g_time == END_TIME);
     const int i = g_grid.begin() + 4;
     const Cell& c = g_grid.cell(i);
-    const double gravity = c.width / c.volume;
-    const double loss = D * c.r * gravity * 0.001;
+    const double gravity = c.gravity_integral / c.volume;
+    const double loss = D * c.dissipation_integral / c.volume * 0.001;
     assert(abs((c.state.momentum - initial.momentum) / dt + gravity) < 1e-6);
     assert(abs((c.state.w_plus - initial.w_plus) / dt + loss) < 1e-6);
     assert(abs((c.state.w_minus - initial.w_minus) / dt + loss) < 1e-6);

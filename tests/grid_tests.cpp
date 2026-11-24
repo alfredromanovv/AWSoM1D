@@ -55,7 +55,13 @@ int main()
         assert(close(c.state.velocity(), U_BASE + U_AMPLITUDE * (1 - exp(-x / U_SCALE))));
         assert(close(c.state.temperature(), 1 + T_AMPLITUDE * (1 - exp(-x / T_SCALE)) * pow(c.r, T_POWER)));
     }
-    assert(close(volume, (pow(R_MAX, 3) - pow(R_MIN, 3)) / 3));
+    const double radial_volume = (pow(R_MAX, 3) - pow(R_MIN, 3)) / 3;
+    if constexpr (SUPER_RADIAL_EXPANSION) {
+        assert(grid.face(grid.begin()).area == 1.0);
+        assert(volume >= radial_volume / (R_MIN * R_MIN));
+    } else {
+        assert(close(volume, radial_volume));
+    }
 #ifdef _OPENMP
     omp_set_num_threads(4);
 #endif

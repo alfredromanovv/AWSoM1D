@@ -1,0 +1,1 @@
+g++ -O3 -fopenmp awsom_1d.cpp -o awsom_1d

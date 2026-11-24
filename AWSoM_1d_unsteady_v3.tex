@@ -1,0 +1,3076 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[a4paper,margin=20mm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs,tabularx,array}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{mathrsfs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\newcommand{\PA}{P_A}
+\newcommand{\VA}{V_A}
+\newcommand{\Rref}{\mathcal R}
+\newcommand{\dd}{\mathrm d}
+\newcommand{\ph}{\mathrm{ph}}
+\providecommand{\U}{}
+\renewcommand{\U}{\bm U}
+\newcommand{\F}{\bm F}
+\newcommand{\Src}{\bm S}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.08}
+\setlength{\emergencystretch}{2em}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Одномерная нестационарная модель солнечного ветра}\\[4pt]
+\end{center}
+
+\section{Исходная постановка}
+
+Рассматриваем течение вдоль открытой магнитной трубки
+с заданной площадью $A(r)>0$,
+$R_\odot\le r\le r_{\mathrm{out}}$.
+Скорость направлена вдоль поля; все поля зависят только от $r,t$.
+Теплопроводность, радиационные потери и дополнительный нагрев отсутствуют (пока что).
+Газ однотемпературный, $\gamma=5/3$ и средняя молекулярная масса
+$\mu$ постоянны. Единственный источник тепла --- диссипация волн.
+
+Искомые физические поля: плотность $\rho$, скорость $u$,
+газовое давление $p$ и плотности энергий встречных альфвеновских
+волн $w_\pm\ge0$. Выбираем поле направленным в сторону роста $r$:
+\[
+ B(r)=\frac{A(R_\odot)B_\ph}{A(r)},\qquad
+ \VA=\frac{B}{\sqrt{\mu_0\rho}},\qquad
+ \PA=\frac{w_++w_-}{2},\qquad
+ p=\frac{\rho k_{\mathrm B}T}{\mu m_u}.
+\]
+Здесь $\mu_0$ --- магнитная постоянная, $m_u$ --- атомная единица массы.
+Регулярное магнитное поле задаёт $\VA$ и геометрию;
+его продольная сила Лоренца равна нулю при $\bm u\parallel\bm B$.
+
+\begin{equation}
+\begin{aligned}
+ \frac{\partial\rho}{\partial t}+\frac1A\frac{\partial(A\rho u)}{\partial r}&=0,\\[3pt]
+ \rho\left(\frac{\partial u}{\partial t}+u\frac{\partial u}{\partial r}\right)
+ &=-\frac{\partial(p+\PA)}{\partial r}-\rho\frac{GM_\odot}{r^2},\\[3pt]
+ \frac{\partial p}{\partial t}+u\frac{\partial p}{\partial r}+
+ \frac{\gamma p}{A}\frac{\partial(Au)}{\partial r}&=(\gamma-1)Q_w,\\[3pt]
+ \frac{\partial w_\pm}{\partial t}+\frac1A\frac{\partial}{\partial r}\!\left[A(u\pm\VA)w_\pm\right]
+ +\frac{w_\pm}{2A}\frac{\partial(Au)}{\partial r}
+ &=\mp\Rref\sqrt{w_+w_-}-\Gamma_\pm w_\pm.
+\end{aligned}
+\label{eq:primitive}
+\end{equation}
+Знак $+$ соответствует волне вдоль поля относительно плазмы,
+знак $-$ --- против поля. В системе отсчёта Солнца скорости переноса
+равны $u\pm\VA$.
+
+\textbf{Турбулентное замыкание.}
+\[
+ L_\perp(r)=L_{\perp,\ph}\sqrt{\frac{A(r)}{A(R_\odot)}},\qquad
+ \Gamma_\pm=\frac{2}{L_\perp}\sqrt{\frac{w_\mp}{\rho}},\qquad
+ Q_w=\Gamma_+w_++\Gamma_-w_-.
+\]
+Используем то же отражение, что в исходном тексте:
+\[
+ \Rref=\mathcal C(w_+,w_-)
+ \min\!\left\{\left|\frac{\partial\VA}{\partial r}\right|,
+                 \max(\Gamma_+,\Gamma_-)\right\},
+\]
+\[
+ \mathcal C=
+ \begin{cases}
+  1-2\sqrt{w_-/w_+},&w_+\ge4w_-,\quad w_+>0,\\[3pt]
+  2\sqrt{w_+/w_-}-1,&w_-\ge4w_+,\quad w_->0,\\[3pt]
+  0,&\text{в остальных случаях}.
+ \end{cases}
+\]
+В частности, $\mathcal C(0,0)=0$.
+Отражение перераспределяет энергию между волнами,
+а диссипация передаёт её газу.
+
+\section{Переход к консервативным переменным}
+
+Плотность кинетической и внутренней энергии газа равна
+\[
+ H=\frac{\rho u^2}{2}+\frac{p}{\gamma-1}.
+\]
+Для гладких решений система \eqref{eq:primitive} даёт
+\[
+ \frac{\partial H}{\partial t}+\frac1A\frac{\partial}{\partial r}\!\left[Au(H+p)\right]
+ =-\rho u\frac{GM_\odot}{r^2}-u\frac{\partial\PA}{\partial r}+Q_w.
+\]
+Обозначим $W=w_++w_-$ и сложим два волновых уравнения:
+\[
+ \frac{\partial W}{\partial t}+\frac1A\frac{\partial}{\partial r}
+ \!\left[A\bigl(uW+\VA(w_+-w_-)\bigr)\right]
+ =-\frac{\PA}{A}\frac{\partial(Au)}{\partial r}-Q_w.
+\]
+При сложении этих балансов $Q_w$ сокращается, как и отражение,
+а работа давления образует дивергенцию:
+\[
+ u\frac{\partial\PA}{\partial r}+\frac{\PA}{A}\frac{\partial(Au)}{\partial r}
+ =\frac1A\frac{\partial(Au\PA)}{\partial r}.
+\]
+Поэтому для полной энергии \emph{газа и волн}
+\[
+ E=H+w_++w_-=
+ \frac{\rho u^2}{2}+\frac{p}{\gamma-1}+w_++w_-
+\]
+получаем консервативный баланс
+\begin{equation}
+ \frac{\partial(AE)}{\partial t}+\frac{\partial}{\partial r}
+ \!\left[A\bigl(u(E+p+\PA)+\VA(w_+-w_-)\bigr)\right]
+ =-A\rho u\frac{GM_\odot}{r^2}.
+\label{eq:totalenergy}
+\end{equation}
+Нагрев не исчез: при уменьшении $w_++w_-$ и фиксированной полной
+энергии возрастает внутренняя энергия газа. Добавлять $Q_w$
+в \eqref{eq:totalenergy} повторно нельзя.
+
+\section{Консервативно-балансная запись}
+
+Используя \eqref{eq:primitive} и \eqref{eq:totalenergy}, получаем
+\begin{equation}
+ \frac{\partial(A\U)}{\partial t}
+ +\frac{\partial(A\F)}{\partial r}
+ +\bm K\frac{\partial(Au)}{\partial r}=A\Src,
+ \label{eq:vector}
+\end{equation}
+где
+\[
+ \U=\begin{pmatrix}
+ \rho\\ \rho u\\ E\\ w_+\\ w_-
+ \end{pmatrix},\qquad
+ \F=\begin{pmatrix}
+ \rho u\\
+ \rho u^2+p+\PA\\
+ u(E+p+\PA)+\VA(w_+-w_-)\\
+ (u+\VA)w_+\\
+ (u-\VA)w_-
+ \end{pmatrix},\qquad
+ \bm K=\begin{pmatrix}
+ 0\\0\\0\\w_+/2\\w_-/2
+ \end{pmatrix},
+\]
+\[
+ \Src=\begin{pmatrix}
+ 0\\[2pt]
+ (p+\PA)A'/A-\rho GM_\odot/r^2\\[2pt]
+ -\rho uGM_\odot/r^2\\[2pt]
+ -\Rref\sqrt{w_+w_-}-\Gamma_+w_+\\[2pt]
+ \Rref\sqrt{w_+w_-}-\Gamma_-w_-
+ \end{pmatrix},\qquad A'=\frac{\dd A}{\dd r}.
+\]
+Давление восстанавливается по полной энергии:
+\[
+ \PA=\frac{w_++w_-}{2},\qquad
+ p=(\gamma-1)\left(E-\frac{\rho u^2}{2}-w_+-w_-\right).
+\]
+Допустимое состояние требует $\rho>0$, $p>0$, $w_\pm\ge0$.
+
+Кроме члена сжатия, пространственную производную содержит отражение:
+\[
+ \frac{\partial\VA}{\partial r}=-\VA
+ \left(\frac{A'}A+\frac1{2\rho}\frac{\partial\rho}{\partial r}\right).
+\]
+Поэтому в \eqref{eq:vector} точно следует понимать
+$\Src=\Src(\U,r,\partial\rho/\partial r)$.
+На градиентной ветви отражение также является дифференциальной связью.
+
+
+\section{Обезразмеривание}
+
+Сохраняем гравитационную нормировку исходного текста:
+\[
+ R_*=R_\odot,\qquad
+ U_*=\sqrt{\frac{GM_\odot}{R_*}},\qquad
+ \rho_*=\rho_\ph,\qquad T_*=T_\ph,\qquad A_*=A(R_*).
+\]
+Масштабы давления, энергий и времени выбираем согласованно:
+\begin{center}
+\small
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}ll@{\qquad}ll@{}}
+\toprule
+Величина & Масштаб & Величина & Масштаб\\
+\midrule
+Длина & $R_*$ & Время & $R_*/U_*$\\
+Скорость & $U_*$ & Плотность & $\rho_*$\\
+Температура & $T_*$ & Площадь & $A_*$\\
+Поле & $B_*=B_\ph$ & Давление, энергии & $p_*=\rho_*U_*^2$\\
+Частоты & $U_*/R_*$ & Нагрев & $p_*U_*/R_*$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Вводим $\hat r=r/R_*$, $\hat t=t/t_*$,
+$\hat\rho=\rho/\rho_*$, $\hat u=u/U_*$ и аналогично делим
+остальные величины на масштабы из таблицы.
+Далее шапочки опускаем: все поля и координаты ниже безразмерны.
+Тогда $A(1)=1$, $B=1/A$, а коэффициент гравитации равен единице.
+
+\subsection*{Безразмерные коэффициенты}
+
+При фиксированных $\gamma,\mu$ используем три коэффициента:
+\begin{equation}
+ \theta=\frac{k_{\mathrm B}T_*}{\mu m_uU_*^2},\qquad
+ b=\frac{B_*}{U_*\sqrt{\mu_0\rho_*}},\qquad
+ d=\frac{2R_*}{L_{\perp,\ph}}.
+ \label{eq:parameters}
+\end{equation}
+Они характеризуют соответственно тепловую энергию относительно
+гравитационной, альфвеновскую скорость относительно $U_*$
+и отношение глобального масштаба к корреляционной длине.
+В частности, $p_\ph=\theta p_*$, а $V_{A,\ph}=bU_*$.
+
+При желании первые два коэффициента можно выразить через
+масштабные числа Маха: $\theta=1/(\gamma M_*^2)$ и $b=1/M_{A,*}$,
+где $M_*=U_*/\sqrt{\gamma k_{\mathrm B}T_*/(\mu m_u)}$,
+$M_{A,*}=U_*/V_{A,\ph}$. Далее эти обозначения не используются.
+
+\section{Итоговая безразмерная система}
+
+Используем исходные волновые энергии $w_\pm$ и полную энергию $E$:
+масса, импульс и энергия записаны в консервативном виде,
+а в волновых балансах явно сохранён член сжатия:
+\begin{equation}
+\begin{aligned}
+ \frac{\partial(A\rho)}{\partial t}+\frac{\partial(A\rho u)}{\partial r}&=0,\\[4pt]
+ \frac{\partial(A\rho u)}{\partial t}+\frac{\partial}{\partial r}\!\left[A(\rho u^2+p+\PA)\right]
+ &=(p+\PA)A'-\frac{A\rho}{r^2},\\[4pt]
+ \frac{\partial(AE)}{\partial t}+\frac{\partial}{\partial r}
+ \!\left[A\bigl(u(E+p+\PA)+\VA(w_+-w_-)\bigr)\right]
+ &=-\frac{A\rho u}{r^2},\\[4pt]
+ \frac{\partial(Aw_+)}{\partial t}
+ +\frac{\partial}{\partial r}\!\left[A(u+\VA)w_+\right]
+ +\frac{w_+}{2}\frac{\partial(Au)}{\partial r}
+ &=-A\left(\Rref\sqrt{w_+w_-}+\Gamma_+w_+\right),\\[4pt]
+ \frac{\partial(Aw_-)}{\partial t}
+ +\frac{\partial}{\partial r}\!\left[A(u-\VA)w_-\right]
+ +\frac{w_-}{2}\frac{\partial(Au)}{\partial r}
+ &=A\left(\Rref\sqrt{w_+w_-}-\Gamma_-w_-\right).
+\end{aligned}
+\label{eq:dimensionless}
+\end{equation}
+Система \eqref{eq:dimensionless} замыкается соотношениями
+\[
+\begin{gathered}
+ \PA=\frac{w_++w_-}{2},\qquad
+ p=(\gamma-1)\left(E-\frac{\rho u^2}{2}-w_+-w_-\right),
+ \qquad T=\frac{p}{\theta\rho},\\[4pt]
+ \VA=\frac{b}{A\sqrt\rho},\qquad
+ \Gamma_\pm=d\sqrt{\frac{w_\mp}{A\rho}},\qquad
+ Q_w=\Gamma_+w_++\Gamma_-w_-,\\[4pt]
+ \Rref=\mathcal C(w_+,w_-)
+ \min\!\left\{
+ b\left|\frac{\partial}{\partial r}\frac1{A\sqrt\rho}\right|,
+ d\sqrt{\frac{\max(w_+,w_-)}{A\rho}}
+ \right\}.
+\end{gathered}
+\]
+Функция $\mathcal C$ остаётся прежней, поскольку зависит
+только от отношения энергий волн. Здесь $Q_w$ --- диагностическая
+скорость нагрева; в уравнение полной энергии она не добавляется.
+
+\subsection*{Куда вошли коэффициенты}
+
+В системе \eqref{eq:dimensionless} коэффициенты входят через замыкания:
+
+\textbf{$\theta$: уравнение состояния и тепловые данные.}
+Связь $p=\theta\rho T$ задаёт пересчёт температуры, а на нижней
+границе при $\rho=T=1$ получаем $p=\theta$.
+При расчёте через $E$ давление восстанавливается из энергии,
+поэтому $\theta$ не стоит явно в потоках: при отсутствии зависящих
+от температуры источников оно входит в начальные и граничные
+тепловые данные и в формулу $T=p/(\theta\rho)$.
+Если вместо $p$ подставить $\theta\rho T$, его вклад в поток
+импульса и энергии становится явным.
+
+\textbf{$b$: перенос и отражение волн.}
+Через $V_A=b/(A\sqrt\rho)$ он входит в скорости переноса $u\pm V_A$,
+в поток полной энергии $V_A(w_+-w_-)$ и в градиентную ветвь отражения.
+Газ испытывает его влияние через изменение волн и волнового давления.
+
+\textbf{$d$: диссипация и нагрев.}
+Он умножает частоты $\Gamma_\pm$, поэтому определяет скорость
+убывания волновой энергии и её перехода в тепло.
+Он также входит в ограничение отражения через $\max(\Gamma_+,\Gamma_-)$.
+В уравнении полной энергии отдельного источника $Q_w$ нет:
+обмен энергией газа и волн является внутренним и сокращается.
+Коэффициент гравитации равен единице благодаря выбору $U_*^2=GM_\odot/R_*$.
+
+\textbf{Данные задачи.}
+Помимо коэффициентов \eqref{eq:parameters}, задаются геометрия $A(r)$,
+размер области $r_{\mathrm{out}}/R_*$, начальные профили всех пяти полей
+и граничные данные для входящих характеристик связанной системы.
+Например, нормировка нижней границы даёт
+\[
+ \rho(1,t)=1,\qquad T(1,t)=1,\qquad p(1,t)=\theta,\qquad
+ w_+(1,t)=\omega(t).
+\]
+\[
+ \omega=\frac{w_{+,\ph}}{\rho_*U_*^2}
+        =\left(\frac{\delta v_{+,\ph}}{U_*}\right)^2,
+ \qquad w_{+,\ph}=\rho_*\delta v_{+,\ph}^{\,2}.
+\]
+Здесь $\delta v_{+,\ph}$ --- среднеквадратичная скорость
+отдельной выходящей популяции волн. Набор граничных условий
+должен соответствовать числу входящих характеристик;
+значения $u$ и $w_-$ нельзя автоматически фиксировать вместе
+с перечисленными данными. Перечисленные равенства не заменяют
+полного характеристического анализа.
+Массовый расход $A\rho u$ постоянен по $r$ только в стационарном режиме.
+
+\section{Характерные значения параметров}
+
+Для опорного примера: $\gamma=5/3$, $\mu=0.6$,
+$R_*=695700$ км, $U_*\simeq436.76$ км/с.
+Постоянная $\mu$ не описывает изменение ионизации по высоте.
+Ниже приведены опорные значения и иллюстративные диапазоны
+для проверки чувствительности модели, а не наблюдательные интервалы.
+\begin{center}
+\small
+\setlength{\tabcolsep}{9pt}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+Величина & Опорное значение & Диапазон перебора\\
+\midrule
+$\rho_*$, кг/м$^3$ & $0.0003$ & $0.0002$ -- $0.0004$\\
+$T_*$, К & $6400$ & $5000$ -- $7000$\\
+$B_*$, Тл & $0.0001$ & $0.0001$ -- $0.001$\\
+$L_{\perp,\ph}$, км & $100$ & $50$ -- $200$\\
+\midrule
+$\theta$ & $0.000465$ & $0.000363$ -- $0.000509$\\
+$b$ & $0.0000118$ & $0.0000102$ -- $0.000144$\\
+$d$ & $13914$ & $6957$ -- $27828$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Диапазоны коэффициентов \eqref{eq:parameters} рассчитаны по крайним
+значениям исходных данных при независимом их варьировании.
+При опорных данных $t_*\simeq1593$ с,
+$p_*\simeq57.23$ МПа, $Q_*\simeq35928$ Вт/м$^3$,
+$V_{A,\ph}\simeq5.15$ м/с.
+
+Помимо $\theta,b,d$, задаются геометрия, начальные профили,
+граничная волновая энергия $\omega$ и размер области.
+Для внешней границы на 1 а.е. $r_{\mathrm{out}}/R_*=215.03$.
+Для малых альфвеновских возмущений требуется
+\[
+ \frac{\delta v_{+,\ph}}{V_{A,\ph}}=\frac{\sqrt\omega}{b}\ll1,
+ \qquad\text{то есть}\qquad \omega\ll b^2.
+\]
+При $B_*=0.0001$ Тл и радиальной трубке $A=r^2$ поле на 1 а.е.
+равно примерно $2.16$ нТл. Изменение поля основания требует
+согласовать геометрию и внешнее поле; таблица диапазонов
+не заменяет этой проверки.
+
+\newpage
+\section{Характеристики и граничные условия}
+
+Рассматриваем безразмерную модель без теплопроводности и радиационных
+потерь на $1\le r\le r_{\rm out}$, с заданной стационарной площадью $A(r)$.
+Анализ локальный: коэффициенты замораживаются в рассматриваемом
+гладком состоянии. Предполагаем $\rho>0$, $p>0$, $w_\pm>0$. Пять неизвестных дают характеристический полином пятой степени;
+существование пяти вещественных характеристик ещё нужно проверить.
+
+\subsection{Главная часть системы}
+
+Для анализа удобно использовать исходные физические переменные
+\[
+ \bm q=(\rho,u,p,w_+,w_-)^{\mathsf T},\qquad
+ c_s^2=\frac{\gamma p}{\rho},\qquad
+ \VA=\frac{b}{A\sqrt\rho},\qquad a=\frac{A'}A.
+\]
+Переход от $(\rho,\rho u,E,w_+,w_-)$ к $\bm q$ обратим, поэтому характеристические скорости не меняются.
+Все пространственные производные неизвестных необходимо включить
+в главную часть, в том числе производную в отражении.
+
+Обозначим $G=\max(\Gamma_+,\Gamma_-)$ и
+$\sigma=\operatorname{sign}(\partial\VA/\partial r)$.
+Замыкание отражения имеет две гладкие ветви:
+\[
+ \Rref=\begin{cases}
+ \mathcal C\sigma\,\partial\VA/\partial r,
+     &0<|\partial\VA/\partial r|<G,\\
+ \mathcal C G,&|\partial\VA/\partial r|>G.
+ \end{cases}
+\]
+При $\mathcal C=0$ отражение отсутствует. Для компактности введём один коэффициент
+\begin{equation}
+ h=\begin{cases}
+ \mathcal C\sigma\sqrt{w_+w_-},
+     &0<|\partial\VA/\partial r|<G,\\
+ 0,&|\partial\VA/\partial r|>G\ \text{или}\ \mathcal C=0.
+ \end{cases}
+ \label{ch:h}
+\end{equation}
+Коэффициент \eqref{ch:h} не является новой искомой переменной. Это, фактически, <<переключатель>>, он включает или выключает дополнительный вклад производной, связанный с отражением. Если отражения нет, то $h = 0$, поэтому слева новой производной не добавится. Если есть, то производная будет.
+
+Из сохранения магнитного потока следует (хотим от производной по альфвеновской скорости перейти к производной плотности):
+\[
+ \frac{\partial\VA}{\partial r}
+ =-a\VA-\frac{\VA}{2\rho}\frac{\partial\rho}{\partial r}.
+\]
+Например, уравнение для $w_+$ до переноса градиентного отражения влево (так мы полностью все производные переносим влево):
+\[
+ \frac{\partial w_+}{\partial t}
+ +(u+\VA)\frac{\partial w_+}{\partial r}
+ +\frac32w_+\frac{\partial u}{\partial r}
+ -\frac{\VA w_+}{2\rho}\frac{\partial\rho}{\partial r}
+ =-\frac32au w_+-\Rref\sqrt{w_+w_-}-\Gamma_+w_+.
+\]
+Поэтому система на фиксированной ветви записывается как
+\begin{equation}
+ \frac{\partial\bm q}{\partial t}
+ +\mathsf J\frac{\partial\bm q}{\partial r}=\bm s,
+ \qquad
+ \mathsf J=\begin{pmatrix}
+ u&\rho&0&0&0\\
+ 0&u&1/\rho&1/(2\rho)&1/(2\rho)\\
+ 0&\gamma p&u&0&0\\
+ -\VA(w_++h)/(2\rho)&3w_+/2&0&u+\VA&0\\
+ \VA(w_-+h)/(2\rho)&3w_-/2&0&0&u-\VA
+ \end{pmatrix}.
+ \label{ch:matrix}
+\end{equation}
+Матрица \eqref{ch:matrix} -- матрица коэффициентов при пространственных производных. Источник:
+\[
+ \bm s=\begin{pmatrix}
+ -a\rho u\\ -1/r^2\\
+ -\gamma aup+(\gamma-1)Q_w\\
+ -3au w_+/2-J_0-\Gamma_+w_+\\
+ -3au w_-/2+J_0-\Gamma_-w_-
+ \end{pmatrix},\qquad
+J_0=
+\begin{cases}
+-aV_Ah,
+& 0<\left|\dfrac{\partial V_A}{\partial r}\right|<G,\\[8pt]
+\mathcal C G\sqrt{w_+w_-},
+& \left|\dfrac{\partial V_A}{\partial r}\right|>G,\\[8pt]
+0,
+& \mathcal C=0.
+\end{cases}
+\]
+
+Итак, смысл системы \eqref{ch:matrix}: если есть отражение, то производная уже стоит слева, а справа их нет. Если же отражения нет, то ни слева, ни справа не будет дополнительной производной.
+
+\subsection{Характеристический полином и пять скоростей}
+
+Характеристические скорости определяются уравнением
+$\det(\lambda\mathsf I-\mathsf J)=0$.
+Положим $z=\lambda-u$, $W=w_++w_-$, $\Delta W=w_+-w_-$.
+Для возмущения $(\delta\rho,\delta u,\delta p,\delta w_+,\delta w_-)$
+при $z\ne0,\pm\VA$ первое и третье уравнения дают
+\[
+ \delta\rho=\frac{\rho}{z}\delta u,\qquad
+ \delta p=\frac{\gamma p}{z}\delta u,
+ \qquad
+ \delta w_\pm=
+ \frac{3z w_\pm\mp\VA(w_\pm+h)}{2z(z\mp\VA)}\delta u.
+\]
+Подставляя их в уравнение импульса и раскрывая определитель,
+получаем:
+\begin{equation}
+ \det(\lambda\mathsf I-\mathsf J)=zP(z),\qquad
+ P(z)=(z^2-c_s^2)(z^2-\VA^2)
+ -\frac{3Wz^2+2\VA\Delta Wz-\VA^2(W+2h)}{4\rho}.
+ \label{ch:poly}
+\end{equation}
+Таким образом, одна скорость точно равна $u$, остальные четыре равны
+$u+z_j$, где $z_j$ --- корни квартета \eqref{ch:poly}.
+Для вычисления достаточно найти корни полинома четвёртой степени
+или собственные значения матрицы; формула в радикалах здесь не нужна.
+
+При исчезающе малых энергиях волн полином стремится к
+$(z^2-c_s^2)(z^2-\VA^2)$, и скорости стремятся к
+\[
+ u,\qquad u\pm c_s,\qquad u\pm\VA.
+\]
+При конечных $w_\pm$ это только приближение.
+Волновое давление меняет скорости, а на градиентной ветви их
+дополнительно меняет $h$. Геометрия, гравитация и локальная диссипация
+не дают отдельных характеристик. Параметр $d$ влияет на выбор ветви
+отражения, а $b$ входит в матрицу через $\VA$.
+
+Точное решение для этого уравнения четвертой степени можно найти, однако формулы там получаются громоздкие. Решение дано в Приложении \ref{app:characteristic_roots}. Однако и оно получено в предположении, что существуют пять различных вещественных корней.
+
+\textbf{Подумать: оценить, может отношение W к cs cs rho и к rho Va Va? Тогда станет понятно, можно ли пренебрегать}
+
+\subsection{Проверка гиперболичности}
+
+\textbf{Ограниченная ветвь и отсутствие отражения.}
+Здесь $h=0$. Из \eqref{ch:poly} следует
+\[
+ P(0)=\VA^2\left(c_s^2+\frac W{4\rho}\right)>0,
+ \qquad P(\VA)=-\frac{\VA^2w_+}{\rho}<0,
+ \qquad P(-\VA)=-\frac{\VA^2w_-}{\rho}<0.
+\]
+Поскольку $P(z)\to+\infty$ при $z\to\pm\infty$, в каждом
+из четырёх интервалов имеется корень. Степень полинома равна четырём,
+поэтому эти корни единственны, вещественны и просты:
+\begin{equation}
+ z_1<-\VA<z_2<0<z_3<\VA<z_4.
+ \label{ch:order}
+\end{equation}
+Следовательно, система строго гиперболична, и её упорядоченные скорости
+\begin{equation}
+ \lambda_1=u+z_1,\quad\lambda_2=u+z_2,\quad
+ \lambda_3=u,\quad\lambda_4=u+z_3,\quad\lambda_5=u+z_4.
+ \label{ch:speeds}
+\end{equation}
+
+\textbf{Градиентная ветвь.}
+Здесь
+\[
+ P(0)=\VA^2\left(c_s^2+\frac{W+2h}{4\rho}\right)>0,
+ \qquad
+ P(\pm\VA)=-\frac{\VA^2}{\rho}\left(w_\pm-\frac h2\right).
+\]
+Первое неравенство следует из $|\mathcal C|\le1$,
+$|h|\le\sqrt{w_+w_-}$ и $W\ge2\sqrt{w_+w_-}$.
+Поэтому достаточное условие строгой гиперболичности и порядка корней
+\eqref{ch:order} имеет вид
+\begin{equation}
+ h<2\min(w_+,w_-).
+ \label{ch:sufficient}
+\end{equation}
+
+Действительно, в таком случае будет четыре смены знака, а значит, четыре действительных корня: 
+
+\begin{center}
+\begin{tikzpicture}[>=Stealth, x=1.5cm]
+  % ось z
+  \draw[->] (-4.4,0) -- (4.6,0) node[right] {$z$};
+
+  % отмеченные точки и подписи под осью
+  \foreach \x/\lab in {-4/-\infty, -2/-V_A, 0/0, 2/V_A, 4/+\infty}
+    \draw (\x,0.08) -- (\x,-0.08) node[below=2pt] {$\lab$};
+
+  % знак P в отмеченных точках (над осью)
+  \foreach \x/\s in {-4/+, -2/-, 0/+, 2/-, 4/+}
+    \node[circle, draw, inner sep=1.5pt, above=5pt] at (\x,0) {$\s$};
+
+  % корни в каждом из четырёх интервалов
+  \foreach \x/\n in {-3/1, -1/2, 1/3, 3/4}
+    \node[red] at (\x,0) {$\times$};
+  \foreach \x/\n in {-3/1, -1/2, 1/3, 3/4}
+    \node[red, below=14pt] at (\x,0) {$z_\n$};
+
+  % подпись: смена знака на каждом интервале
+  \foreach \x in {-3,-1,1,3}
+    \draw[<->, gray] (\x-0.7,0.9) -- (\x+0.7,0.9)
+      node[midway, above] {\footnotesize смена знака};
+\end{tikzpicture}
+\end{center}
+
+В частности, это выполняется при $h\le0$.
+Условие \eqref{ch:sufficient} достаточное, но не необходимое:
+если оно нарушено, нужно непосредственно проверить корни.
+
+\emph{Для данного замыкания гиперболичность не гарантирована глобально.}
+Контрпример: $\rho=1$, $c_s=\VA=1$, $w_+=0.1$, $w_-=0.001$,
+$\mathcal C=0.8$, $\sigma=1$, откуда $h=0.008$.
+Тогда
+\[
+ P(z)=z^4-2.07575z^2-0.0495z+1.02925,
+\]
+\[
+ z\simeq0.858576,\quad1.167488,\quad-1.013032\pm0.023976\,\mathrm i.
+\]
+Это допустимое состояние градиентной ветви: например,
+при $r=A=b=1$, $A'/A=2$, $d=1$, $\partial\rho/\partial r=-4.2$
+имеем $\partial\VA/\partial r=0.1<G=\sqrt{0.1}$.
+Две скорости комплексные, и обычная постановка через пять вещественных
+входящих/выходящих характеристик здесь неприменима.
+Замораживание отражения как источника при расщеплении даёт матрицу
+с $h=0$ для подшага, но не доказывает гиперболичность полной модели.
+
+\subsection{Сколько характеристик входит через каждую границу}
+
+Далее предполагаем гиперболическое состояние с двумя отрицательными
+и двумя положительными $z_j$, упорядоченными как $z_1<z_2<0<z_3<z_4$,
+и истечение $u>0$. На ограниченной ветви это доказано выше;
+на градиентной проверяется по корням.
+Характеристика удовлетворяет $\mathrm dr/\mathrm dt=\lambda_j$.
+Для скоростей \eqref{ch:speeds} слева $\lambda>0$ означает вход {из фотосферы в область},
+а $\lambda<0$ --- выход из области к фотосфере.
+Справа направления относительно области меняются местами.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Режим в данной граничной точке & Слева: вход / выход & Справа: вход / выход\\
+\midrule
+$0<u<-z_2$ & $3/2$ & $2/3$\\
+$-z_2<u<-z_1$ & $4/1$ & $1/4$\\
+$u>-z_1$ & $5/0$ & $0/5$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Каждый столбец применяется к состоянию на своей границе.
+
+\textbf{Фотосфера.}
+На нижней границе предполагается дозвуковое и
+доальфвеновское истечение:
+\[
+0<u_\ph<\min(c_{s,\ph},V_{A,\ph}).
+\]
+Оценим справедливость этого предположения.
+При характерных параметрах фотосферы
+$\rho_\ph=3\cdot10^{-4}$ кг/м$^3$,
+$T_\ph=6400$ К, $B_\ph=10^{-4}$ Тл,
+$\gamma=5/3$, $\mu=1.3$ получаем
+\[
+c_{s,\ph}=
+\sqrt{\frac{\gamma k_{\mathrm B}T_\ph}{\mu m_u}}
+\simeq 8.3\ \text{км/с},
+\qquad
+V_{A,\ph}=
+\frac{B_\ph}{\sqrt{\mu_0\rho_\ph}}
+\simeq 5.15\ \text{м/с}.
+\]
+
+Для оценки скорости истечения воспользуемся
+типичными параметрами солнечного ветра на 1 а.е.:
+$n_{\mathrm{AU}}\simeq5$ см$^{-3}$,
+$u_{\mathrm{AU}}\simeq400$ км/с.
+Из сохранения массового расхода в стационарной
+радиальной трубке $A\propto r^2$ следует
+\[
+u_\ph=
+\frac{m_p n_{\mathrm{AU}}u_{\mathrm{AU}}}{\rho_\ph}
+\left(\frac{r_{\mathrm{AU}}}{R_\odot}\right)^2
+\simeq 5.2\cdot10^{-7}\ \text{м/с}.
+\]
+Таким образом,
+\[
+\boxed{u_\ph\ll V_{A,\ph}\ll c_{s,\ph}.}
+\]
+Следовательно, в приближении слабых волн
+на фотосфере три характеристики входят
+в расчётную область, а две выходят из неё.
+
+\textbf{Дальняя граница.}
+Условия извне не нужны, так как на правой границе течение сверхзвуковое и сверхальфвеновское. Все характеристики выходят из области течения.
+
+\subsection{Выходящие характеристики}
+
+На левой границе рассматриваем режим, когда три характеристики
+входят в расчётную область, а две выходят из неё к фотосфере.
+Две выходящие характеристики приносят информацию
+из внутреннего решения и позволяют определить
+скорость $u_{\mathrm{ph}}$ и энергию встречных волн
+$w_{-,\mathrm{ph}}$.
+
+Обозначим столбец искомых величин через
+\[
+ \bm q=(\rho,u,p,w_+,w_-)^{\mathsf T}.
+\]
+Система имеет вид
+\[
+\frac{\partial\bm q}{\partial t}
++\mathsf J\frac{\partial\bm q}{\partial r}
+=\bm s.
+\]
+Умножим её слева на строку коэффициентов
+$\bm\ell^{\mathsf T}$:
+\[
+\bm\ell^{\mathsf T}\frac{\partial\bm q}{\partial t}
++\bm\ell^{\mathsf T}\mathsf J
+\frac{\partial\bm q}{\partial r}
+=\bm\ell^{\mathsf T}\bm s.
+\]
+Хотим, чтобы левая часть представляла собой производную
+вдоль кривой $dr/dt=\lambda$, то есть
+\[
+\bm\ell^{\mathsf T}
+\left(
+\frac{\partial\bm q}{\partial t}
++\lambda\frac{\partial\bm q}{\partial r}
+\right).
+\]
+Для этого необходимо потребовать
+\[
+\boxed{
+\bm\ell^{\mathsf T}\mathsf J
+=\lambda\bm\ell^{\mathsf T}.
+}
+\]
+Это определение левого собственного вектора матрицы
+$\mathsf J$, а $\lambda$ --- соответствующее собственное значение.
+Таким образом, вдоль характеристики $dr/dt=\lambda$
+получаем условие
+\[
+\boxed{
+\bm\ell^{\mathsf T}\frac{d\bm q}{dt}
+=\bm\ell^{\mathsf T}\bm s,
+\qquad
+\frac{dr}{dt}=\lambda.
+}
+\]
+
+\subsubsection{Соотношения вдоль выходящих траекторий.}
+
+Для первого приближения пренебрежём влиянием
+волнового давления на движение газа, нагревом
+и геометрическим членом в уравнении давления.
+Гравитацию сохраним.
+Тогда
+\[
+ \partial_tu+u\partial_ru+\frac1\rho\partial_rp
+ =-\frac1{r^2},
+ \qquad
+ \partial_tp+u\partial_rp+\rho c_s^2\partial_ru=0.
+\]
+Вычтем из второго уравнения первое,
+умноженное на $\rho c_s$:
+\[
+ \bigl[\partial_t+(u-c_s)\partial_r\bigr]p
+ -\rho c_s
+ \bigl[\partial_t+(u-c_s)\partial_r\bigr]u
+ =\frac{\rho c_s}{r^2}.
+\]
+Таким образом, вдоль выходящей акустической траектории
+получаем
+\begin{equation}
+ \boxed{
+ \frac{dp}{dt}-\rho c_s\frac{du}{dt}
+ \simeq\frac{\rho c_s}{r^2},
+ \qquad
+ \frac{dr}{dt}=u-c_s.
+ }
+ \label{bc:acoustic-path}
+\end{equation}
+Здесь $d/dt$ означает производную именно вдоль
+указанной траектории.
+Для вывода не требовалось считать $\rho c_s$
+постоянным; это дополнительное приближение
+будет использовано при интегрировании на одном шаге.
+
+Для встречных волн примем более грубое приближение:
+\begin{equation}
+ \boxed{
+ \frac{dw_-}{dt}\simeq0,
+ \qquad
+ \frac{dr}{dt}=u-\VA.
+ }
+ \label{bc:wave-path}
+\end{equation}
+Оно допустимо, если за время $\Delta t$ отражение,
+диссипация, сжатие и неоднородность среды
+мало меняют $w_-$.
+Слабое влияние волн на газ само по себе
+этого не гарантирует.
+
+\subsection{Граничные условия на фотосфере}
+
+На новом временном слое задаём
+\[
+\rho_{\mathrm{ph}}^{n+1}=1,\qquad
+T_{\mathrm{ph}}^{n+1}=1,\qquad
+p_{\mathrm{ph}}^{n+1}=\theta,\qquad
+w_{+,\mathrm{ph}}^{n+1}=\omega(t^{n+1}).
+\]
+Скорость $u_{\mathrm{ph}}^{n+1}$ и энергию встречных волн
+$w_{-,\mathrm{ph}}^{n+1}$ определяем по информации
+из расчётной области.
+Ниже используем упрощённые акустическое и волновое
+соотношения совместности.
+
+\subsubsection{Основания характеристик}
+
+На старом слое $t^n$ решение представлено постоянными
+состояниями внутри ячеек.
+Первая ячейка занимает интервал
+\[
+I_1=[r_{\mathrm{ph}},r_{3/2}],
+\]
+а $r_1$ обозначает её центр.
+По известному состоянию этой ячейки вычисляем
+\[
+c_{s,1}^n=\sqrt{\frac{\gamma p_1^n}{\rho_1^n}},
+\qquad
+V_{A,1}^n=\frac{b}{A(r_1)\sqrt{\rho_1^n}}.
+\]
+На один шаг замораживаем характеристические скорости:
+\[
+\lambda_{\mathrm a}^n=u_1^n-c_{s,1}^n<0,
+\qquad
+\lambda_{\mathrm w}^n=u_1^n-V_{A,1}^n<0.
+\]
+Основания характеристик, приходящих в точку
+$(r_{\mathrm{ph}},t^{n+1})$, находятся на старом слое:
+\[
+r_{\mathrm a}=r_{\mathrm{ph}}-\lambda_{\mathrm a}^n\Delta t,
+\qquad
+r_{\mathrm w}=r_{\mathrm{ph}}-\lambda_{\mathrm w}^n\Delta t.
+\]
+Выбираем шаг так, чтобы обе точки лежали в первой ячейке (в численном методе это условие автоматически будет выполнено -- условие Куранта-Фридрихса-Леви)ф:
+\[
+\max(-\lambda_{\mathrm a}^n,-\lambda_{\mathrm w}^n)\Delta t
+\le r_{3/2}-r_{\mathrm{ph}}.
+\]
+Тогда вследствие кусочно-постоянного представления
+\[
+p_{\mathrm a}^n=p_1^n,\qquad
+u_{\mathrm a}^n=u_1^n,\qquad
+w_{-,\mathrm w}^n=w_{-,1}^n.
+\]
+Интерполяция не требуется.
+
+% В преамбуле:
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    x=1.25cm,
+    y=1.05cm,
+    >=Stealth,
+    font=\small
+]
+% Первая ячейка: от x=0 до x=6.
+% Её центр: x=3.
+% Основания характеристик: x=1.5 и x=4.5.
+
+% Временные слои.
+\draw[gray] (0,0) -- (6.4,0);
+\draw[gray] (0,2.7) -- (6.4,2.7);
+\node[left] at (-0.15,0) {$t^n$};
+\node[left] at (-0.15,2.7) {$t^{n+1}$};
+
+% Границы и центр первой ячейки.
+\draw[thick] (0,-0.15) -- (0,3);
+\draw[gray,dashed] (6,-0.15) -- (6,3);
+\draw[gray,dotted] (3,0) -- (3,0.7);
+
+\node[above] at (0,3.05) {фотосфера};
+\node[above] at (6,3.05) {правая грань};
+
+% Постоянное состояние на старом слое.
+\draw[very thick,gray!65] (0,0) -- (6,0);
+\fill (3,0) circle (1.8pt);
+\node[above] at (3,0.7)
+    {$\rho_1^n,\ u_1^n,\ p_1^n,\ w_{\pm,1}^n$};
+
+% Характеристики.
+\draw[blue!75!black,very thick,->]
+    (1.5,0) -- (0,2.7);
+\draw[red!75!black,very thick,->]
+    (4.5,0) -- (0,2.7);
+
+% Основания и новая граничная точка.
+\fill[blue!75!black] (1.5,0) circle (2.4pt);
+\fill[red!75!black] (4.5,0) circle (2.4pt);
+\fill (0,2.7) circle (2.5pt);
+
+\node[above right] at (0.1,2.7)
+    {новое граничное состояние};
+
+% Подписи координат.
+\node[below] at (0,-0.12) {$r_{\mathrm{ph}}$};
+\node[below,blue!75!black] at (1.5,-0.12)
+    {$r_{\mathrm a}$};
+\node[below] at (3,-0.12) {$r_1$};
+\node[below,red!75!black] at (4.5,-0.12)
+    {$r_{\mathrm w}$};
+\node[below] at (6,-0.12) {$r_{3/2}$};
+
+% Обозначения скоростей.
+\node[blue!75!black,anchor=west] at (3.4,2.1)
+    {$\lambda_{\mathrm a}^n=u_1^n-c_{s,1}^n$};
+\node[red!75!black,anchor=west] at (3.4,1.6)
+    {$\lambda_{\mathrm w}^n=u_1^n-V_{A,1}^n$};
+
+% Размер первой ячейки.
+\draw[<->] (0,-0.9) -- (6,-0.9)
+    node[midway,below] {первая ячейка $I_1$};
+
+\end{tikzpicture}
+\caption{
+Оба основания характеристик находятся в первой ячейке.
+На старом слое состояние внутри неё постоянно,
+поэтому значения в основаниях совпадают
+с ячеечными значениями.
+Взаимное расположение оснований показано условно.
+}
+\label{fig:characteristic_feet_constant}
+\end{figure}
+
+\subsubsection{Обновление граничного состояния}
+
+Интегрируем соотношение~\eqref{bc:acoustic-path}
+вдоль акустической характеристики.
+Коэффициент $\rho c_s$ заменяем постоянным
+значением $\rho_1^n c_{s,1}^n$ со старого слоя,
+а в гравитационном источнике полагаем
+$r\simeq r_{\mathrm{ph}}$:
+\[
+\theta-p_1^n
+-\rho_1^n c_{s,1}^n
+\left(u_{\mathrm{ph}}^{n+1}-u_1^n\right)
+\simeq
+\Delta t\,\frac{\rho_1^n c_{s,1}^n}{r_{\mathrm{ph}}^2}.
+\]
+В используемом упрощённом волновом соотношении
+$w_-$ сохраняется вдоль характеристики.
+Поэтому
+\begin{equation}
+\begin{aligned}
+u_{\mathrm{ph}}^{n+1}
+&\simeq
+u_1^n+\frac{\theta-p_1^n}{\rho_1^n c_{s,1}^n}
+-\frac{\Delta t}{r_{\mathrm{ph}}^2},\\[4pt]
+w_{-,\mathrm{ph}}^{n+1}
+&\simeq w_{-,1}^n.
+\end{aligned}
+\label{ch:leftsimple}
+\end{equation}
+Все величины справа известны на слое $t^n$.
+В нашей нормировке $r_{\mathrm{ph}}=1$.
+
+Полную энергию восстанавливаем после обновления:
+\[
+E_{\mathrm{ph}}^{n+1}
+=
+\frac{(u_{\mathrm{ph}}^{n+1})^2}{2}
++\frac{\theta}{\gamma-1}
++\omega(t^{n+1})
++w_{-,\mathrm{ph}}^{n+1}.
+\]
+
+\subsubsection{Возможность простого копирования}
+
+Можно использовать более простую экстраполяцию:
+\[
+u_{\mathrm{ph}}^{n+1}=u_1^n,\qquad
+w_{-,\mathrm{ph}}^{n+1}=w_{-,1}^n.
+\]
+Однако копирование скорости не учитывает её связь
+с заданным давлением $\theta$ и гравитацией,
+присутствующую в~\eqref{ch:leftsimple}.
+Поэтому оно может искажать отражение акустических
+возмущений и граничный массовый расход.
+Для встречных волн копирование уже совпадает
+с принятым здесь упрощённым характеристическим условием.
+
+Схема~\eqref{ch:leftsimple} также является приближённой:
+для полной связанной системы следует использовать
+её точные выходящие характеристики и условия
+совместности со всеми источниками.
+Кусочно-постоянное представление само по себе
+не обеспечивает точного сохранения
+гидростатического равновесия.
+\subsection{Граничные условия на выходе трубки}
+
+Если на правой границе
+\[
+ \min_j\lambda_j(r_{\mathrm{out}},t)>0,
+\]
+то все пять характеристик выходят из области.
+При обратном прослеживании каждая из них приходит
+из внутренней точки предыдущего временного слоя.
+Поэтому никаких дополнительных физических данных
+от внешней среды здесь не требуется.
+
+Для первого приближения используем копирование
+последней расчётной ячейки:
+\[
+ \rho_{\mathrm{out}}=\rho_N,\qquad
+ u_{\mathrm{out}}=u_N,\qquad
+ p_{\mathrm{out}}=p_N,\qquad
+ w_{\pm,\mathrm{out}}=w_{\pm,N}.
+\]
+
+Полную энергию вычисляем по тем же значениям:
+\[
+ E_{\mathrm{out}}
+ =\frac{\rho_{\mathrm{out}}u_{\mathrm{out}}^2}{2}
+  +\frac{p_{\mathrm{out}}}{\gamma-1}
+  +w_{+,\mathrm{out}}+w_{-,\mathrm{out}}.
+\]
+Дополнительно фиксировать давление, скорость
+или полагать $w_{-,\mathrm{out}}=0$ не следует.
+
+\newpage
+
+\section{Численный метод}
+
+
+\subsection{Дивергентная часть и поток HLL или LF}
+
+Безразмерная система \eqref{eq:dimensionless} записывается в виде
+\begin{equation}
+\boxed{
+\frac{\partial(A\U)}{\partial t}
++\frac{\partial(A\F)}{\partial r}
+=A\Src-\bm K\frac{\partial(Au)}{\partial r},
+}
+\end{equation}
+где
+\[
+\U=
+\begin{pmatrix}
+\rho\\
+\rho u\\
+E\\
+w_+\\
+w_-
+\end{pmatrix},
+\qquad
+\F=
+\begin{pmatrix}
+\rho u\\
+\rho u^2+p+\PA\\
+u(E+p+\PA)+V_A(w_+-w_-)\\
+(u+V_A)w_+\\
+(u-V_A)w_-
+\end{pmatrix},
+\]
+\[
+\Src=
+\begin{pmatrix}
+0\\[2pt]
+(p+\PA)\dfrac{A'}{A}-\dfrac{\rho}{r^2}\\[6pt]
+-\dfrac{\rho u}{r^2}\\[6pt]
+-\Rref\sqrt{w_+w_-}-\Gamma_+w_+\\[4pt]
++\Rref\sqrt{w_+w_-}-\Gamma_-w_-
+\end{pmatrix},
+\qquad
+\bm K=
+\begin{pmatrix}
+0\\0\\0\\w_+/2\\w_-/2
+\end{pmatrix}.
+\]
+Здесь используются замыкания
+\[
+\PA=\frac{w_++w_-}{2},
+\qquad
+V_A=\frac{b}{A\sqrt{\rho}},
+\qquad
+p=(\gamma-1)
+\left(E-\frac{\rho u^2}{2}-w_+-w_-\right).
+\]
+
+
+\subsubsection{Конечно-объёмная аппроксимация.}
+
+Сначала рассмотрим только дивергентную часть системы,
+формально положив $\Src=0$, $\bm K=0$:
+\begin{equation}
+\frac{\partial(A\U)}{\partial t}
++\frac{\partial(A\F)}{\partial r}=0.
+\label{eq:homogeneous_system}
+\end{equation}
+
+Введём пространственную сетку с гранями
+$r_{i-1/2}$, $r_{i+1/2}$ и временные слои
+$t^n$, $t^{n+1}=t^n+\Delta t$.
+
+Проинтегрируем \eqref{eq:homogeneous_system}
+по пространственно-временной ячейке
+$[r_{i-1/2},r_{i+1/2}]
+\times[t^n,t^{n+1}]$:
+\[
+\int_{t^n}^{t^{n+1}}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+\left[
+\frac{\partial(A\U)}{\partial t}
++\frac{\partial(A\F)}{\partial r}
+\right]dr\,dt=0.
+\]
+
+Интегрируя первое слагаемое по времени,
+а второе по пространству, получаем
+\begin{align*}
+&\int_{r_{i-1/2}}^{r_{i+1/2}}
+A(r)\bigl[\U(r,t^{n+1})-\U(r,t^n)\bigr]\,dr
+\\
+&\quad+
+\int_{t^n}^{t^{n+1}}
+\left[
+A_{i+1/2}\F(r_{i+1/2},t)
+-A_{i-1/2}\F(r_{i-1/2},t)
+\right]dt=0.
+\end{align*}
+
+Обозначим объём ячейки и среднее значение
+консервативных переменных на временном слое:
+\[
+V_i=\int_{r_{i-1/2}}^{r_{i+1/2}}A(r)\,dr,
+\qquad
+\U_i^n=
+\frac{1}{V_i}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+A(r)\U(r,t^n)\,dr.
+\]
+
+Кроме того, введём средний по времени
+физический поток через грань:
+\[
+\overline{\F}_{i+1/2}^{\,n}
+=\frac{1}{\Delta t}
+\int_{t^n}^{t^{n+1}}
+\F(r_{i+1/2},t)\,dt.
+\]
+
+Тогда предыдущее интегральное равенство
+записывается точно:
+\begin{equation}
+\boxed{
+\U_i^{n+1}
+=\U_i^n
+-\frac{\Delta t}{V_i}
+\left(
+A_{i+1/2}\overline{\F}_{i+1/2}^{\,n}
+-A_{i-1/2}\overline{\F}_{i-1/2}^{\,n}
+\right).
+}
+\label{eq:fv_exact}
+\end{equation}
+
+\subsubsection{Численные потоки.}
+
+Формула \eqref{eq:fv_exact} пока точная,
+но средние по времени потоки
+$\overline{\F}_{i\pm1/2}^{\,n}$ неизвестны.
+Их необходимо аппроксимировать.
+
+Для схемы первого порядка используем
+значения переменных на старом временном слое:
+\[
+\U_L=\U_i^n,\qquad
+\U_R=\U_{i+1}^n.
+\]
+По этим состояниям вычисляем физические потоки
+$\F_L$ и $\F_R$. Поскольку поток $\F$
+зависит от альфвеновской скорости
+$V_A=b/(A\sqrt{\rho})$, при его вычислении
+используем
+\[
+V_{A,L}=\frac{b}{A_{i+1/2}\sqrt{\rho_L}},
+\qquad
+V_{A,R}=\frac{b}{A_{i+1/2}\sqrt{\rho_R}}.
+\]
+Площадь берётся на рассматриваемой грани,
+а плотности --- из соответствующих состояний.
+
+Вместо неизвестного среднего потока положим
+\[
+\overline{\F}_{i+1/2}^{\,n}
+\approx\widehat{\F}_{i+1/2}^{\,n}.
+\]
+
+При наличии оценок крайних скоростей
+$s_L<s_R$ поток HLL имеет вид
+\begin{equation}
+\widehat{\F}_{\mathrm{HLL}}=
+\begin{cases}
+\F_L, & s_L\ge0,\\[3pt]
+\displaystyle
+\frac{s_R\F_L-s_L\F_R+s_Ls_R(\U_R-\U_L)}
+{s_R-s_L},
+& s_L<0<s_R,\\[8pt]
+\F_R, & s_R\le0.
+\end{cases}
+\label{eq:hll_flux}
+\end{equation}
+
+Более простой вариант --- локальный поток
+Лакса--Фридрихса (Русанова):
+\begin{equation}
+\widehat{\F}_{\mathrm{LF}}
+=\frac{\F_L+\F_R}{2}
+-\frac{\alpha}{2}(\U_R-\U_L),
+\label{eq:lf_flux}
+\end{equation}
+где $\alpha$ --- оценка максимального модуля
+характеристической скорости.
+Он соответствует выбору
+$s_L=-\alpha$, $s_R=\alpha$ в HLL.
+
+Подстановка численных потоков в
+\eqref{eq:fv_exact} даёт окончательную формулу
+схемы первого порядка для дивергентной части:
+\begin{equation}
+\boxed{
+\U_i^{n+1}
+=\U_i^n
+-\frac{\Delta t}{V_i}
+\left(
+A_{i+1/2}\widehat{\F}_{i+1/2}^{\,n}
+-A_{i-1/2}\widehat{\F}_{i-1/2}^{\,n}
+\right).
+}
+\label{eq:fv_flux}
+\end{equation}
+Здесь $\widehat{\F}$ выбирается по формуле
+\eqref{eq:hll_flux} или \eqref{eq:lf_flux}.
+
+Полученная формула относится только
+к дивергентной части системы.
+Для исходных уравнений необходимо дополнительно
+аппроксимировать источники $\Src$
+и неконсервативный член
+$\bm K\,\partial_r(Au)$.
+Кроме того, требуется определить допустимые
+оценки характеристических скоростей
+с учётом возможной негиперболичности системы.
+
+
+
+\subsection{Конечно-объёмная запись полной системы}
+
+Интегрируем исходную систему по той же
+пространственно-временной ячейке. Левая часть
+преобразуется так же, как при выводе \eqref{eq:fv_exact}:
+\[
+V_i(\U_i^{n+1}-\U_i^n)
++\Delta t\left(
+A_{i+1/2}\overline{\F}_{i+1/2}^{\,n}
+-A_{i-1/2}\overline{\F}_{i-1/2}^{\,n}
+\right)
+=
+\int_{t^n}^{t^{n+1}}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+\left(
+A\Src-\bm K\,\frac{\partial(Au)}{\partial r}
+\right)dr\,dt.
+\]
+Таким образом, потоковая часть сохраняет прежний вид.
+Заменяя средние физические потоки численными,
+получаем
+\begin{equation}
+\U_i^{n+1}
+=
+\U_i^n
+-\frac{\Delta t}{V_i}
+\left(
+A_{i+1/2}\widehat{\F}_{i+1/2}^{\,n}
+-A_{i-1/2}\widehat{\F}_{i-1/2}^{\,n}
+\right)
++\Delta t\,\overline{\Src}_i^{\,n}
+-\Delta t\,\overline{\bm C}_i^{\,n},
+\label{eq:fv_full}
+\end{equation}
+где пока неизвестны интегральные средние
+\[
+\overline{\Src}_i^{\,n}
+=
+\frac{1}{\Delta t\,V_i}
+\int_{t^n}^{t^{n+1}}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+A\Src\,dr\,dt,
+\qquad
+\overline{\bm C}_i^{\,n}
+=
+\frac{1}{\Delta t\,V_i}
+\int_{t^n}^{t^{n+1}}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+\bm K\,\frac{\partial(Au)}{\partial r}\,dr\,dt.
+\]
+В отличие от потока, последний член нельзя
+сразу представить разностью значений $\bm K Au$
+на гранях: $\bm K$ зависит от решения.
+Кроме того, при разрывах произведение
+$\bm K\,\partial_r(Au)$ требует отдельного
+определения.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.95\linewidth]{pics/grid_rt_correct.png}
+    \caption{Схема сетки.}
+\end{figure}
+
+\subsection{Член расширения и сжатия: аппроксимация первого порядка}
+
+Средний вклад неконсервативного члена в ячейке равен
+\[
+\overline{\bm C}_i^{\,n}
+=
+\frac{1}{\Delta t\,V_i}
+\int_{t^n}^{t^{n+1}}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+\bm K\,\frac{\partial(Au)}{\partial r}\,dr\,dt.
+\]
+Заморозим коэффициент на старом временном слое:
+\[
+\bm K(r,t)\approx\bm K_i^n
+=
+\begin{pmatrix}
+0&0&0&w_{+,i}^n/2&w_{-,i}^n/2
+\end{pmatrix}^{\mathsf T}.
+\]
+После вынесения коэффициента пространственный интеграл
+вычисляется через значения на границах ячейки:
+\[
+\overline{\bm C}_i^{\,n}
+\approx
+\frac{\bm K_i^n}{\Delta t\,V_i}
+\int_{t^n}^{t^{n+1}}
+\left[
+A_{i+1/2}u_{i+1/2}(t)
+-A_{i-1/2}u_{i-1/2}(t)
+\right]dt.
+\]
+Аппроксимируя интеграл по времени значениями
+на старом слое, получаем
+\begin{equation}
+\overline{\bm C}_i^{\,n}
+\approx \bm K_i^n D_i^n,
+\qquad
+D_i^n=
+\frac{
+A_{i+1/2}\widehat u_{i+1/2}^{\,n}
+-A_{i-1/2}\widehat u_{i-1/2}^{\,n}
+}{V_i}.
+\label{eq:compression_first_order}
+\end{equation}
+Соответствующая добавка к обновлению волновых энергий:
+\[
+\left.\Delta w_{\pm,i}\right|_{\text{сж/расш}}
+=-\frac{\Delta t}{2}\,w_{\pm,i}^nD_i^n.
+\]
+При $D_i^n>0$ этот вклад уменьшает энергию волн,
+при $D_i^n<0$ --- увеличивает её.
+
+Остаётся определить скорость на каждой грани.
+Для первого порядка используем состояния
+$\U_L=\U_i^n$, $\U_R=\U_{i+1}^n$.
+Рассмотрим два способа.
+
+\subsubsection{Арифметическое среднее.}
+Простейший выбор:
+\[
+\widehat u_{i+1/2}=\frac{u_L+u_R}{2}.
+\]
+Он согласован с точным значением на гладком решении,
+но не учитывает направление распространения волн.
+
+\subsubsection{Скорость промежуточного состояния HLL.}
+Используем те же состояния, потоки и оценки скоростей,
+что и при вычислении численного потока.
+При $s_L<0<s_R$ промежуточное состояние имеет вид
+\[
+\U_*=
+\frac{
+s_R\U_R-s_L\U_L-(\F_R-\F_L)
+}{s_R-s_L}.
+\]
+Тогда определим
+\[
+\widehat u_{i+1/2}=
+\begin{cases}
+u_L, & s_L\geq0,\\[2pt]
+(\rho u)_*/\rho_*, & s_L<0<s_R,\\[2pt]
+u_R, & s_R\leq0.
+\end{cases}
+\]
+Для потока Русанова тот же выбор получается
+из симметричных оценок $s_L=-\alpha$, $s_R=\alpha$:
+\[
+\U_*=
+\frac{\U_L+\U_R}{2}
+-\frac{\F_R-\F_L}{2\alpha},
+\qquad
+\widehat u_{i+1/2}=\frac{(\rho u)_*}{\rho_*}.
+\]
+Здесь предполагается $\rho_*>0$.
+
+Предпочтём второй способ: скорость на грани
+определяется по тому же приближённому решению задачи
+Римана, что и численный поток.
+Это мотивированный выбор дискретизации;
+сам по себе он не гарантирует правильных условий
+перехода волн через ударный фронт.
+
+
+\subsection{Переход ко второму порядку}
+
+Для второго порядка по пространству восстановим
+в каждой ячейке линейные профили примитивных переменных
+с ограничением наклонов. На грани используем
+восстановленные состояния
+\[
+\bm q_L=\bm q_i+\bm\sigma_i(r_{i+1/2}-r_i),
+\qquad
+\bm q_R=\bm q_{i+1}
++\bm\sigma_{i+1}(r_{i+1/2}-r_{i+1}),
+\qquad
+\bm q=(\rho,u,p,w_+,w_-)^{\mathsf T}.
+\]
+По ним вычисляем как численный поток,
+так и скорость $\widehat u_{i+1/2}$ выбранным выше способом.
+
+На гладком решении центральная квадратура произведения
+даёт пространственную аппроксимацию второго порядка:
+\[
+\frac1{V_i}
+\int_{r_{i-1/2}}^{r_{i+1/2}}
+\bm K\,\frac{\partial(Au)}{\partial r}\,dr
+=
+\bm K_i
+\frac{
+A_{i+1/2}\widehat u_{i+1/2}
+-A_{i-1/2}\widehat u_{i-1/2}
+}{V_i}
++O(h^2).
+\]
+Здесь предполагаются гладкая сетка и достаточно точное
+вычисление геометрических величин.
+Таким образом, форма \eqref{eq:compression_first_order}
+сохраняется, но скорости на гранях вычисляются
+по линейно восстановленным состояниям.
+
+Для второго порядка по времени включим сжатие
+в общий пространственный оператор:
+\[
+L_i(\U)=
+-\frac{
+A_{i+1/2}\widehat\F_{i+1/2}
+-A_{i-1/2}\widehat\F_{i-1/2}
+}{V_i}
++\Src_i-\bm K_iD_i.
+\]
+Затем применим двухстадийную схему Рунге--Кутты:
+\[
+\U_i^{(1)}=\U_i^n+\Delta t\,L_i(\U^n),
+\]
+\[
+\U_i^{n+1}
+=\frac12\U_i^n
++\frac12\left[
+\U_i^{(1)}+\Delta t\,L_i(\U^{(1)})
+\right].
+\]
+На каждой стадии заново выполняются реконструкция,
+вычисление потоков, скоростей на гранях,
+коэффициентов $\bm K_i$ и величин $D_i$.
+Поэтому сжатие учитывается с той же временной точностью,
+что и перенос.
+
+Заявленный второй порядок относится к гладким решениям.
+Вблизи разрывов ограничение наклонов снижает порядок,
+а выбор смысла неконсервативного произведения
+остаётся отдельным вопросом.
+
+
+
+\subsection{Выбор скоростей для потоков HLL и LF}
+
+Для вычисления численного потока нужны оценки
+самой левой и самой правой скоростей распространения
+возмущений через грань ячейки.
+Обозначим их через $s_L$ и $s_R$.
+
+Рассмотрим два способа их вычисления:
+по характеристическим скоростям системы
+и по приближённой формуле.
+
+На грани $r_{i+1/2}$ имеются два состояния:
+\[
+\U_L=\U_i,\qquad \U_R=\U_{i+1}.
+\]
+Для первого порядка это средние значения в соседних
+ячейках, для второго --- восстановленные значения
+на грани на соответствующей стадии RK2.
+
+Все необходимые величины вычисляются отдельно
+для каждого из двух состояний:
+\[
+c_s^2=\frac{\gamma p}{\rho},
+\qquad
+V_A=\frac{b}{A_{i+1/2}\sqrt{\rho}}.
+\]
+
+\subsubsection{По характеристическим скоростям}
+
+Рассмотрим характеристики подсистемы переноса
+и сжатия. Градиентную часть отражения здесь
+предполагаем обрабатываемой отдельно.
+
+Одна характеристическая скорость равна $u$,
+а остальные четыре имеют вид
+\[
+\lambda=u+x,
+\]
+где $x$ удовлетворяет уравнению
+\begin{equation}
+x^4-C_2x^2-C_1x+C_0=0,
+\label{eq:speed_quartic}
+\end{equation}
+с коэффициентами
+\[
+C_2=c_s^2+V_A^2+\frac{3(w_++w_-)}{4\rho},
+\]
+\[
+C_1=\frac{V_A(w_+-w_-)}{2\rho},
+\qquad
+C_0=V_A^2
+\left(c_s^2+\frac{w_++w_-}{4\rho}\right).
+\]
+
+Для численного нахождения четырёх корней
+$x_1,\ldots,x_4$ можно использовать
+стандартный алгоритм поиска корней многочлена.
+Например, они являются собственными значениями
+матрицы
+\[
+\bm H=
+\begin{pmatrix}
+0&0&0&-C_0\\
+1&0&0&C_1\\
+0&1&0&C_2\\
+0&0&1&0
+\end{pmatrix}.
+\]
+
+Таким образом, для каждого состояния на грани
+получаем пять характеристических скоростей:
+\[
+u,\quad u+x_1,\quad u+x_2,\quad
+u+x_3,\quad u+x_4.
+\]
+
+Выберем минимальную и максимальную:
+\[
+\lambda_{\min}
+=u+\min(0,x_1,x_2,x_3,x_4),
+\]
+\[
+\lambda_{\max}
+=u+\max(0,x_1,x_2,x_3,x_4).
+\]
+
+Дополнительно определим наибольшее отклонение
+характеристической скорости от скорости газа:
+\[
+c_*=\max_{1\le k\le4}|x_k|.
+\]
+Эта величина используется только для задания
+запаса при выборе границ скоростей.
+
+Поскольку расчёт выполняется для обоих состояний,
+получаем
+\[
+\lambda_{\min,L},\quad\lambda_{\max,L},\quad c_{*,L},
+\]
+\[
+\lambda_{\min,R},\quad\lambda_{\max,R},\quad c_{*,R}.
+\]
+
+Теперь непосредственно зададим скорости
+для численного потока:
+\begin{equation}
+\boxed{
+\begin{aligned}
+s_L&=\min\left(
+\lambda_{\min,L}-\delta c_{*,L},\,
+\lambda_{\min,R}-\delta c_{*,R}
+\right),\\[3pt]
+s_R&=\max\left(
+\lambda_{\max,L}+\delta c_{*,L},\,
+\lambda_{\max,R}+\delta c_{*,R}
+\right).
+\end{aligned}
+}
+\label{eq:speeds_exact}
+\end{equation}
+
+Здесь $\delta\ge0$ --- задаваемый относительный
+запас. Например, для первоначальных расчётов
+можно выбрать $\delta=0.1$.
+
+Таким образом, $s_L$ оценивает скорость самого
+левого возмущения, а $s_R$ --- самого правого.
+Запас расширяет найденный интервал скоростей,
+но не заменяет вычисление характеристик.
+
+Для рассматриваемой подсистемы при
+$\rho>0$, $p>0$, $w_\pm>0$ все пять
+характеристических скоростей действительны.
+Существенные мнимые части вычисленных корней
+в этом случае свидетельствуют о численной
+проблеме, которую необходимо исследовать.
+
+\subsubsection{Приближённая оценка}
+
+Вместо решения уравнения четвёртой степени
+можно воспользоваться приближённой оценкой
+максимальной скорости возмущений.
+
+Обоснуем её с помощью двух предельных случаев.
+
+\textbf{Первый случай: волновая энергия равна нулю.}
+
+При $w_+=w_-=0$ уравнение
+\eqref{eq:speed_quartic} принимает вид
+\[
+(x^2-c_s^2)(x^2-V_A^2)=0.
+\]
+Следовательно, характеристики равны
+\[
+u,\qquad u\pm c_s,\qquad u\pm V_A.
+\]
+Максимальное отклонение от скорости газа:
+\[
+c_{\max}=\max(c_s,V_A).
+\]
+
+\textbf{Второй случай: $V_A=0$.}
+
+В этом формальном пределе характеристический
+многочлен принимает вид
+\[
+x^2\left(
+x^2-c_s^2-\frac{3(w_++w_-)}{4\rho}
+\right)=0.
+\]
+Поэтому ненулевые относительно газа скорости
+распространения равны
+\[
+x=\pm\sqrt{
+c_s^2+\frac{3(w_++w_-)}{4\rho}
+}.
+\]
+
+Таким образом, вклад волнового давления
+в квадрат акустической скорости составляет
+\[
+c_w^2=\frac{3(w_++w_-)}{4\rho}.
+\]
+
+Объединим результаты двух предельных случаев.
+В качестве приближённой максимальной скорости
+относительно газа примем
+\begin{equation*}
+{
+c_{\mathrm{fast}}=
+\max\left(
+V_A,\sqrt{c_s^2+\frac{3(w_++w_-)}{4\rho}}
+\right).
+}
+\end{equation*}
+
+Эта формула даёт правильные крайние скорости
+в обоих рассмотренных предельных случаях.
+Однако при одновременно ненулевых $V_A$
+и $w_\pm$ она уже не является точной:
+связь газовых и волновых возмущений
+содержит дополнительные слагаемые.
+
+В частности, она может занижать максимальную
+характеристическую скорость.
+
+Для каждого состояния на грани вычислим
+$c_{\mathrm{fast},L}$ и $c_{\mathrm{fast},R}$.
+Тогда непосредственно зададим
+\begin{equation*}
+{
+\begin{aligned}
+s_L&=\min\left(
+u_L-c_{\mathrm{fast},L},\,
+u_R-c_{\mathrm{fast},R}
+\right),\\[3pt]
+s_R&=\max\left(
+u_L+c_{\mathrm{fast},L},\,
+u_R+c_{\mathrm{fast},R}
+\right).
+\end{aligned}
+}
+\end{equation*}
+
+В этих формулах дополнительный запас
+не используется. При необходимости
+можно заменить
+\[
+c_{\mathrm{fast}}
+\longrightarrow
+(1+\delta)c_{\mathrm{fast}}.
+\]
+Однако фиксированный процентный запас
+не гарантирует охват всех характеристик
+для произвольных допустимых состояний.
+
+\subsubsection{Использование в HLL и LF}
+
+В обоих рассмотренных вариантах результатом
+являются две скорости на грани:
+\[
+\boxed{s_L,\qquad s_R.}
+\]
+
+Именно они используются в численном потоке HLL:
+\[
+\widehat{\F}_{\mathrm{HLL}}=
+\begin{cases}
+\F_L,&s_L\ge0,\\[3pt]
+\displaystyle
+\frac{
+s_R\F_L-s_L\F_R+s_Ls_R(\U_R-\U_L)
+}{s_R-s_L},
+&s_L<0<s_R,\\[8pt]
+\F_R,&s_R\le0.
+\end{cases}
+\]
+
+Для потока Лакса--Фридрихса (Русанова)
+достаточно одной оценки:
+\[
+\boxed{\alpha=\max(|s_L|,|s_R|),}
+\]
+после чего
+\[
+\widehat{\F}_{\mathrm{LF}}
+=\frac{\F_L+\F_R}{2}
+-\frac{\alpha}{2}(\U_R-\U_L).
+\]
+
+Те же оценки учитываются при выборе
+шага по времени и пересчитываются
+на каждой стадии RK2.
+
+Основным вариантом выберем вычисление
+характеристических скоростей, а приближённую
+формулу оставим для сравнения.
+
+Отметим два ограничения.
+
+Во-первых, оценки характеристик только
+левого и правого состояний не гарантируют,
+что ими ограничены все скорости нелинейной
+задачи Римана.
+
+Во-вторых, характеристики были получены
+с учётом неконсервативного члена сжатия,
+тогда как поток HLL аппроксимирует
+дивергентную часть системы. Поэтому
+устойчивость их совместной дискретизации
+необходимо проверять отдельно.
+
+Наконец, если градиентную часть отражения
+включать в главную матрицу полной системы,
+характеристический многочлен изменяется.
+В таком случае следует использовать
+результаты полного характеристического анализа,
+включая проверку гиперболичности.
+
+\subsection{Выбор шага по времени: условие CFL}
+
+Для каждой ячейки определим максимальный модуль
+оценённых скоростей на обеих её гранях:
+\[
+a_i=\max\left(
+|s_{L,i-1/2}|,\ |s_{R,i-1/2}|,\ 
+|s_{L,i+1/2}|,\ |s_{R,i+1/2}|
+\right).
+\]
+Здесь $s_L$ и $s_R$ --- скорости, выбранные выше
+для вычисления численного потока. Шаг по времени зададим формулой
+\[
+\Delta t_{\mathrm{CFL}}
+=C_{\mathrm{CFL}}\min_i\frac{\Delta r_i}{a_i},
+\qquad
+\Delta r_i=r_{i+1/2}-r_{i-1/2}.
+\]
+Для первоначальных расчётов примем
+$C_{\mathrm{CFL}}=0.45$.
+Тогда оценённое перемещение возмущения за шаг
+не превышает $0.45$ полной ширины ячейки.
+Запас, введённый при выборе $s_L,s_R$,
+уже учитывается в величине $a_i$.
+
+Для RK2 скорости пересчитываются на промежуточной
+стадии. Если выбранный шаг нарушает ту же оценку,
+расчёт шага повторяется с меньшим $\Delta t$.
+
+Это ограничение относится к переносу.
+Учёт источников и неконсервативного члена
+может потребовать дополнительного уменьшения шага.
+
+\subsection{Контроль положительности и шага по источникам}
+
+Условие CFL ограничивает перенос между ячейками.
+Источники могут уменьшать энергию непосредственно
+внутри ячейки, поэтому для их явного обновления
+может потребоваться меньший шаг.
+
+Обозначим правые части, отвечающие за отражение
+и диссипацию:
+\[
+S_+=-\Rref\sqrt{w_+w_-}-\Gamma_+w_+,
+\qquad
+S_-=\Rref\sqrt{w_+w_-}-\Gamma_-w_-.
+\]
+При явном обновлении
+\[
+w_\pm^{\,\mathrm{new}}=w_\pm+\Delta t\,S_\pm.
+\]
+Если $S_\pm<0$, источник расходует энергию волны.
+Чтобы за один шаг он не израсходовал больше
+имеющегося запаса, необходимо
+\[
+\Delta t\leq\frac{w_\pm}{|S_\pm|}.
+\]
+Поэтому для положительных $w_\pm$ примем
+\[
+\Delta t_{\mathrm{src}}
+=
+C_{\mathrm{src}}
+\min_{\substack{i,\;\pm\\S_{\pm,i}<0}}
+\frac{w_{\pm,i}}{|S_{\pm,i}|},
+\qquad C_{\mathrm{src}}=0.5.
+\]
+Такой выбор позволяет источнику израсходовать
+не более половины текущей энергии за подшаг.
+Если убывающих источников нет, это ограничение
+отсутствует. Общий шаг выбирается как
+\[
+\Delta t=\min(\Delta t_{\mathrm{CFL}},
+             \Delta t_{\mathrm{src}}).
+\]
+
+После каждой стадии RK2 и отдельного обновления
+источников проверяются
+\[
+\rho_i>0,\qquad w_{+,i}\geq0,\qquad w_{-,i}\geq0,
+\]
+\[
+E_i-\frac{(\rho u)_i^2}{2\rho_i}
+-w_{+,i}-w_{-,i}>0.
+\]
+Последнее неравенство означает положительность
+тепловой энергии газа и давления.
+Если хотя бы одно условие нарушено, весь шаг
+повторяется с исходного состояния
+с уменьшенным вдвое $\Delta t$.
+Источники и ограничение на шаг пересчитываются
+на каждой стадии.
+
+Оценка $\Delta t_{\mathrm{src}}$ относится
+к явному обновлению источников и не гарантирует
+положительности всего совместного обновления.
+При полунеявном интегрировании ограничение
+определяется выбранной формулой источников.
+Если уже при $w_\pm=0$ схема даёт $S_\pm<0$,
+уменьшение шага не поможет: необходимо исправить
+само обновление источника.
+
+\subsection{Интегрирование источников по ячейке и по времени}
+
+Вектор источников имеет вид
+\[
+\Src=
+\begin{pmatrix}
+0\\[3pt]
+(p+P_A)\dfrac{A'}{A}-\dfrac{\rho}{r^2}\\[7pt]
+-\dfrac{\rho u}{r^2}\\[7pt]
+-\Rref\sqrt{w_+w_-}-\Gamma_+w_+\\[3pt]
++\Rref\sqrt{w_+w_-}-\Gamma_-w_-
+\end{pmatrix}.
+\]
+
+Рассмотрим одну ячейку $I_i=[r_{i-1/2},r_{i+1/2}]$
+объёма $V_i=\int_{I_i}A(r)\,dr$.
+После интегрирования уравнений вклад источников за шаг равен
+\[
+\left.\Delta\U_i\right|_{\mathrm{ист}}
+=
+\int_{t^n}^{t^{n+1}}
+\underbrace{\left[
+\frac{1}{V_i}\int_{I_i}A(r)\Src(r,t)\,dr
+\right]}_{\displaystyle \Src_i(t)}
+dt.
+\]
+Сначала вычислим внутренний интеграл по каждой строке
+при фиксированном $t=t^n$.
+
+\subsubsection{Первая строка. Масса.}
+
+\[
+S_{\rho,i}(t^n)=\frac{1}{V_i}\int_{I_i}A(r)\cdot 0\,dr=0.
+\]
+
+\subsubsection{Вторая строка. Импульс.}
+
+Умножим вторую строку на $A(r)$ и внесём под интеграл:
+\[
+S_{\rho u,i}(t^n)
+=
+\frac{1}{V_i}\int_{I_i}(p+P_A)A'(r)\,dr
+-
+\frac{1}{V_i}\int_{I_i}\rho\,\frac{A(r)}{r^2}\,dr.
+\]
+
+На слое $t^n$ примем газовое и волновое давления
+постоянными внутри ячейки $I_i$ и равными
+$p_i^n$ и $P_{A,i}^n$ соответственно. Тогда
+\[
+\frac{1}{V_i}\int_{I_i}(p+P_A)A'(r)\,dr
+\;\approx\;
+\frac{p_i^n+P_{A,i}^n}{V_i}\int_{I_i}A'(r)\,dr
+=
+(p_i^n+P_{A,i}^n)
+\frac{A_{i+1/2}-A_{i-1/2}}{V_i}.
+\]
+
+В гравитационном члене на слое $t^n$ примем плотность
+постоянной внутри ячейки $I_i$ и равной $\rho_i^n$.
+Тогда её можно вынести за знак интеграла.
+Складывая вклад давления и гравитации, получаем
+\[
+{
+S_{\rho u,i}(t^n)\approx
+\frac{1}{V_i}
+\left[
+(p_i^n+P_{A,i}^n)(A_{i+1/2}-A_{i-1/2})
+-\rho_i^n
+\int_{r_{i-1/2}}^{r_{i+1/2}}\frac{A(r)}{r^2}\,dr
+\right].
+}
+\]
+Оставшийся интеграл зависит только от заданной геометрии
+и может быть вычислен заранее.
+
+При $A(r)=r^2$ подынтегральная функция равна единице,
+а объём ячейки равен
+$V_i=(r_{i+1/2}^3-r_{i-1/2}^3)/3$. Поэтому
+\[
+S_{\rho u,i}(t^n)\approx
+3\,
+\frac{
+(p_i^n+P_{A,i}^n)
+\bigl(r_{i+1/2}^2-r_{i-1/2}^2\bigr)
+-\rho_i^n\bigl(r_{i+1/2}-r_{i-1/2}\bigr)
+}{
+r_{i+1/2}^3-r_{i-1/2}^3
+}
+=
+3\,
+\frac{
+(p_i^n+P_{A,i}^n)(r_{i+1/2}+r_{i-1/2})-\rho_i^n
+}{
+r_{i+1/2}^2+r_{i+1/2}r_{i-1/2}+r_{i-1/2}^2
+}.
+\]
+
+\subsubsection{Третья строка. Полная энергия.}
+
+На слое $t^n$ примем плотность импульса $\rho u$
+постоянной внутри ячейки $I_i$ и равной $(\rho u)_i^n$.
+Тогда
+\[
+S_{E,i}(t^n)
+=
+-\frac{1}{V_i}\int_{I_i}(\rho u)\frac{A(r)}{r^2}\,dr
+\;\approx\;
+-\frac{(\rho u)_i^n}{V_i}
+\int_{r_{i-1/2}}^{r_{i+1/2}}\frac{A(r)}{r^2}\,dr.
+\]
+Оставшийся интеграл зависит только от заданной геометрии
+и может быть вычислен заранее.
+
+При $A(r)=r^2$ получаем
+\[
+S_{E,i}(t^n)\approx
+-3(\rho u)_i^n
+\frac{r_{i+1/2}-r_{i-1/2}}
+     {r_{i+1/2}^3-r_{i-1/2}^3}
+=
+-\frac{3(\rho u)_i^n}
+{r_{i+1/2}^2+r_{i+1/2}r_{i-1/2}+r_{i-1/2}^2}.
+\]
+
+\subsubsection{Четвёртая и пятая строки. Энергии волн.}
+
+Подставим в обе строки
+$\Gamma_\pm=d\sqrt{w_\mp/(A\rho)}$ и внесём множитель $A(r)$
+под интегралы. Пока все преобразования точные:
+\begin{align*}
+S_{+,i}(t^n)
+={}&-\frac{1}{V_i}\int_{I_i}
+ A\,\Rref\sqrt{w_+w_-}\,dr
+-\frac{d}{V_i}\int_{I_i}
+ \sqrt{A}\,w_+\sqrt{\frac{w_-}{\rho}}\,dr,
+\\[3pt]
+S_{-,i}(t^n)
+={}&+\frac{1}{V_i}\int_{I_i}
+ A\,\Rref\sqrt{w_+w_-}\,dr
+-\frac{d}{V_i}\int_{I_i}
+ \sqrt{A}\,w_-\sqrt{\frac{w_+}{\rho}}\,dr.
+\end{align*}
+Уже здесь видно, что интеграл отражения один и тот же
+в обеих строках. При их сложении он сокращается точно.
+
+\emph{Диссипация.}
+Известны средние $w_{+,i}^n$, $w_{-,i}^n$, $\rho_i^n$.
+Чтобы вычислить интеграл, примем эти величины постоянными
+внутри ячейки. Тогда все зависящие от решения множители
+выносятся за знак интеграла:
+\[
+\frac{d}{V_i}\int_{I_i}
+\sqrt{A(r)}\,w_\pm\sqrt{\frac{w_\mp}{\rho}}\,dr
+\;\approx\;
+\underbrace{\frac{d}{V_i}\int_{I_i}\sqrt{A(r)}\,dr}
+_{\text{вычисляется по заданной геометрии}}
+\,w_{\pm,i}^n\sqrt{\frac{w_{\mp,i}^n}{\rho_i^n}}
+\;=:\;D_{\pm,i}^n.
+\]
+
+При $A(r)=r^2$ и $r>0$ имеем $\sqrt{A(r)}=r$, поэтому
+\[
+D_{\pm,i}^n
+=
+\frac{d}{V_i}
+\frac{r_{i+1/2}^2-r_{i-1/2}^2}{2}
+\,w_{\pm,i}^n\sqrt{\frac{w_{\mp,i}^n}{\rho_i^n}}
+=
+\frac{3d(r_{i+1/2}+r_{i-1/2})}
+{2\bigl(r_{i+1/2}^2+r_{i+1/2}r_{i-1/2}+r_{i-1/2}^2\bigr)}
+\,w_{\pm,i}^n\sqrt{\frac{w_{\mp,i}^n}{\rho_i^n}}.
+\]
+
+\emph{Отражение.}
+В коэффициент $\Rref$ входит производная альфвеновской
+скорости. Для её вычисления используем соседние ячейки
+на одном временном слое:
+\[
+V_{A,j}^n=\frac{b}{A(r_j)\sqrt{\rho_j^n}},
+\qquad j=i-1,\ i,\ i+1.
+\]
+На равномерной сетке примем
+\[
+\left(\frac{\partial V_A}{\partial r}\right)_i^n
+\approx
+\frac{V_{A,i+1}^n-V_{A,i-1}^n}{r_{i+1}-r_{i-1}}.
+\]
+Подставляя эту разность в замыкание, получаем
+\[
+\Rref_i^n=
+\mathcal C(w_{+,i}^n,w_{-,i}^n)
+\min\!\left\{
+\left|\frac{V_{A,i+1}^n-V_{A,i-1}^n}{r_{i+1}-r_{i-1}}\right|,
+\max(\Gamma_{+,i}^n,\Gamma_{-,i}^n)
+\right\},
+\qquad
+\Gamma_{\pm,i}^n
+=d\sqrt{\frac{w_{\mp,i}^n}{A(r_i)\rho_i^n}}.
+\]
+
+Примем $\Rref$, $w_+$ и $w_-$ постоянными внутри ячейки
+и равными найденным ячеечным значениям. Тогда
+\[
+\frac{1}{V_i}\int_{I_i}
+A(r)\Rref\sqrt{w_+w_-}\,dr
+\;\approx\;
+\Rref_i^n\sqrt{w_{+,i}^n w_{-,i}^n}
+\frac{1}{V_i}\int_{I_i}A(r)\,dr
+=
+\Rref_i^n\sqrt{w_{+,i}^n w_{-,i}^n}
+=:J_i^n.
+\]
+Последнее равенство следует из определения объёма $V_i$.
+
+При $A(r)=r^2$ и $r>0$ используемые коэффициенты принимают вид
+\[
+V_{A,j}^n=\frac{b}{r_j^2\sqrt{\rho_j^n}},
+\qquad
+\Gamma_{\pm,i}^n
+=\frac{d}{r_i}\sqrt{\frac{w_{\mp,i}^n}{\rho_i^n}},
+\]
+поэтому
+\[
+\Rref_i^n=
+\mathcal C(w_{+,i}^n,w_{-,i}^n)
+\min\!\left\{
+\frac{|b|}{r_{i+1}-r_{i-1}}
+\left|
+\frac{1}{r_{i+1}^2\sqrt{\rho_{i+1}^n}}
+-
+\frac{1}{r_{i-1}^2\sqrt{\rho_{i-1}^n}}
+\right|,
+\frac{d}{r_i}
+\sqrt{\frac{\max(w_{+,i}^n,w_{-,i}^n)}{\rho_i^n}}
+\right\}.
+\]
+Вклад отражения по-прежнему равен
+$J_i^n=\Rref_i^n\sqrt{w_{+,i}^n w_{-,i}^n}$.
+
+С учётом диссипации четвёртая и пятая строки дают
+\[
+S_{+,i}(t^n)\approx-J_i^n-D_{+,i}^n,
+\qquad
+S_{-,i}(t^n)\approx+J_i^n-D_{-,i}^n.
+\]
+
+\subsubsection{Интеграл по времени.}
+
+Обозначим через $\Src_i^n$ вектор из пяти только что
+вычисленных строк. До сих пор использовались исключительно
+данные слоя $t^n$. Для явного шага первого порядка остаётся
+взять левый прямоугольник:
+\[
+\left.\Delta\U_i\right|_{\mathrm{ист}}
+=\int_{t^n}^{t^{n+1}}\Src_i(t)\,dt
+\;\approx\;\Delta t\,\Src_i^n.
+\]
+Именно на этом переходе источник считается постоянным
+\emph{по времени} в течение шага.
+
+\subsubsection{Как получить второй порядок.}
+
+Для второго порядка по времени используем RK2 в форме
+предиктора и корректора. Сначала по \emph{полной} правой части
+сделаем предварительный шаг от $t^n$ до $t^{n+1}$.
+Он даст состояния $\U_j^{(1)}$ во всех ячейках.
+По ним повторим тот же расчёт пяти строк и получим
+$\Src_i^{(1)}$. В частности, для отражения обе соседние
+скорости $V_{A,i-1}^{(1)}$ и $V_{A,i+1}^{(1)}$ берутся
+уже из предварительного решения. Тогда правило трапеций даёт
+\[
+\boxed{
+\left.\Delta\U_i\right|_{\mathrm{ист}}
+\approx
+\frac{\Delta t}{2}\bigl(\Src_i^n+\Src_i^{(1)}\bigr).
+}
+\]
+В этой форме RK2 предварительное состояние относится к концу
+шага $t^{n+1}$. Окончательное состояние на том же слое
+получается после усреднения правых частей.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.65cm,y=1cm,>=Stealth,font=\small]
+  % Границы трёх пространственных ячеек.
+  \foreach \x in {-0.5,0.5,1.5,2.5}
+    \draw[gray!55,dashed] (\x,-0.35) -- (\x,2.45);
+
+  % Нижняя строка -- известное решение,
+  % верхняя -- предварительное решение в конце шага.
+  \draw[gray] (-0.5,0) -- (2.5,0);
+  \draw[gray] (-0.5,2) -- (2.5,2);
+  \foreach \x/\j in {0/{i-1},1/{i},2/{i+1}} {
+    \fill (\x,0) circle (1.6pt);
+    \fill (\x,2) circle (1.6pt);
+    \node[below] at (\x,-0.04) {$\U_{\j}^{n}$};
+    \node[above] at (\x,2.04) {$\U_{\j}^{(1)}$};
+  }
+
+  \node[left] at (-0.55,0) {$t^n$};
+  \node[left] at (-0.55,2) {$t^{n+1}$};
+  \node[right] at (2.6,0) {$\longrightarrow\ \Src_i^n$};
+  \node[right] at (2.6,2) {$\longrightarrow\ \Src_i^{(1)}$};
+
+  % Скобка показывает шаблон производной на одном слое.
+  \draw[<->] (0,0.55) -- (2,0.55)
+    node[midway,fill=white,inner sep=2pt] {$2\Delta r$};
+  \node at (1,1.15) {предварительный шаг RK2};
+  \draw[->] (1,1.42) -- (1,1.84);
+\end{tikzpicture}
+\caption{В каждой строке рисунка источник вычисляется для
+ячейки $i$. Значения слева и справа нужны для производной
+$V_A$ в отражении. Для шага Эйлера используется нижняя строка,
+для RK2 усредняются источники, полученные на обеих строках.}
+\end{figure}
+
+Для второго порядка \emph{по пространству} существенно,
+насколько точно проинтегрирована каждая строка. На равномерной
+сетке для гладкого решения среднее по ячейке отличается от
+значения в её середине на $O(\Delta r^2)$. Это следует из
+разложения около середины: интеграл линейного слагаемого
+по симметричному интервалу равен нулю. Гладкий вес $A(r)$
+сохраняет этот порядок. Поэтому на гладком участке замены,
+сделанные в интегралах выше, уже дают второй порядок по
+пространству. Центральная разность для $V_A$ имеет тот же
+порядок. Для отражения этот вывод относится к участку,
+где замыкание гладко. Чтобы второй порядок имела вся схема,
+с тем же порядком необходимо аппроксимировать также потоки
+на гранях и член расширения и сжатия.
+
+\subsection{Возможная жёсткость источников и расщепление операторов}
+
+В используемой схеме RK2 отражение и турбулентная диссипация
+альфвеновских волн учитываются явно, как обычные источники.
+Однако характерные времена этих процессов могут оказаться
+существенно меньше временного шага, определяемого условием CFL.
+
+Для диссипации характерные времена имеют вид
+\[
+\tau_{\mathrm{diss},\pm}=\frac{1}{\Gamma_\pm},
+\qquad
+\Gamma_\pm=d\sqrt{\frac{w_\mp}{A\rho}},
+\]
+где $d=2R_*/L_{\perp,\ph}$ --- введённый ранее
+безразмерный параметр диссипации.
+
+Поэтому необходимо контролировать величину
+\[
+\eta_{\mathrm{diss}}
+=
+\Delta t_{\mathrm{CFL}}
+\max_i\left(\Gamma_{+,i},\Gamma_{-,i}\right).
+\]
+При $\eta_{\mathrm{diss}}\ll1$ явное интегрирование
+диссипации не вызывает дополнительных затруднений.
+Если же $\eta_{\mathrm{diss}}\gtrsim1$,
+для сохранения устойчивости и положительности волновых
+энергий может потребоваться уменьшение шага по времени.
+Аналогичные ограничения могут возникать из-за быстрого
+отражения волн, особенно в областях больших градиентов
+альфвеновской скорости.
+
+Предварительные оценки показывают, что для рассматриваемых
+параметров диссипация, вероятно, не будет существенно
+ограничивать шаг CFL. Поэтому первоначально все источники
+предполагается интегрировать явно в рамках RK2.
+
+Если в ходе расчётов обнаружится жёсткость источников,
+можно перейти к расщеплению операторов. Например,
+по схеме Стрэнга:
+\[
+\boxed{
+\U^{n+1}
+=
+\mathcal S_{\Delta t/2}
+\circ
+\mathcal H_{\Delta t}
+\circ
+\mathcal S_{\Delta t/2}
+(\U^n),
+}
+\]
+где $\mathcal H_{\Delta t}$ обозначает шаг RK2
+для пространственного оператора,
+а $\mathcal S_{\Delta t/2}$ --- интегрирование
+быстрых источников на полушаге.
+Для устранения ограничения по времени диссипации
+источники в этом случае следует интегрировать
+неявно или полунеявно, причём с достаточной точностью,
+чтобы сохранялся второй порядок всей схемы.
+
+
+\section{Начальные условия}
+\label{sec:initial_conditions}
+
+\subsection{Безразмерная система и её коэффициенты}
+
+Рассматриваем область $1\le r\le r_{\mathrm{out}}$.
+Напомним безразмерные уравнения:
+\[
+\begin{aligned}
+\frac{\partial(A\rho)}{\partial t}
++\frac{\partial(A\rho u)}{\partial r}
+&=0,\\[4pt]
+\frac{\partial(A\rho u)}{\partial t}
++\frac{\partial}{\partial r}
+\left[A(\rho u^2+p+P_A)\right]
+&=(p+P_A)A'-\frac{A\rho}{r^2},\\[4pt]
+\frac{\partial(AE)}{\partial t}
++\frac{\partial}{\partial r}
+\left[A\bigl(u(E+p+P_A)+V_A(w_+-w_-)\bigr)\right]
+&=-\frac{A\rho u}{r^2},\\[4pt]
+\frac{\partial(Aw_\pm)}{\partial t}
++\frac{\partial}{\partial r}
+\left[A(u\pm V_A)w_\pm\right]
++\frac{w_\pm}{2}\frac{\partial(Au)}{\partial r}
+&=\mp A\mathcal R\sqrt{w_+w_-}
+-A\Gamma_\pm w_\pm.
+\end{aligned}
+\]
+Здесь $A'=dA/dr$. Теплопроводность, радиационные потери
+и дополнительный нагрев в этом варианте отсутствуют.
+
+Связи между переменными:
+\[
+P_A=\frac{w_++w_-}{2},
+\qquad
+E=\frac{\rho u^2}{2}+\frac{p}{\gamma-1}+w_++w_-,
+\]
+\[
+p=(\gamma-1)
+\left(E-\frac{\rho u^2}{2}-w_+-w_-\right),
+\qquad
+T=\frac{p}{\theta\rho}.
+\]
+
+Используем масштабы
+\[
+R_*=R_\odot,\qquad
+U_*=\sqrt{\frac{GM_\odot}{R_*}},\qquad
+\rho_*=\rho_{\mathrm{ph}}^{\mathrm{phys}},\qquad
+T_*=T_{\mathrm{ph}}^{\mathrm{phys}},\qquad
+p_*=\rho_*U_*^2.
+\]
+Основные безразмерные коэффициенты равны
+\[
+\theta=\frac{k_{\mathrm B}T_*}{\mu m_uU_*^2},
+\qquad
+b=\frac{B_{\mathrm{ph}}^{\mathrm{phys}}}
+{U_*\sqrt{\mu_0\rho_*}},
+\qquad
+d=\frac{2R_*}{L_{\perp,\mathrm{ph}}^{\mathrm{phys}}}.
+\]
+Коэффициент гравитации равен единице
+благодаря выбору $U_*^2=GM_\odot/R_*$.
+
+Альфвеновская скорость и частоты диссипации:
+\[
+V_A=\frac{b}{A\sqrt{\rho}},
+\qquad
+\Gamma_+=d\sqrt{\frac{w_-}{A\rho}},
+\qquad
+\Gamma_-=d\sqrt{\frac{w_+}{A\rho}}.
+\]
+Скорость передачи волновой энергии газу равна
+\[
+Q_w=\Gamma_+w_++\Gamma_-w_-.
+\]
+Она не добавляется в уравнение полной энергии:
+диссипация перераспределяет энергию между волнами и газом.
+
+Коэффициент отражения задаётся формулой
+\[
+\mathcal R
+=
+\mathcal C(w_+,w_-)
+\min\!\left\{
+\left|\frac{\partial V_A}{\partial r}\right|,
+\max(\Gamma_+,\Gamma_-)
+\right\},
+\]
+где
+\[
+\mathcal C(w_+,w_-)=
+\begin{cases}
+1-2\sqrt{w_-/w_+},
+& w_+\ge4w_-,\quad w_+>0,\\[4pt]
+2\sqrt{w_+/w_-}-1,
+& w_-\ge4w_+,\quad w_->0,\\[4pt]
+0,
+& \text{в остальных случаях}.
+\end{cases}
+\]
+В частности, $\mathcal C(0,0)=0$.
+Производная альфвеновской скорости выражается через
+геометрию и плотность:
+\[
+\frac{\partial V_A}{\partial r}
+=
+-V_A\left(
+\frac{A'}{A}
++\frac{1}{2\rho}\frac{\partial\rho}{\partial r}
+\right).
+\]
+Таким образом, $\mathcal C$, $\mathcal R$ и $\Gamma_\pm$
+вычисляются по текущему решению и не являются
+постоянными параметрами.
+
+Для конкретного пробного расчёта возьмём основные
+коэффициенты из безразмерного режима программы:
+\[
+\gamma=\frac53,\qquad
+\mu=0.60,\qquad
+\theta=0.0036,\qquad
+b=1.50,\qquad
+d=35,\qquad
+\omega_0=0.08,\qquad
+r_{\mathrm{out}}=30.
+\]
+Здесь
+\[
+\omega_0=
+\frac{w_{+,\mathrm{ph}}^{\mathrm{phys}}(0)}{p_*}.
+\]
+Этот набор является вычислительным примером.
+При выборе других размерных параметров фотосферы
+коэффициенты следует пересчитать по приведённым формулам.
+
+\subsection{Площадь магнитной трубки}
+
+В общем случае зададим геометрию через положительную
+функцию дополнительного расширения $f(r)$:
+\[
+A(r)=r^2\frac{f(r)}{f(1)},
+\qquad f(r)>0.
+\]
+Тогда
+\[
+A(1)=1,\qquad
+\frac{A'}{A}=\frac{2}{r}+\frac{f'}{f},
+\]
+\[
+V_A=\frac{b\,f(1)}{r^2f(r)\sqrt{\rho}},
+\qquad
+\Gamma_\pm
+=\frac{d}{r}
+\sqrt{\frac{f(1)w_\mp}{f(r)\rho}}.
+\]
+Функция $f(r)$ задаётся заранее и не зависит от времени.
+
+В рассматриваемом радиальном варианте выбираем
+$f(r)\equiv1$. Поэтому
+\[
+A(r)=r^2,\qquad
+A'(r)=2r,\qquad
+\frac{A'}{A}=\frac2r,
+\]
+\[
+V_A=\frac{b}{r^2\sqrt{\rho}},
+\qquad
+\Gamma_\pm=\frac{d}{r}\sqrt{\frac{w_\mp}{\rho}},
+\]
+\[
+\mathcal R
+=
+\mathcal C(w_+,w_-)
+\min\!\left\{
+V_A\left|
+\frac2r+\frac{1}{2\rho}\frac{\partial\rho}{\partial r}
+\right|,
+\frac{d}{r}
+\sqrt{\frac{\max(w_+,w_-)}{\rho}}
+\right\}.
+\]
+
+\subsection{Согласование с граничными условиями}
+
+На фотосфере $r_{\mathrm{ph}}=1$ задаём
+\[
+\rho_{\mathrm{ph}}(t)=1,\qquad
+T_{\mathrm{ph}}(t)=1,\qquad
+p_{\mathrm{ph}}(t)=\theta,\qquad
+w_{+,\mathrm{ph}}(t)=\omega(t).
+\]
+Для поиска стационарного течения используем
+$\omega(t)\equiv\omega_0$.
+Скорость $u_{\mathrm{ph}}(t)$ и энергию
+$w_{-,\mathrm{ph}}(t)$ определяем по информации из области
+с помощью выбранного граничного алгоритма.
+
+На внешней границе свободный выход допустим,
+если все характеристики направлены из области.
+При наличии входящих характеристик
+для них необходимо задать внешние данные.
+
+\subsection{Начальная скорость и плотность}
+
+Используем следующую форму начальных профилей:
+\[
+u(r,0)
+=
+u_{\mathrm{ph}}^0
++1.45\left(1-\exp\!\left[-\frac{r-1}{3.5}\right]\right),
+\qquad
+u_{\mathrm{ph}}^0=0.015.
+\]
+Для выбранных коэффициентов
+\[
+c_{s,\mathrm{ph}}^0=\sqrt{\gamma\theta}
+=\sqrt{0.006},
+\qquad
+V_{A,\mathrm{ph}}^0=b=1.50.
+\]
+Поэтому начальная скорость на фотосфере
+меньше обеих этих скоростей.
+
+Плотность задаём формулой
+\[
+\rho(r,0)
+=
+\max\!\left\{
+\frac{u_{\mathrm{ph}}^0}{A(r)u(r,0)}
++
+\left(1-\frac{u_{\mathrm{ph}}^0}{u(r,0)}\right)
+\exp\!\left[-\frac{r-1}{0.15}\right],
+\ 10^{-8}
+\right\}.
+\]
+На фотосфере получаем
+\[
+u(1,0)=u_{\mathrm{ph}}^0,\qquad
+\rho(1,0)=1.
+\]
+Во внешней части области экспоненциальная добавка мала,
+и до срабатывания нижнего ограничения плотности
+\[
+A(r)\rho(r,0)u(r,0)\simeq u_{\mathrm{ph}}^0.
+\]
+Это условие приблизительно постоянного массового расхода
+для начального профиля, а не заранее заданный расход
+будущего стационарного решения.
+
+\subsection{Начальная температура и давление}
+
+Зададим температурный профиль с максимумом:
+\[
+T(r,0)
+=
+1+25
+\left(1-\exp\!\left[-\frac{r-1}{0.3}\right]\right)
+r^{-1/4}.
+\]
+Он удовлетворяет условию $T(1,0)=1$,
+возрастает над фотосферой,
+достигает максимума и затем убывает.
+Число $25$ задаёт амплитуду добавки,
+а не само значение максимальной температуры.
+
+Давление вычисляем по уравнению состояния:
+\[
+p(r,0)=\theta\rho(r,0)T(r,0).
+\]
+Следовательно,
+\[
+p(1,0)=\theta.
+\]
+Размерная температура равна
+\[
+T^{\mathrm{phys}}(r,0)=T_*T(r,0).
+\]
+Поэтому при изменении фотосферного масштаба $T_*$
+размерная высота температурного максимума
+также изменяется.
+
+\subsection{Начальные энергии волн}
+
+Выберем профили
+\[
+w_+(r,0)=\omega_0 A(r)^{-1.2},
+\]
+\[
+w_-(r,0)
+=
+0.02\,w_+(r,0)
+\left(1-\exp\!\left[-\frac{r-1}{0.5}\right]\right).
+\]
+В радиальной геометрии они принимают вид
+\[
+w_+(r,0)=\omega_0 r^{-2.4},
+\]
+\[
+w_-(r,0)
+=
+0.02\,\omega_0 r^{-2.4}
+\left(1-\exp\!\left[-\frac{r-1}{0.5}\right]\right).
+\]
+На фотосфере
+\[
+w_{+,\mathrm{ph}}^0=\omega_0,\qquad
+w_{-,\mathrm{ph}}^0=0.
+\]
+При $r>1$ обе энергии положительны,
+а отношение $w_-/w_+$ возрастает от нуля к $0.02$.
+Нулевое значение встречной энергии на фотосфере
+задаётся только в начальный момент;
+далее оно определяется граничным алгоритмом.
+
+\subsection{Полная энергия и заполнение ячеек}
+
+Начальную полную энергию вычисляем как
+\[
+E(r,0)
+=
+\frac{\rho(r,0)u(r,0)^2}{2}
++\frac{p(r,0)}{\gamma-1}
++w_+(r,0)+w_-(r,0).
+\]
+Как в программе, значения для инициализации
+берём в центрах ячеек:
+\[
+\bm U_i^0=
+\begin{pmatrix}
+\rho(r_i,0)\\
+\rho(r_i,0)u(r_i,0)\\
+E(r_i,0)\\
+w_+(r_i,0)\\
+w_-(r_i,0)
+\end{pmatrix}.
+\]
+Это приближение объёмных средних
+значениями в центрах ячеек.
+При кусочно-постоянном представлении
+внутри ячейки используется состояние $\bm U_i^0$.
+Если хранятся переменные $A\bm U$,
+начальный вектор равен $A(r_i)\bm U_i^0$.
+
+Заданные профили описывают начальный ускоряющийся поток
+с горячей областью над фотосферой.
+Они не удовлетворяют всем стационарным балансам.
+Сохранение горячей короны и установление течения
+должны определяться последующей эволюцией
+по полной системе уравнений.
+
+
+\section{Растянутая пространственная сетка}
+\label{sec:stretched_grid}
+
+\subsection{Зачем растягивать сетку}
+
+Вблизи фотосферы плотность, температура и волновые
+энергии могут изменяться на малых пространственных
+масштабах. Поэтому здесь нужны небольшие ячейки.
+Во внешней части области для описания плавных профилей
+можно использовать более крупные ячейки.
+
+Выберем геометрически растущие размеры ячеек:
+\[
+\Delta r_{i+1}=q\Delta r_i,\qquad q=1.008.
+\]
+Каждая следующая ячейка шире предыдущей на $0.8\%$.
+Такое растяжение позволяет сосредоточить разрешение
+возле фотосферы, сохраняя умеренное число ячеек
+во всей области.
+
+Число $q=1.008$ является параметром сетки,
+а не физической модели.
+Достаточность выбранного разрешения
+проверяется сравнением расчётов на разных сетках.
+
+\subsection{Построение сетки}
+
+Пусть область $[1,r_{\mathrm{out}}]$ разбита
+на $N$ ячеек:
+\[
+I_i=[r_{i-1/2},r_{i+1/2}],
+\qquad
+\Delta r_i=r_{i+1/2}-r_{i-1/2}.
+\]
+Задаём
+\[
+\Delta r_i=\Delta r_1q^{i-1}.
+\]
+Сумма размеров ячеек должна совпадать
+с длиной расчётной области:
+\[
+r_{\mathrm{out}}-1
+=\sum_{i=1}^{N}\Delta r_i
+=\Delta r_1\frac{q^N-1}{q-1}.
+\]
+Следовательно,
+\[
+\Delta r_1
+=(r_{\mathrm{out}}-1)\frac{q-1}{q^N-1}.
+\]
+Координаты граней и центров:
+\[
+r_{i+1/2}
+=1+\Delta r_1\frac{q^i-1}{q-1},
+\qquad i=0,\ldots,N,
+\]
+\[
+r_i=\frac{r_{i-1/2}+r_{i+1/2}}{2},
+\qquad i=1,\ldots,N.
+\]
+При $q=1$ используется равномерная сетка:
+\[
+\Delta r_i=\frac{r_{\mathrm{out}}-1}{N}.
+\]
+
+Например, при
+\[
+N=600,\qquad r_{\mathrm{out}}=30,\qquad q=1.008
+\]
+получаем
+\[
+\Delta r_1\simeq0.001963,\qquad
+\Delta r_N\simeq0.2321,\qquad
+\frac{\Delta r_N}{\Delta r_1}\simeq118.3.
+\]
+Для равномерной сетки из тех же $600$ ячеек
+\[
+\Delta r_{\mathrm{uniform}}\simeq0.04833.
+\]
+Таким образом, возле фотосферы шаг примерно
+в $24.6$ раза меньше, чем на равномерной сетке
+с тем же числом ячеек.
+Все приведённые расстояния безразмерны;
+размерный шаг равен $R_*\Delta r_i$.
+
+\subsection{Влияние на уравнения и численные потоки}
+
+Растяжение сетки не меняет исходные
+дифференциальные уравнения.
+Мы продолжаем использовать ту же координату $r$,
+но выбираем неравномерно расположенные грани ячеек.
+Дополнительных физических слагаемых
+или коэффициента $q$ в уравнениях не возникает.
+
+Меняются геометрические величины в дискретной схеме.
+Для записи
+\[
+\frac{\partial(A\bm U)}{\partial t}
++\frac{\partial(A\bm F)}{\partial r}
++\bm K\frac{\partial(Au)}{\partial r}
+=A\bm S
+\]
+вводим объём и среднее состояние ячейки:
+\[
+V_i=\int_{r_{i-1/2}}^{r_{i+1/2}}A(r)\,dr,
+\qquad
+\bm U_i
+=\frac1{V_i}\int_{I_i}A(r)\bm U(r)\,dr.
+\]
+При $A(r)=r^2$
+\[
+V_i=\frac{r_{i+1/2}^3-r_{i-1/2}^3}{3}.
+\]
+
+Например, явное обновление первого порядка имеет вид
+\[
+\begin{aligned}
+\bm U_i^{n+1}
+={}&\bm U_i^n
+-\frac{\Delta t}{V_i}
+\left(
+A_{i+1/2}\widehat{\bm F}_{i+1/2}^n
+-A_{i-1/2}\widehat{\bm F}_{i-1/2}^n
+\right)
+\\
+&+\Delta t\,\bm S_i^n
+-\frac{\Delta t}{V_i}\bm K_i^n
+\left(
+A_{i+1/2}\widehat u_{i+1/2}^n
+-A_{i-1/2}\widehat u_{i-1/2}^n
+\right),
+\end{aligned}
+\]
+где
+\[
+A_{i\pm1/2}=A(r_{i\pm1/2}),
+\qquad
+\bm S_i^n\simeq
+\frac1{V_i}\int_{I_i}A(r)\bm S(r,t^n)\,dr.
+\]
+Формула численного потока HLL или LF сохраняется.
+В ней используются состояния слева и справа
+от соответствующей грани.
+
+Один и тот же поток через общую грань
+входит в балансы соседних ячеек с противоположными
+знаками. Поэтому неравномерность сетки
+не нарушает консервативность потоковой части.
+
+\subsection{Пространственные производные}
+
+В разностных формулах необходимо использовать
+фактические расстояния между центрами.
+Например,
+\[
+\left(\frac{\partial V_A}{\partial r}\right)_i
+\simeq
+\frac{V_{A,i+1}-V_{A,i-1}}{r_{i+1}-r_{i-1}}.
+\]
+Однако на неравномерной сетке эта формула
+в общем случае не имеет второго порядка
+в точке $r_i$.
+
+Если требуется трёхточечная аппроксимация
+второго порядка для гладкого профиля,
+обозначим расстояния до соседних центров:
+\[
+\delta_-=r_i-r_{i-1},
+\qquad
+\delta_+=r_{i+1}-r_i.
+\]
+Тогда
+\[
+\left(\frac{\partial V_A}{\partial r}\right)_i
+\simeq
+-\frac{\delta_+}{\delta_-(\delta_-+\delta_+)}V_{A,i-1}
++\frac{\delta_+-\delta_-}{\delta_-\delta_+}V_{A,i}
++\frac{\delta_-}{\delta_+(\delta_-+\delta_+)}V_{A,i+1}.
+\]
+Эта производная используется при вычислении
+коэффициента отражения $\mathcal R$.
+Аналогично при реконструкции профилей
+наклоны вычисляются с учётом реальных расстояний
+между центрами ячеек.
+
+\subsection{Шаг по времени и точность}
+
+Для переноса используем оценку шага вида
+\[
+\Delta t_{\mathrm{CFL}}
+=
+C_{\mathrm{CFL}}
+\min_i\frac{\Delta r_i}{a_i},
+\]
+где $a_i$ --- оценка максимального модуля
+характеристической скорости в окрестности ячейки,
+а $C_{\mathrm{CFL}}$ выбирается с учётом
+применяемой схемы.
+Ограничения от источников и контроля положительности
+учитываются дополнительно.
+
+Мелкие ячейки возле фотосферы могут ограничивать
+общий шаг по времени.
+Поэтому растяжение не обязательно ускоряет расчёт
+по сравнению с равномерной сеткой из тех же $N$ ячеек:
+оно прежде всего перераспределяет разрешение.
+Зато равномерная сетка с таким же малым шагом,
+как $\Delta r_1$, потребовала бы в данном примере
+около $14777$ ячеек вместо $600$.
+
+Крупные внешние ячейки хуже разрешают короткие волны
+и узкие структуры и обычно усиливают их численное
+размазывание. Поэтому при исследовании нестационарных
+возмущений нужно проверять разрешение
+во всей области, а не только возле фотосферы.
+
+При проверке сходимости следует уменьшать размеры
+всех ячеек. Например, каждую ячейку исходной сетки
+можно разделить пополам.
+Одно увеличение $N$ при фиксированных $q>1$
+и границах области не гарантирует измельчения
+внешней части сетки.
+
+При переходе на растянутую сетку необходимо:
+\begin{itemize}
+    \item Пересчитать координаты граней и центров,
+    размеры $\Delta r_i$ и объёмы $V_i$ всех ячеек.
+
+    \item Вычислять $A$, $A'$ и площади граней
+    в новых точках сетки.
+
+    \item В разностях для $\partial V_A/\partial r$
+    учитывать реальные расстояния между центрами;
+    для второго порядка использовать трёхточечную
+    формулу на неравномерной сетке.
+
+    \item При линейной реконструкции учитывать
+    местные расстояния между центрами и гранями.
+    Для кусочно-постоянных состояний это не требуется.
+
+    \item В условии CFL использовать локальные шаги
+    $\Delta r_i$, а при проверке оснований граничных
+    характеристик --- ширину первой ячейки.
+
+    \item В потоковом обновлении и интегрировании
+    источников использовать новые границы
+    и объёмы ячеек.
+\end{itemize}
+Исходные уравнения, физические коэффициенты,
+формулы потоков HLL/LF и стадии RK2 не меняются.
+
+
+
+
+
+
+
+
+\newpage
+\appendix
+\section{Явные формулы характеристических скоростей}
+\label{app:characteristic_roots}
+
+Рассмотрим полный характеристический полином
+\[
+\det(\lambda\mathsf I-\mathsf J)=zP(z),
+\qquad z=\lambda-u,
+\]
+где
+\[
+P(z)
+=
+(z^2-c_s^2)(z^2-V_A^2)
+-\frac{
+3Wz^2+2V_A\Delta Wz-V_A^2(W+2h)
+}{4\rho},
+\qquad
+W=w_++w_-,
+\qquad
+\Delta W=w_+-w_-.
+\]
+Предполагаем, что все пять корней полного характеристического
+полинома вещественны, с учётом кратности.
+Никаких предположений о малости волновой энергии
+или коэффициента $h$ не вводится.
+
+\subsection{Приведение к уравнению четвёртой степени}
+
+Только в пределах настоящего приложения обозначим
+коэффициенты полинома через
+\[
+\begin{aligned}
+a&=c_s^2+V_A^2+\frac{3W}{4\rho},\\[3pt]
+b&=\frac{V_A\Delta W}{2\rho},\\[3pt]
+c&=V_A^2\left(c_s^2+\frac{W+2h}{4\rho}\right).
+\end{aligned}
+\]
+Тогда характеристическое уравнение принимает вид
+\[
+z\left(z^4-az^2-bz+c\right)=0.
+\]
+Один корень известен сразу:
+\[
+z_0=0,\qquad \lambda_0=u.
+\]
+Остальные четыре корня определяются уравнением
+\begin{equation}
+z^4-az^2-bz+c=0.
+\label{app:quartic_equation}
+\end{equation}
+
+\subsection{Общий случай: $b\ne0$}
+
+Введём положительную величину $m$ и представим полином
+как разность квадратов:
+\[
+\begin{aligned}
+z^4-az^2-bz+c
+={}&
+\left(z^2+\frac{m-a}{2}\right)^2
+-\left(\sqrt m\,z+\frac{b}{2\sqrt m}\right)^2
++
+c-\frac{(m-a)^2}{4}+\frac{b^2}{4m}.
+\end{aligned}
+\]
+Чтобы последняя строка обратилась в нуль, необходимо
+\[
+m(m-a)^2-4cm-b^2=0.
+\]
+Таким образом, $m$ должно удовлетворять
+вспомогательному кубическому уравнению
+\begin{equation}
+m^3-2am^2+(a^2-4c)m-b^2=0.
+\label{app:cubic_resolvent}
+\end{equation}
+
+Выбираем наибольший вещественный корень
+уравнения~\eqref{app:cubic_resolvent}.
+При четырёх вещественных корнях
+уравнения~\eqref{app:quartic_equation} и $b\ne0$
+этот корень положителен.
+
+Для пояснения обозначим корни квартета через
+$r_1,r_2,r_3,r_4$.
+Поскольку кубический член отсутствует, по теореме Виета получаем
+\[
+r_1+r_2+r_3+r_4=0.
+\]
+Три корня кубического
+уравнения~\eqref{app:cubic_resolvent} равны
+\[
+(r_1+r_2)^2,\qquad
+(r_1+r_3)^2,\qquad
+(r_1+r_4)^2.
+\]
+Следовательно, они вещественны и неотрицательны.
+При $b\ne0$ их произведение равно $b^2>0$,
+поэтому все три положительны.
+
+Выбранный наибольший корень можно записать явно (тригонометрический метод решения кубического уравнения, или формула Виета для кубического уравнения):
+\[
+m=
+\frac{2a}{3}
++\frac{2\sqrt{a^2+12c}}{3}
+\cos\!\left[
+\frac13\arccos\!\left(
+\frac{-2a^3+72ac+27b^2}
+{2(a^2+12c)^{3/2}}
+\right)
+\right].
+\]
+При рассматриваемых предположениях
+$a^2+12c>0$, а аргумент $\arccos$ принадлежит $[-1,1]$.
+
+После выбора $m$ получаем точное разложение
+\[
+\begin{aligned}
+z^4-az^2-bz+c
+={}&
+\left(
+z^2-\sqrt m\,z+\frac{m-a}{2}
+-\frac{b}{2\sqrt m}
+\right)\cdot
+\left(
+z^2+\sqrt m\,z+\frac{m-a}{2}
++\frac{b}{2\sqrt m}
+\right).
+\end{aligned}
+\]
+Решая два квадратных уравнения, находим
+\begin{equation}
+\begin{aligned}
+z_{1,2}
+&=
+\frac{
+\sqrt m\ \pm
+\sqrt{\,2a-m+\dfrac{2b}{\sqrt m}\,}
+}{2},
+\\[6pt]
+z_{3,4}
+&=
+\frac{
+-\sqrt m\ \pm
+\sqrt{\,2a-m-\dfrac{2b}{\sqrt m}\,}
+}{2}.
+\end{aligned}
+\label{app:four_explicit_roots}
+\end{equation}
+В каждой строке берутся оба знака.
+При вещественности всех четырёх корней
+подкоренные выражения неотрицательны.
+Нумерация в~\eqref{app:four_explicit_roots}
+не задаёт порядка корней по величине.
+
+\subsection{Биквадратный случай: $b=0$}
+
+Если $b=0$, уравнение~\eqref{app:quartic_equation}
+решается заменой $y=z^2$:
+\[
+y^2-ay+c=0.
+\]
+Поэтому
+\[
+\begin{aligned}
+z_{1,2}
+&=\pm\sqrt{\frac{a+\sqrt{a^2-4c}}{2}},\\[5pt]
+z_{3,4}
+&=\pm\sqrt{\frac{a-\sqrt{a^2-4c}}{2}}.
+\end{aligned}
+\]
+Предположение о вещественности всех четырёх корней
+означает
+\[
+a^2-4c\ge0,
+\qquad
+\frac{a+\sqrt{a^2-4c}}2\ge0,
+\qquad
+\frac{a-\sqrt{a^2-4c}}2\ge0.
+\]
+Коэффициент $h$ сохраняется в этих формулах через $c$.
+
+\subsection{Все пять характеристических скоростей}
+
+После вычисления корней квартета получаем
+\[
+\lambda_0=u,\qquad
+\lambda_j=u+z_j,\qquad j=1,2,3,4.
+\]
+При необходимости скорости сортируются по возрастанию.
+
+Формулы учитывают все слагаемые исходного полинома.
+Совпадающие корни выдаются с учётом кратности.
+Вещественность всех корней сама по себе не означает
+строгой гиперболичности: для неё все пять скоростей
+должны быть различными.
+
+При численной реализации около кратных корней
+возможна потеря точности вследствие вычитания близких
+чисел. Поэтому найденные корни следует проверять
+подстановкой в исходный полином.
+\end{document}

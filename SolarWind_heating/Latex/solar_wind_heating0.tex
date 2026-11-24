@@ -1,0 +1,381 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[a4paper,margin=22mm]{geometry}
+
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!60!black,
+    citecolor=blue!60!black
+}
+
+\title{\textbf{Квазиодномерная нестационарная модель ускорения и нагрева солнечного ветра альфвеновской турбулентностью с учётом переходного слоя: консервативная формулировка, параметрический анализ и численная схема}}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Трёхмерные уравнения идеальной МГД с альфвеновской турбулентностью}
+
+Искомыми функциями времени $t$ и радиус-вектора $\bm{x}$ ($r = |\bm{x}|$) являются плотность плазмы $\rho$, массовая скорость $\bm{u}$, тепловое давление $p$, магнитная индукция $\bm{B}$, а также плотности энергии альфвеновских волн $w_+$ и $w_-$, распространяющихся соответственно вдоль и против направления магнитного поля $\bm{B}$.
+
+Полная плотность энергии плазмы и магнитного поля (без учёта энергии волн) $E_{\rm mhd}$, вектор альфвеновской скорости $\bm{V}_A$, изотропное волновое давление $P_A$ и ускорение солнечной гравитации $\bm{g}$ определяются соотношениями:
+\begin{equation}
+E_{\rm mhd} = \frac{\rho|\bm{u}|^2}{2} + \frac{p}{\gamma-1} + \frac{|\bm{B}|^2}{2\mu_0}, \qquad
+\bm{V}_A = \frac{\bm{B}}{\sqrt{\mu_0\rho}}, \qquad
+P_A = \frac{w_+ + w_-}{2}, \qquad
+\bm{g} = -\frac{GM_\odot}{r^3}\bm{x},
+\label{eq:defs_3d}
+\end{equation}
+где $\gamma = 5/3$ --- показатель адиабаты, $\mu_0$ --- магнитная постоянная, $G$ --- гравитационная постоянная, $M_\odot$ --- масса Солнца.
+
+Трёхмерная система уравнений модели AWSoM (Alfv\'en Wave Solar Model) включает законы сохранения массы, импульса, уравнения индукции идеальной МГД, баланса энергии плазмы и переноса энергии встречных популяций альфвеновских волн:
+\begin{align}
+\frac{\partial\rho}{\partial t} + \nabla\cdot(\rho\bm{u}) &= 0,
+\label{eq:3d_mass}\\[4pt]
+\frac{\partial(\rho\bm{u})}{\partial t} + \nabla\cdot\left[\rho\bm{u}\otimes\bm{u} + \left(p + P_A + \frac{|\bm{B}|^2}{2\mu_0}\right)\mathbf{I} - \frac{\bm{B}\otimes\bm{B}}{\mu_0}\right] &= \rho\bm{g},
+\label{eq:3d_momentum}\\[4pt]
+\frac{\partial\bm{B}}{\partial t} + \nabla\cdot(\bm{B}\otimes\bm{u} - \bm{u}\otimes\bm{B}) &= \bm{0}, \qquad \nabla\cdot\bm{B} = 0,
+\label{eq:3d_induction}\\[4pt]
+\frac{\partial E_{\rm mhd}}{\partial t} + \nabla\cdot\left[\left(E_{\rm mhd} + p + \frac{|\bm{B}|^2}{2\mu_0}\right)\bm{u} - \frac{(\bm{u}\cdot\bm{B})\bm{B}}{\mu_0} + \bm{q}\right] &= \rho\bm{u}\cdot\bm{g} - \bm{u}\cdot\nabla P_A + Q_w - Q_{\rm rad} + Q_{\rm bg},
+\label{eq:3d_energy}\\[4pt]
+\frac{\partial w_\pm}{\partial t} + \nabla\cdot\left[(\bm{u} \pm \bm{V}_A)w_\pm\right] + \frac{w_\pm}{2}\nabla\cdot\bm{u} &= \mp\mathcal{R}\sqrt{w_+ w_-} - \Gamma_\pm w_\pm.
+\label{eq:3d_waves}
+\end{align}
+Здесь $\mathbf{I}$ --- единичный тензор, $\bm{q}$ --- вектор теплового потока, $Q_{\rm rad}$ --- радиационные потери, $Q_{\rm bg}$ --- фоновый нагрев. Феноменологическое замыкание каскадной диссипации $\Gamma_\pm$, турбулентного нагрева $Q_w$ и коэффициента линейного отражения $\mathcal{R}$ имеет вид:
+\begin{equation}
+\Gamma_\pm = \frac{2}{L_\perp}\sqrt{\frac{w_\mp}{\rho}}, \qquad
+L_\perp\sqrt{|\bm{B}|} = C_L = \mathrm{const} > 0, \qquad
+Q_w = \Gamma_+ w_+ + \Gamma_- w_-,
+\label{eq:3d_dissipation}
+\end{equation}
+\begin{equation}
+\mathcal{R} = \min\left\{\mathcal{R}_{\rm imb},\, \max(\Gamma_+,\Gamma_-)\right\}\mathcal{C}(w_+, w_-), \qquad
+\mathcal{R}_{\rm imb} = \sqrt{\left[(\bm{V}_A\cdot\nabla)\ln|\bm{V}_A|\right]^2 + \left[\bm{b}\cdot(\nabla\times\bm{u})\right]^2},
+\label{eq:3d_reflection}
+\end{equation}
+где $\bm{b} = \bm{B}/|\bm{B}|$, $L_\perp$ --- поперечный корреляционный масштаб турбулентности, а безразмерная функция дисбаланса волн $\mathcal{C}(w_+, w_-)$ задаётся кусочно-гладким соотношением:
+\begin{equation}
+\mathcal{C}(w_+, w_-) =
+\begin{cases}
+1 - 2\sqrt{w_-/w_+}, & w_+ \ge 4w_-,\\[4pt]
+0, & \frac{1}{4}w_- < w_+ < 4w_-,\\[4pt]
+2\sqrt{w_+/w_-} - 1, & w_- \ge 4w_+.
+\end{cases}
+\label{eq:imbalance_func}
+\end{equation}
+
+\section{Квазиодномерная редукция, модель переходного слоя и консервативная форма}
+
+Рассмотрим осесимметричную магнитную трубку с заданной стационарной площадью поперечного сечения $A(r) > 0$, боковая поверхность которой образована магнитными силовыми линиями ($\bm{u} \parallel \bm{B}$). Из соленоидальности магнитного поля следует сохранение магнитного потока $\Phi_B$ вдоль трубки:
+\begin{equation}
+A(r)B(r) = \Phi_B = \mathrm{const}, \qquad V_A(r,\rho) = \frac{B(r)}{\sqrt{\mu_0\rho}}, \qquad L_\perp(r) = C_L B(r)^{-1/2}.
+\label{eq:flux_tube}
+\end{equation}
+В отсутствие завихренности ($\nabla\times\bm{u}=\bm{0}$) и дополнительного фонового нагрева ($Q_{\rm bg}=0$) продольная проекция системы \eqref{eq:3d_mass}--\eqref{eq:3d_waves} для газодинамической плотности энергии плазмы
+\begin{equation}
+E_g = \frac{\rho u^2}{2} + \frac{p}{\gamma-1}
+\label{eq:gas_energy_def}
+\end{equation}
+включает дивергенцию продольного теплового потока $q$, радиационные потери $Q_{\rm rad}$, неконсервативный член работы волнового давления $-u\,\partial P_A/\partial r$ и объёмный источник турбулентного нагрева $Q_w$:
+\begin{equation}
+\frac{\partial E_g}{\partial t} + \frac{1}{A}\frac{\partial}{\partial r}\left[A u (E_g + p) + A q\right] = -\rho u \frac{GM_\odot}{r^2} - u\frac{\partial P_A}{\partial r} + Q_w - Q_{\rm rad}.
+\label{eq:noncons_Eg}
+\end{equation}
+Уравнения переноса волн содержат неконсервативные члены взаимодействия с расходящимся потоком $+\frac{w_\pm}{2A}\frac{\partial(Au)}{\partial r}$ и источник диссипации $-\Gamma_\pm w_\pm$:
+\begin{equation}
+\frac{\partial w_\pm}{\partial t} + \frac{1}{A}\frac{\partial}{\partial r}\left[A(u \pm V_A)w_\pm\right] + \frac{w_\pm}{2A}\frac{\partial(Au)}{\partial r} = \mp\mathcal{R}\sqrt{w_+ w_-} - \Gamma_\pm w_\pm.
+\label{eq:noncons_w}
+\end{equation}
+
+Заметим, что тождество
+\[
+\frac{w_+ + w_-}{2A}\frac{\partial(Au)}{\partial r} + u\frac{\partial P_A}{\partial r} = \frac{1}{A}\frac{\partial(A u P_A)}{\partial r}, \qquad (\Gamma_+ w_+ + \Gamma_- w_-) - Q_w = 0
+\]
+позволяет сложить уравнения \eqref{eq:noncons_Eg} и \eqref{eq:noncons_w}, введя полную плотность энергии системы «плазма + альфвеновские волны» $E$:
+\begin{equation}
+E = E_g + w_+ + w_- = \frac{\rho u^2}{2} + \frac{p}{\gamma-1} + w_+ + w_-.
+\label{eq:total_energy_def}
+\end{equation}
+В переменной $E$ гиперболическая часть уравнения полной энергии принимает строго дивергентный (консервативный) вид, не содержащий ни неконсервативной производной $\partial P_A/\partial r$, ни жёсткого источника турбулентного нагрева $Q_w$:
+\begin{equation}
+\frac{\partial(A E)}{\partial t} + \frac{\partial}{\partial r}\left[A u(E + p + P_A) + A V_A(w_+ - w_-)\right] = -A\rho u\frac{GM_\odot}{r^2} - \frac{\partial(A q)}{\partial r} - A Q_{\rm rad}.
+\label{eq:total_energy_eq_1d}
+\end{equation}
+
+\subsection{Физическая модель переходного слоя и регуляризация Линкера--Лионелло--Соколова}
+
+Формирование переходного слоя между верхней хромосферой ($T_0 \sim 2\times 10^4$~К) и короной ($T \sim 1.5\times 10^6$~К) определяется балансом направленного к Солнцу потока электронной теплопроводности $q$ и радиационного охлаждения оптически тонкой плазмы $Q_{\rm rad}$:
+\begin{equation}
+q = -f_c(r)\kappa_0 T^{5/2}\frac{\partial T}{\partial r}, \qquad Q_{\rm rad} = n_e n_H \Lambda(T) = c_{\rm rad}\left(\frac{\rho}{m_u}\right)^2\Lambda(T),
+\label{eq:tr_physics_raw}
+\end{equation}
+где $\kappa_0 \approx 9\times 10^{-12}\text{ Вт}\cdot\text{м}^{-1}\cdot\text{К}^{-7/2}$ --- классический коэффициент электронной теплопроводности Спитцера--Харма, $c_{\rm rad} = X_H(1 + X_H)/2 \approx 0.61$ для полностью ионизованной водородно-гелиевой плазмы ($\mu \approx 0.6$), $f_c(r) = \left[1 + (r/r_{\rm col})^2\right]^{-1}$ --- фактор плавного выключения столкновительной теплопроводности в сверхзвуковой бесстолкновительной зоне ($r_{\rm col} \approx 5 R_\odot$), а $\Lambda(T)$ --- кусочно-степенная функция радиационных потерь Роснера--Таккера--Вайана (RTV / Klimchuk et al. 2008), обращающаяся в нуль при $T \le T_0$ для обеспечения радиационного равновесия хромосферного резервуара.
+
+Поскольку в нижней части переходного слоя ($T \approx 3\times 10^4$~К) коэффициент $\kappa_0 T^{5/2}$ падает более чем на четыре порядка по сравнению с корональным значением, физическая толщина теплового фронта составляет $\Delta r_{\rm TR} \sim 1\text{--}5$~км ($\sim 10^{-6} R_\odot$) и не может быть разрешена на глобальной гелиоцентрической сетке. В соответствии с методом искусственного уширения переходного слоя (Lionello et al. 2009; Sokolov et al. 2013) вводится модифицирующий множитель при температурах ниже пороговой $T_{\rm mod} \approx 2.5\times 10^5$~К:
+\begin{equation}
+s(T) = \max\left\{1,\, \left(\frac{T_{\rm mod}}{T}\right)^{5/2}\right\}, \qquad
+\tilde{\kappa}(T) = \kappa_0 T^{5/2} s(T), \qquad
+\tilde{\Lambda}(T) = \frac{\Lambda(T)}{s(T)}.
+\label{eq:lls_broadening}
+\end{equation}
+Преобразование \eqref{eq:lls_broadening} обладает фундаментальным свойством инвариантности интеграла теплового баланса переходного слоя:
+\begin{equation}
+\tilde{\kappa}(T)\tilde{\Lambda}(T) \equiv \kappa(T)\Lambda(T), \qquad
+\frac{1}{2}q_{\rm cor}^2 \approx \int_{T_0}^{T_{\rm cor}}\tilde{\kappa}(T)\tilde{Q}_{\rm rad}(p_{\rm cor}, T)\,dT = \mathrm{inv},
+\label{eq:lls_invariance}
+\end{equation}
+благодаря чему давление у основания короны $p_{\rm cor}$ и массовый расход солнечного ветра $\dot{m}$ остаются неизменными, тогда как при $T < T_{\rm mod}$ эффективный коэффициент теплопроводности становится постоянным ($\tilde{\kappa}(T) = \kappa_0 T_{\rm mod}^{5/2}$), растягивая переходный слой до разрешаемого на сетке масштаба $\Delta r_{\rm TR} \sim 2\text{--}4\times 10^{-3} R_\odot$.
+
+\subsection{Векторная запись системы в консервативных переменных}
+
+Введём вектор консервативных переменных на единицу длины трубки $\bm{U}$ и вектор гиперболических потоков $\bm{F}(\bm{U}, r)$:
+\begin{equation}
+\bm{U} = A\begin{pmatrix}
+\rho \\[3pt]
+\rho u \\[3pt]
+E \\[3pt]
+w_+ \\[3pt]
+w_-
+\end{pmatrix}, \qquad
+\bm{F}(\bm{U}, r) = A\begin{pmatrix}
+\rho u \\[3pt]
+\rho u^2 + p + P_A \\[3pt]
+u(E + p + P_A) + V_A(w_+ - w_-) \\[3pt]
+(u + V_A)w_+ \\[3pt]
+(u - V_A)w_-
+\end{pmatrix}.
+\label{eq:cons_vectors}
+\end{equation}
+Тогда замкнутая квазиодномерная система записывается в балансной форме:
+\begin{equation}
+\frac{\partial\bm{U}}{\partial t} + \frac{\partial\bm{F}(\bm{U}, r)}{\partial r} + \bm{G}(\bm{U})\frac{\partial(Au)}{\partial r} = \bm{S}_{\rm geom}(\bm{U}, r) + \bm{S}_{\rm turb}(\bm{U}, \partial_r\rho, r) + \bm{S}_{\rm th}(\bm{U}, \partial_r T, \partial_r^2 T, r),
+\label{eq:master_system}
+\end{equation}
+где вектор неконсервативной связи $\bm{G}$, геометрически-гравитационный источник $\bm{S}_{\rm geom}$, турбулентный источник $\bm{S}_{\rm turb}$ и неадиабатический тепловой оператор $\bm{S}_{\rm th}$ имеют вид:
+\begin{equation}
+\bm{G}(\bm{U}) = \begin{pmatrix}
+0 \\[2pt]
+0 \\[2pt]
+0 \\[2pt]
+\frac{1}{2}w_+ \\[2pt]
+\frac{1}{2}w_-
+\end{pmatrix}, \quad
+\bm{S}_{\rm geom} = \begin{pmatrix}
+0 \\[2pt]
+(p + P_A)\dfrac{dA}{dr} - A\rho\dfrac{GM_\odot}{r^2} \\[5pt]
+-A\rho u\dfrac{GM_\odot}{r^2} \\[5pt]
+0 \\[2pt]
+0
+\end{pmatrix}, \quad
+\bm{S}_{\rm turb} = A\begin{pmatrix}
+0 \\[2pt]
+0 \\[2pt]
+0 \\[2pt]
+-\mathcal{R}\sqrt{w_+ w_-} - \Gamma_+ w_+ \\[2pt]
++\mathcal{R}\sqrt{w_+ w_-} - \Gamma_- w_-
+\end{pmatrix},
+\label{eq:source_vectors}
+\end{equation}
+\begin{equation}
+\bm{S}_{\rm th} = \begin{pmatrix}
+0 \\[2pt]
+0 \\[2pt]
+\dfrac{\partial}{\partial r}\left[A f_c(r)\tilde{\kappa}(T)\dfrac{\partial T}{\partial r}\right] - A\tilde{Q}_{\rm rad}(\rho, T) \\[6pt]
+0 \\[2pt]
+0
+\end{pmatrix}.
+\label{eq:thermal_vector}
+\end{equation}
+Давление восстанавливается из консервативных компонент по алгебраической формуле:
+\begin{equation}
+p = (\gamma - 1)\left(\frac{U_3}{A} - \frac{U_2^2}{2 A U_1} - \frac{U_4 + U_5}{A}\right), \qquad P_A = \frac{U_4 + U_5}{2A}.
+\label{eq:pressure_recovery}
+\end{equation}
+
+\section{Обезразмеривание и параметрический анализ}
+
+\subsection{Выбор характерных масштабов}
+
+Зададим на внутренней границе $r = R_\odot$ (вершина хромосферного резервуара) размерные параметры $\rho_0$, $T_0$, $B_0$, корреляционную длину $L_{\perp,0}$ и плотность энергии выходящих волн $w_{+,0}$. В качестве независимых базисных масштабов длины, плотности, скорости (первой космической скорости на поверхности Солнца $v_{\rm K}$), времени и температуры выберем:
+\begin{equation}
+R_* = R_\odot, \qquad \rho_* = \rho_0, \qquad V_* = v_{\rm K} = \sqrt{\frac{GM_\odot}{R_\odot}}, \qquad t_* = \frac{R_*}{V_*}, \qquad T_* = T_0.
+\label{eq:scales_base}
+\end{equation}
+Производные масштабы площади сечения, магнитного поля, давления (и плотности энергии), частоты диссипации, теплового потока и объёмного охлаждения принимают вид:
+\begin{equation}
+A_* = A(R_\odot), \qquad B_* = B_0, \qquad p_* = \rho_* V_*^2, \qquad \Gamma_* = \frac{V_*}{R_*}, \qquad q_* = p_* V_*, \qquad Q_* = \frac{p_* V_*}{R_*}.
+\label{eq:scales_derived}
+\end{equation}
+Переходя к безразмерным переменным (без крышек) и учитывая $B(r)/B_0 = A(r)^{-1}$, $L_\perp(r)/L_{\perp,0} = A(r)^{1/2}$, получаем безразмерные замыкания:
+\begin{equation}
+V_A = \frac{V_{A,0}}{A\sqrt{\rho}}, \qquad
+\Gamma_\pm = \alpha_d\sqrt{\frac{w_\mp}{A\rho}}, \qquad
+p = \theta_0\rho T,
+\label{eq:dimless_closures}
+\end{equation}
+\begin{equation}
+\mathcal{R} = \mathcal{C}(w_+, w_-)\min\left\{V_{A,0}\left|\frac{\partial}{\partial r}\left(\frac{1}{A\sqrt{\rho}}\right)\right|,\, \frac{\alpha_d}{\sqrt{A\rho}}\max\left(\sqrt{w_+}, \sqrt{w_-}\right)\right\},
+\label{eq:dimless_R}
+\end{equation}
+\begin{equation}
+q = -\chi_0 f_c(r)\max(T, \tau_{\rm mod})^{5/2}\frac{\partial T}{\partial r}, \qquad
+\tilde{Q}_{\rm rad} = \lambda_{\rm rad}\rho^2 \frac{\hat{\Lambda}(T)}{\max(1, (\tau_{\rm mod}/T)^{5/2})},
+\label{eq:dimless_tr}
+\end{equation}
+где $\tau_{\rm mod} = T_{\rm mod}/T_0$ --- безразмерный порог регуляризации переходного слоя, а $\hat{\Lambda}(T) = \Lambda(T_0 T)/\Lambda_*$ --- нормированная функция радиационных потерь ($\Lambda_* = 10^{-34}\text{ Вт}\cdot\text{м}^3$).
+
+В результате система \eqref{eq:master_system} в безразмерных переменных принимает вид:
+\begin{align}
+\frac{\partial(A\rho)}{\partial t} + \frac{\partial(A\rho u)}{\partial r} &= 0,
+\label{eq:nd_mass}\\[4pt]
+\frac{\partial(A\rho u)}{\partial t} + \frac{\partial}{\partial r}\left[A(\rho u^2 + p + P_A)\right] &= (p + P_A)\frac{dA}{dr} - \frac{A\rho}{r^2},
+\label{eq:nd_mom}\\[4pt]
+\frac{\partial(A E)}{\partial t} + \frac{\partial}{\partial r}\left[A u(E + p + P_A) + A V_A(w_+ - w_-)\right] &= -\frac{A\rho u}{r^2} - \frac{\partial(A q)}{\partial r} - A\tilde{Q}_{\rm rad},
+\label{eq:nd_energy}\\[4pt]
+\frac{\partial(A w_\pm)}{\partial t} + \frac{\partial}{\partial r}\left[A(u \pm V_A)w_\pm\right] + \frac{w_\pm}{2}\frac{\partial(Au)}{\partial r} &= A\left(\mp\mathcal{R}\sqrt{w_+ w_-} - \Gamma_\pm w_\pm\right).
+\label{eq:nd_waves}
+\end{align}
+
+\subsection{Безразмерные комплексы подобия}
+
+Безразмерные комплексы модели $(\theta_0, V_{A,0}, \alpha_d, w_{+,0}, \chi_0, \lambda_{\rm rad}, \tau_{\rm mod})$ сведены в таблицу~\ref{tab:params}.
+
+\begin{table}[ht!]
+\centering
+\caption{Безразмерные параметры подобия квазиодномерной модели с переходным слоем ($R_\odot = 6.96\times 10^8$~м, $V_* = 436.7$~км/с, $T_0 \approx 2\text{--}5\times 10^4$~К, $\rho_0 \approx 2\text{--}5\times 10^{-11}\text{ кг/м}^3$, $B_0 \sim 2\text{--}10$~Гс).}
+\vspace{2mm}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Параметр} & \textbf{Определение} & \textbf{Физический смысл} & \textbf{Типичный диапазон} \\
+\midrule
+$\theta_0$ & $\dfrac{k_{\rm B}T_0}{\mu m_u V_*^2} = \dfrac{c_{T,0}^2}{V_*^2}$ & Безразмерная шкала высот у границы $r=1$ & $0.0015 \text{ -- } 0.005$ \\[7pt]
+$V_{A,0}$ & $\dfrac{B_0}{V_*\sqrt{\mu_0\rho_0}}$ & Безразмерная скорость Альфвена у основания & $0.5 \text{ -- } 3.0$ \\[7pt]
+$\alpha_d$ & $\dfrac{2 R_\odot}{L_{\perp,0}}$ & Параметр каскадной диссипации & $10 \text{ -- } 100$ \\[7pt]
+$w_{+,0}$ & $\dfrac{w_{+,{\rm dim}}(R_\odot)}{\rho_0 V_*^2}$ & Безразмерная энергия входящих волн & $0.02 \text{ -- } 0.20$ \\[7pt]
+$\chi_0$ & $\dfrac{\kappa_0 T_0^{7/2}}{R_\odot\rho_0 V_*^3}$ & Обратное число Пекле электронной теплопроводности & $10^{-7} \text{ -- } 10^{-5}$ \\[7pt]
+$\lambda_{\rm rad}$ & $\dfrac{c_{\rm rad} R_\odot \rho_0 \Lambda_*}{m_u^2 V_*^3}$ & Безразмерный параметр радиационного охлаждения & $0.05 \text{ -- } 2.0$ \\[7pt]
+$\tau_{\rm mod}$ & $\dfrac{T_{\rm mod}}{T_0}$ & Порог уширения переходного слоя & $5.0 \text{ -- } 15.0$ \\
+\bottomrule
+\end{tabular}
+\label{tab:params}
+\end{table}
+
+Примечательно, что хотя на самой хромосферной границе параметр $\chi_0 \sim 10^{-6}$ мал, в разогретой короне ($T/T_0 \sim 30\text{--}60$) безразмерный коэффициент температуропроводности возрастает в $(T/T_0)^{5/2} / \rho \sim 10^5\text{--}10^6$ раз, делая электронную теплопроводность ведущим процессом переноса энергии в короне и переходном слое.
+
+\section{Математические свойства нестационарной системы}
+
+При выделении главной гиперболической части (без учёта параболического оператора теплопроводности $\bm{S}_{\rm th}$) система в примитивных переменных $\bm{W} = (\rho, u, p, w_+, w_-)^T$ имеет квазилинейную форму
+\begin{equation}
+\frac{\partial\bm{W}}{\partial t} + \mathsf{A}_{\rm prim}(\bm{W})\frac{\partial\bm{W}}{\partial r} = \bm{S}_{\rm alg}(\bm{W}, r) + \bm{S}_{\rm diff}(\bm{W}, \partial_r^2 T),
+\label{eq:quasilinear_form}
+\end{equation}
+где матрица $\mathsf{A}_{\rm prim}(\bm{W})$ включает вклад от градиента плотности $\partial_r\rho$ на градиентной ветви коэффициента отражения ($\sigma = \mathrm{sgn}(\partial_r V_A) \in \{-1, 0, +1\}$):
+\begin{equation}
+\mathsf{A}_{\rm prim}(\bm{W}) =
+\begin{pmatrix}
+u & \rho & 0 & 0 & 0 \\[4pt]
+0 & u & \dfrac{1}{\rho} & \dfrac{1}{2\rho} & \dfrac{1}{2\rho} \\[6pt]
+0 & \gamma p & u & 0 & 0 \\[4pt]
+-\alpha_+ & \dfrac{3}{2}w_+ & 0 & u + V_A & 0 \\[6pt]
+\alpha_- & \dfrac{3}{2}w_- & 0 & 0 & u - V_A
+\end{pmatrix}, \qquad
+\alpha_\pm = \frac{V_A}{2\rho}\left(w_\pm - \sigma\mathcal{C}\sqrt{w_+ w_-}\right).
+\label{eq:A_prim}
+\end{equation}
+Спектр конвективной части состоит из пяти вещественных собственных значений:
+\begin{equation}
+\lambda_1 = u, \qquad \lambda_{2,3} \approx u \pm c_{\rm eff}, \qquad \lambda_{4,5} \approx u \pm V_A, \qquad c_{\rm eff}^2 = c_s^2 + \frac{w_+ + w_-}{4\rho}\left(3 - \frac{2 V_A^2}{V_A^2 - c_s^2}\right).
+\label{eq:eigenvalues_approx}
+\end{equation}
+При включении электронной теплопроводности ($\chi_0 > 0$) система становится **гиперболо-параболической** при $r \lesssim r_{\rm col}$ и асимптотически переходит в **строго гиперболическую** систему при $r \gg r_{\rm col}$ благодаря убывающему фактору $f_c(r)$.
+
+\section{Численная схема решения методом установления}
+
+Численное интегрирование системы \eqref{eq:nd_mass}--\eqref{eq:nd_waves} до установления стационарного режима выполняется методом конечного объёма с трёхэтапным операторным расщеплением типа IMEX (Implicit-Explicit) на каждом шаге по времени $\Delta t$:
+\begin{enumerate}
+\item **Явный гиперболический шаг (MUSCL-HLL/Rusanov + TVD RK2)** для конвективного переноса, геометрических сил, гравитации и работы волнового давления;
+\item **Локальный полунеявный шаг в переменных амплитуд $a_\pm = \sqrt{w_\pm}$** для жёстких волновых источников отражения $\mathcal{R}$ и каскадной диссипации $\Gamma_\pm$;
+\item **Глобальный неявный шаг (метод трёхдиагональной прогонки Томаса)** для параболического оператора нелинейной электронной теплопроводности и радиационных потерь переходного слоя.
+\end{enumerate}
+
+\subsection{Конечно-объёмная аппроксимация гиперболической части и турбулентных источников}
+
+На неравномерной радиальной сетке $1 = r_{1/2} < r_{3/2} < \dots < r_{N+1/2} = r_{\rm out}$ с геометрическим растяжением $\Delta r_i = q\Delta r_{i-1}$ полудискретная схема для гиперболического оператора $\mathcal{L}_{\rm hyp}(\bm{U}_i)$ имеет вид:
+\begin{equation}
+\mathcal{L}_{\rm hyp}(\bm{U}_i) = -\frac{\hat{\bm{F}}_{i+1/2} - \hat{\bm{F}}_{i-1/2}}{\Delta r_i} - \bm{G}(\bm{U}_i)\frac{\Phi_{m,i+1/2} - \Phi_{m,i-1/2}}{\Delta r_i} + \bm{S}_{{\rm geom},i}.
+\label{eq:fvm_hyp}
+\end{equation}
+Потоки на гранях $\hat{\bm{F}}_{i+1/2}$ вычисляются по схеме HLL или Русанова по кусочно-линейно реконструированным примитивным переменным $\bm{W}_{i+1/2}^{L,R}$ с лимитером ван Лира. После явного шага и обновления $\bm{U}^* = (A\rho, A\rho u, A E^*, A w_+^*, A w_-^*)^T$ в каждой ячейке решается линейная система $2 \times 2$ для новых амплитуд $a_\pm = \sqrt{w_\pm}$:
+\begin{equation}
+\begin{pmatrix}
+1 & \dfrac{\Delta t}{2}\left(\mathcal{R}_{\rm ref} + \kappa_i a_+^*\right) \\[8pt]
+-\dfrac{\Delta t}{2}\mathcal{R}_{\rm ref} & 1 + \dfrac{\Delta t}{2}\kappa_i a_+^*
+\end{pmatrix}
+\begin{pmatrix}
+a_+^{**} \\[6pt]
+a_-^{**}
+\end{pmatrix} =
+\begin{pmatrix}
+a_+^* \\[6pt]
+a_-^*
+\end{pmatrix}, \qquad \kappa_i = \frac{\alpha_d}{\sqrt{A_i\rho_i}},
+\label{eq:imex_waves_2x2}
+\end{equation}
+при сохранении полной энергии $E^{**} = E^*$, что автоматически переводит диссипировавшую энергию волн в тепловую энергию плазмы $p^{**}/(\gamma - 1)$.
+
+\subsection{Неявная схема прогонки (алгоритм Томаса) для переходного слоя}
+
+Поскольку параболическое условие устойчивости для электронной теплопроводности Спитцера ($\Delta t_{\rm cond} \propto \Delta r_{\min}^2 / T^{5/2} \sim 10^{-6}$) на два-три порядка жёстче гиперболического условия Куранта ($\Delta t_{\rm CFL} \sim 10^{-3}$), тепловой оператор $\bm{S}_{\rm th}$ интегрируется **неявно**.
+
+На третьем этапе расщепления плотность $\rho_i = \rho_i^{n+1}$, скорость $u_i = u_i^{n+1}$ и энергии волн $w_{\pm,i} = w_{\pm,i}^{n+1}$ заморожены, а внутренняя тепловая энергия газа равна $\frac{p_i}{\gamma-1} = \frac{\theta_0}{\gamma-1}\rho_i T_i$. Тогда уравнение полной энергии \eqref{eq:nd_energy} на шаге $\Delta t$ сводится к эволюционному уравнению для безразмерной температуры $T_i$:
+\begin{equation}
+\frac{\theta_0}{\gamma-1}A_i\rho_i\frac{T_i^{n+1} - T_i^{**}}{\Delta t} = \frac{1}{\Delta r_i}\left(K_{i+1/2}\frac{T_{i+1}^{n+1} - T_i^{n+1}}{r_{i+1} - r_i} - K_{i-1/2}\frac{T_i^{n+1} - T_{i-1}^{n+1}}{r_i - r_{i-1}}\right) - A_i\tilde{Q}_{\rm rad}\left(\rho_i, T_i^{**}, T_i^{n+1}\right),
+\label{eq:implicit_heat_discrete}
+\end{equation}
+где эффективная теплопроводность на грани $r_{i+1/2}$ вычисляется по полусумме температур со слоя $**$:
+\begin{equation}
+K_{i+1/2} = A_{i+1/2} f_c(r_{i+1/2}) \chi_0 \max\left(\frac{T_i^{**} + T_{i+1}^{**}}{2},\, \tau_{\rm mod}\right)^{5/2}.
+\label{eq:K_face_def}
+\end{equation}
+Чтобы обеспечить безусловную положительность температуры $T_i^{n+1} > 0$ при сильном радиационном охлаждении в основании переходного слоя, член $\tilde{Q}_{\rm rad}$ аппроксимируется полунеявно (пропорционально $T_i^{n+1} / T_i^{**}$):
+\begin{equation}
+\tilde{Q}_{\rm rad}\left(\rho_i, T_i^{**}, T_i^{n+1}\right) = \left[\frac{\tilde{Q}_{\rm rad}(\rho_i, T_i^{**})}{T_i^{**}}\right] T_i^{n+1}.
+\label{eq:qrad_semi_implicit}
+\end{equation}
+В результате система \eqref{eq:implicit_heat_discrete} записывается в виде линейной трёхдиагональной системы с диагональным преобладанием:
+\begin{equation}
+-a_i T_{i-1}^{n+1} + b_i T_i^{n+1} - c_i T_{i+1}^{n+1} = d_i, \qquad i = 1, \dots, N,
+\label{eq:tridiagonal_system}
+\end{equation}
+с положительными коэффициентами
+\[
+a_i = \frac{\Delta t\, K_{i-1/2}}{\Delta r_i (r_i - r_{i-1})}, \qquad
+c_i = \frac{\Delta t\, K_{i+1/2}}{\Delta r_i (r_{i+1} - r_i)}, \qquad
+b_i = \frac{\theta_0}{\gamma-1}A_i\rho_i + a_i + c_i + \Delta t A_i \frac{\tilde{Q}_{\rm rad}(\rho_i, T_i^{**})}{T_i^{**}},
+\]
+\[
+d_i = \frac{\theta_0}{\gamma-1}A_i\rho_i T_i^{**}.
+\]
+На левой границе ($r = 1$) задаётся условие Дирихле хромосферного резервуара $T_0^{n+1} = 1$, а на правой границе ($r = r_{\rm out}$) --- условие свободного теплового выхода $T_{N+1}^{n+1} = T_N^{n+1}$. Трёхдиагональная система \eqref{eq:tridiagonal_system} решается за $O(N)$ операций прямым и обратным ходом алгоритма Томаса, после чего обновляется давление $p_i^{n+1} = \theta_0\rho_i T_i^{n+1}$ и полная консервативная энергия $U_{3,i}^{n+1}$.
+
+\subsection{Критерий сходимости и интеграл энергии с учётом переходного слоя}
+
+При включении теплопроводности и радиационных потерь обобщённый интеграл Бернулли стационарной системы принимает вид:
+\begin{equation}
+\varepsilon_i^{\rm tot} = \frac{u_i^2}{2} + \frac{\gamma}{\gamma-1}\frac{p_i}{\rho_i} - \frac{1}{r_i} + \frac{3(w_{+,i} + w_{-,i})}{2\rho_i} + \frac{V_{A,i}(w_{+,i} - w_{-,i})}{\rho_i u_i} + \frac{A_i q_i}{\dot{m}} + \frac{1}{\dot{m}}\int_1^{r_i} A(r')\tilde{Q}_{\rm rad}\,dr' = \mathrm{const},
+\label{eq:bernoulli_with_tr}
+\end{equation}
+где последнее интегральное слагаемое учитывает суммарную мощность излучения, высвеченную в переходном слое и нижней короне.
+
+\end{document}

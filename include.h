@@ -56,12 +56,23 @@ constexpr double R_MIN = 1.0;               // Inner boundary at the solar surfa
 constexpr double R_MAX = 30.0;              // Outer boundary in solar-radius units.
 constexpr double GRID_RATIO = 1.008;        // Adjacent cell width ratio; 1 gives a uniform grid.
 
-// Uniform dimensionless state for fresh runs. The outgoing wave energy is OMEGA_0.
-constexpr double RHO_INITIAL = 1.0;
-constexpr double U_INITIAL = 0.02;
-constexpr double T_INITIAL = 1.0;
-constexpr double W_MINUS_INITIAL = 0.02 * OMEGA_0;
-static_assert(RHO_INITIAL > 0 && T_INITIAL > 0 && W_MINUS_INITIAL >= 0);
+// Dimensionless initial gas and wave profiles.
+constexpr double U_PH_INITIAL = 0.015;
+constexpr double U_INITIAL_RISE = 1.45;
+constexpr double U_INITIAL_SCALE = 3.5;
+constexpr double RHO_INITIAL_SCALE = 0.15;
+constexpr double RHO_INITIAL_FLOOR = 1e-8;
+constexpr double T_PH_INITIAL = 1.0;
+constexpr double T_INITIAL_RISE = 25.0;
+constexpr double T_INITIAL_SCALE = 0.3;
+constexpr double T_INITIAL_RADIAL_EXPONENT = -0.25;
+constexpr double W_PLUS_INITIAL_AREA_EXPONENT = -1.2;
+constexpr double W_MINUS_INITIAL_RATIO = 0.02;
+constexpr double W_MINUS_INITIAL_SCALE = 0.5;
+static_assert(U_PH_INITIAL > 0 && U_INITIAL_RISE >= 0 && U_INITIAL_SCALE > 0);
+static_assert(RHO_INITIAL_SCALE > 0 && RHO_INITIAL_FLOOR > 0);
+static_assert(T_PH_INITIAL > 0 && T_INITIAL_RISE >= 0 && T_INITIAL_SCALE > 0);
+static_assert(W_MINUS_INITIAL_RATIO >= 0 && W_MINUS_INITIAL_SCALE > 0);
 
 // Dimensionless solver settings.
 enum class SlopeLimiter { Minmod, VanLeer, FirstOrder };
@@ -93,6 +104,10 @@ constexpr double PRINT_INTERVAL = 0.5;      // Simulation-time interval between 
 constexpr double OUTPUT_INTERVAL = 0.5;     // Simulation-time interval between profile outputs.
 constexpr double CONVERGENCE_TOL = 1e-9;     // Threshold for max |L_k|/(1+|U_k|) over cells and components.
 constexpr int CONV_NEEDED = 5;              // Required consecutive successful convergence checks.
+
+// Parent directory for run1, run2, etc. Empty uses the launch directory.
+// Example: LR"(D:\AWSoM1D\Results)"
+inline constexpr wchar_t OUTPUT_ROOT[] = LR"(F:\Results\AWSoM1D)";
 
 // An empty restart path selects initialization from the profiles above.
 inline constexpr char RESTART_FILE[] = "";

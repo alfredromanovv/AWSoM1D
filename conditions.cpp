@@ -5,10 +5,19 @@ void set_initial_conditions(Grid& grid)
 {
     if (grid.size() == 0 || grid.face(grid.begin()).r < 1.0)
         throw logic_error("Initial profiles require a grid with r >= 1.");
-    const int first = grid.begin();
-    const State initial = State::from_primitive(RHO_INITIAL, U_INITIAL, T_INITIAL, OMEGA_0, W_MINUS_INITIAL);
-    for (int i = first; i < grid.end(); ++i)
-        grid.set_state(i, initial);
+    for (int i = grid.begin(); i < grid.end(); ++i) {
+        const Cell& cell = grid.cell(i);
+        const double height = cell.r - 1.0;
+        const double u = U_PH_INITIAL - U_INITIAL_RISE * expm1(-height / U_INITIAL_SCALE);
+        const double rho = max(U_PH_INITIAL / (cell.area * u)
+                               + (1.0 - U_PH_INITIAL / u) * exp(-height / RHO_INITIAL_SCALE),
+                               RHO_INITIAL_FLOOR);
+        const double temperature = T_PH_INITIAL - T_INITIAL_RISE * expm1(-height / T_INITIAL_SCALE)
+                                   * pow(cell.r, T_INITIAL_RADIAL_EXPONENT);
+        const double w_plus = OMEGA_0 * pow(cell.area, W_PLUS_INITIAL_AREA_EXPONENT);
+        const double w_minus = W_MINUS_INITIAL_RATIO * w_plus * (-expm1(-height / W_MINUS_INITIAL_SCALE));
+        grid.set_state(i, State::from_primitive(rho, u, temperature, w_plus, w_minus));
+    }
 }
 
 State photospheric_boundary_state(const State& interior)

@@ -51,12 +51,21 @@ int main()
         volume += c.volume;
         if (i + 1 < grid.end())
             assert(close(grid.cell(i + 1).width / c.width, GRID_RATIO));
-        assert(c.state.rho == RHO_INITIAL);
-        assert(close(c.state.velocity(), U_INITIAL));
-        assert(close(c.state.pressure(), THETA * RHO_INITIAL * T_INITIAL));
-        assert(close(c.state.temperature(), T_INITIAL));
-        assert(c.state.w_plus == OMEGA_0);
-        assert(c.state.w_minus == W_MINUS_INITIAL);
+        const double height = c.r - 1.0;
+        const double u = 0.015 + 1.45 * (1.0 - exp(-height / 3.5));
+        const double rho = max(0.015 / (c.area * u) + (1.0 - 0.015 / u) * exp(-height / 0.15), 1e-8);
+        const double temperature = 1.0 + 25.0 * (1.0 - exp(-height / 0.3)) / pow(c.r, 0.25);
+        const double pressure = THETA * rho * temperature;
+        assert(close(c.state.rho / rho, 1.0));
+        assert(close(c.state.velocity(), u));
+        assert(close(c.state.pressure() / pressure, 1.0));
+        const double w_plus = OMEGA_0 * pow(c.area, -1.2);
+        const double ratio = 0.02 * (1.0 - exp(-height / 0.5));
+        assert(close(c.state.w_plus / w_plus, 1.0));
+        assert(c.state.w_minus > 0.0);
+        assert(close(c.state.w_minus / c.state.w_plus, ratio));
+        const double energy = 0.5 * rho * u * u + pressure / (GAMMA - 1.0) + w_plus * (1.0 + ratio);
+        assert(close(c.state.energy / energy, 1.0));
     }
     const double radial_volume = (pow(R_MAX, 3) - pow(R_MIN, 3)) / 3;
     if constexpr (SUPER_RADIAL_EXPANSION) {

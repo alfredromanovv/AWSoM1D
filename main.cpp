@@ -3,8 +3,15 @@
 
 static void enter_run_directory()
 {
+    const filesystem::path output_root = OUTPUT_ROOT;
+    if (!output_root.empty()) {
+        if (!output_root.is_absolute())
+            throw invalid_argument("OUTPUT_ROOT must be an absolute path");
+        filesystem::create_directories(output_root);
+    }
+
     for (uint64_t number = 1; ; ++number) {
-        const filesystem::path path = "run" + to_string(number);
+        const filesystem::path path = output_root / ("run" + to_string(number));
         error_code error;
         if (filesystem::create_directory(path, error)) {
             filesystem::current_path(path);

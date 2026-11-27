@@ -24,6 +24,9 @@
     <ClCompile Include="conditions.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="mms.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
     <ClCompile Include="output.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -45,6 +48,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="functions.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="mms.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

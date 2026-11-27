@@ -53,20 +53,21 @@ extern atomic<bool> g_stop;
 // rho* = 3.3452438519e-10 kg/m^3; T* = 50000 K
 // B* = 0.0005 T; L_perp,0 = 4743379.7887534 m
 // w_+,0 = 0.022553373276327 J/m^3; mu = 0.6
+constexpr bool MMS_TEST = true; // Run the manufactured-solution convergence study.
 constexpr double GAMMA = 5.0 / 3.0;
-constexpr double THETA = 0.0036320362607286;
-constexpr double B = 0.055834135972868;
-constexpr double D = 293.33514539549;
+constexpr double THETA = MMS_TEST ? 0.0036 : 0.0036320362607286;
+constexpr double B = MMS_TEST ? 1.5 : 0.055834135972868;
+constexpr double D = MMS_TEST ? 35.0 : 293.33514539549;
 constexpr double OMEGA_0 = 0.00035341173263479;
 constexpr bool ENABLE_REFLECTION = true;
 
-constexpr bool SUPER_RADIAL_EXPANSION = true;
+constexpr bool SUPER_RADIAL_EXPANSION = !MMS_TEST;
 constexpr double EXPANSION_F_MAX = 6.5;
 constexpr double EXPANSION_R = 1.3;
 constexpr double EXPANSION_SIGMA = 0.25;
 
 // One-dimensional radial grid.
-constexpr int NX = 700;                    // Number of physical cells.
+constexpr int NX = 800;                    // Number of physical cells.
 constexpr int NG = 2;                      // Number of ghost layers on each side.
 constexpr double R_MIN = 1.0;               // Inner boundary at the solar surface.
 constexpr double R_MAX = 70.0;              // Outer boundary in solar-radius units.
@@ -111,9 +112,9 @@ constexpr const char* LIMITER_NAME = SLOPE_LIMITER == SlopeLimiter::Minmod ? "mi
 enum class FluxMethod { HLL, HLLC };
 constexpr FluxMethod FLUX_METHOD = FluxMethod::HLL; // HLLC is reserved.
 constexpr const char* RIEMANN_SOLVER = FLUX_METHOD == FluxMethod::HLL ? "HLL" : "HLLC";
-constexpr bool LIMIT_SOURCE_STEP = false; // Enable the explicit source time-step restriction.
+constexpr bool LIMIT_SOURCE_STEP = MMS_TEST; // Enable the explicit source time-step restriction.
 constexpr double SOURCE_CFL = 0.5;
-constexpr double END_TIME = 30.0; // Absolute final time, including restarted runs.
+constexpr double END_TIME = MMS_TEST ? 1.0 : 30.0; // Absolute final time, including restarted runs.
 inline constexpr char TIME_INTEGRATOR[] = "SSP-RK2";
 constexpr int SCHEME_ORDER = SLOPE_LIMITER == SlopeLimiter::FirstOrder ? 1 : 2; // Spatial order; time remains SSP-RK2.
 constexpr double CFL_NUMBER = 0.45;

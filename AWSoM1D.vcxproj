@@ -153,6 +153,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="conditions.cpp" />
+    <ClCompile Include="mms.cpp" />
     <ClCompile Include="output.cpp" />
     <ClCompile Include="solver.cpp" />
     <ClCompile Include="realization.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="include.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="functions.h" />
+    <ClInclude Include="mms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

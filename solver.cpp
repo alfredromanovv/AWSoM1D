@@ -1,4 +1,5 @@
 ﻿#include "functions.h"
+#include "mms.h"
 #include <array>
 #include <limits>
 
@@ -118,7 +119,7 @@ double imbalance(double plus, double minus)
     return 0;
 }
 
-Bounds evaluate(const Grid &grid, Work &w)
+Bounds evaluate(const Grid &grid, Work &w, double time)
 {
     const int begin = grid.begin(), end = grid.end(), n = grid.size();
     if (begin < 1 || end <= begin)
@@ -186,6 +187,11 @@ Bounds evaluate(const Grid &grid, Work &w)
             const double divergence = (ar * r.velocity - al * l.velocity) / c.volume;
             rhs[3] += sp - 0.5 * q.w_plus * divergence;
             rhs[4] += sm - 0.5 * q.w_minus * divergence;
+            if constexpr (MMS_TEST) {
+                const auto forcing = mms::source(c.r, time);
+                for (int k = 0; k < 5; ++k)
+                    rhs[k] += forcing[k];
+            }
             double source = infinity;
             if (sp < 0)
                 source = SOURCE_CFL * q.w_plus / (-sp);
@@ -246,7 +252,10 @@ bool update(Grid &dest, const Grid &base, const Grid &stage, const Work &w, doub
     }
     if (invalid)
         return false;
-    apply_boundary_conditions(dest);
+    if constexpr (MMS_TEST)
+        mms::fill_ghosts(dest, g_time + dt);
+    else
+        apply_boundary_conditions(dest);
     return true;
 }
 } // namespace
@@ -284,7 +293,7 @@ double dissipation_stiffness(const Grid &grid)
     return cfl * gamma;
 }
 
-void calculate()
+void calculate(double step_factor)
 {
     Grid intermediate = g_grid, next = g_grid;
     Work first(g_grid.size()), second(g_grid.size());
@@ -301,7 +310,7 @@ void calculate()
     double last_dt = 0;
     for (;;)
     {
-        const Bounds b = evaluate(g_grid, first);
+        const Bounds b = evaluate(g_grid, first, g_time);
         if (!isfinite(b.residual))
             throw runtime_error("Nonfinite spatial operator.");
         if (last_dt == 0 || g_time >= print_at || g_time >= END_TIME || g_stop.load())
@@ -313,7 +322,7 @@ void calculate()
             consecutive = b.residual < CONVERGENCE_TOL ? consecutive + 1 : 0;
             print_at = next_event(g_time, PRINT_INTERVAL);
         }
-        if (consecutive >= CONV_NEEDED)
+        if (!MMS_TEST && consecutive >= CONV_NEEDED)
         {
             cout << "Stationary residual tolerance reached.\n";
             break;
@@ -321,14 +330,14 @@ void calculate()
         if (g_stop.load() || g_time >= END_TIME)
             break;
         const double target = min({END_TIME, print_at, save_at});
-        double dt = min({target - g_time, b.cfl, b.source});
+        double dt = min(target - g_time, step_factor * min(b.cfl, b.source));
         for (;;)
         {
             if (!(g_time + dt > g_time))
                 throw runtime_error("Time step underflow.");
             if (update(intermediate, g_grid, g_grid, first, dt, false))
             {
-                const Bounds mid = evaluate(intermediate, second);
+                const Bounds mid = evaluate(intermediate, second, g_time + dt);
                 if (dt <= min(mid.cfl, mid.source) && isfinite(mid.residual) &&
                     update(next, g_grid, intermediate, second, dt, true))
                     break;

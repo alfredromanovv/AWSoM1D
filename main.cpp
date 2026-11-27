@@ -1,4 +1,5 @@
 #include "functions.h"
+#include "mms.h"
 #include <filesystem>
 
 static void enter_run_directory()
@@ -27,6 +28,12 @@ int main()
 {
     try {
         install_signal_handlers();
+
+        if constexpr (MMS_TEST) {
+            enter_run_directory();
+            mms::run_study();
+            return EXIT_SUCCESS;
+        }
 
         // 1. Parameters and grid geometry.
         load_parameters();

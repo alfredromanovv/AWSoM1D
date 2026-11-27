@@ -21,7 +21,7 @@ void apply_boundary_conditions(Grid& grid);
 void load_state(const string& filename);
 
 // Simulation and shutdown.
-void calculate();
+void calculate(double step_factor = 1.0);
 double dissipation_stiffness(const Grid& grid);
 void output_results();
 // Call at output times; time is dimensionless. Files are written in the working directory.

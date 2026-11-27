@@ -78,23 +78,26 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
         WRITE_PARAMETER(EXPANSION_R);
         WRITE_PARAMETER(EXPANSION_SIGMA);
     }
-    WRITE_PARAMETER(NX);
-    WRITE_PARAMETER(NG);
-    WRITE_PARAMETER(R_MIN);
-    WRITE_PARAMETER(R_MAX);
-    WRITE_PARAMETER(GRID_RATIO);
-    WRITE_PARAMETER(U_PH_INITIAL);
-    WRITE_PARAMETER(U_INITIAL_RISE);
-    WRITE_PARAMETER(U_INITIAL_SCALE);
-    WRITE_PARAMETER(RHO_INITIAL_SCALE);
-    WRITE_PARAMETER(RHO_INITIAL_FLOOR);
-    WRITE_PARAMETER(T_PH_INITIAL);
-    WRITE_PARAMETER(T_INITIAL_RISE);
-    WRITE_PARAMETER(T_INITIAL_SCALE);
-    WRITE_PARAMETER(T_INITIAL_RADIAL_EXPONENT);
-    WRITE_PARAMETER(W_PLUS_INITIAL_AREA_EXPONENT);
-    WRITE_PARAMETER(W_MINUS_INITIAL_RATIO);
-    WRITE_PARAMETER(W_MINUS_INITIAL_SCALE);
+    WRITE_PARAMETER(MMS_TEST);
+    if constexpr (!MMS_TEST) {
+        WRITE_PARAMETER(NX);
+        WRITE_PARAMETER(NG);
+        WRITE_PARAMETER(R_MIN);
+        WRITE_PARAMETER(R_MAX);
+        WRITE_PARAMETER(GRID_RATIO);
+        WRITE_PARAMETER(U_PH_INITIAL);
+        WRITE_PARAMETER(U_INITIAL_RISE);
+        WRITE_PARAMETER(U_INITIAL_SCALE);
+        WRITE_PARAMETER(RHO_INITIAL_SCALE);
+        WRITE_PARAMETER(RHO_INITIAL_FLOOR);
+        WRITE_PARAMETER(T_PH_INITIAL);
+        WRITE_PARAMETER(T_INITIAL_RISE);
+        WRITE_PARAMETER(T_INITIAL_SCALE);
+        WRITE_PARAMETER(T_INITIAL_RADIAL_EXPONENT);
+        WRITE_PARAMETER(W_PLUS_INITIAL_AREA_EXPONENT);
+        WRITE_PARAMETER(W_MINUS_INITIAL_RATIO);
+        WRITE_PARAMETER(W_MINUS_INITIAL_SCALE);
+    }
     WRITE_PARAMETER(CFL_NUMBER);
     WRITE_PARAMETER(SOURCE_CFL);
     WRITE_PARAMETER(LIMIT_SOURCE_STEP);
@@ -122,9 +125,9 @@ void write_parameters(const Grid& grid, double time, uint64_t step)
     file << "\ngeometry = "
          << (SUPER_RADIAL_EXPANSION ? "Kopp-Holzer superradial; A(r_in)=1; volume=Gauss quadrature"
                                     : "radial 1D; A(r)=r^2; volume=integral(A dr)") << '\n'
-         << "initial_conditions = " << (RESTART_FILE[0] ? "loaded from checkpoint" : "uniform state from include.h") << '\n'
-         << "inner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; copied u, w_minus\n"
-         << "outer_boundary = constant extrapolation\n"
+         << (MMS_TEST ? "initial_conditions = manufactured cell averages\ninner_boundary = analytic ghosts\nouter_boundary = analytic ghosts\n"
+                      : (string("initial_conditions = ") + (RESTART_FILE[0] ? "loaded from checkpoint" : "profiles from include.h") +
+                         "\ninner_boundary = fixed rho=1, T=1, w_plus=OMEGA_0; copied u, w_minus\nouter_boundary = constant extrapolation\n"))
          << "signal_speed_estimate = max(VA,sqrt(cs2+cw2)); "
             "cs2=GAMMA*p/rho; cw2=3*(w_plus+w_minus)/(4*rho)\n"
          << "output_cells = physical only (no ghosts)\n"
